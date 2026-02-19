@@ -1,0 +1,11 @@
+{
+  "Group": "Misc",
+  "FriendlyName": "Amazing Discounts",
+  "SystemName": "Misc.AmazingDiscounts",
+  "Version": "1.00",
+  "SupportedVersions": [ "4.90" ],
+  "Author": "AI Assistant",
+  "DisplayOrder": 1,
+  "FileName": "Nop.Plugin.Misc.AmazingDiscounts.dll",
+  "Description": "Dedicated offers page with attractive UI."
+}

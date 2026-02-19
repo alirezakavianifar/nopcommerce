@@ -1,0 +1,43 @@
+@model Nop.Plugin.Misc.AmazingDiscounts.Models.AmazingDiscountPublicModel
+@using Nop.Services.Seo
+@inject Nop.Services.Seo.IUrlRecordService urlRecordService
+
+@{
+    Layout = "_ColumnsOne";
+    Html.AddTitleParts(T("Plugins.Misc.AmazingDiscounts.PageTitle").Text);
+}
+
+<div class="page amazing-discounts-page">
+    <div class="page-title">
+        <h1>@T("Plugins.Misc.AmazingDiscounts.PageTitle")</h1>
+    </div>
+    <div class="page-body">
+        @if (Model.Products.Any())
+        {
+            <div class="product-grid">
+                <div class="item-grid">
+                    @foreach (var product in Model.Products)
+                    {
+                        var seName = await urlRecordService.GetSeNameAsync(product);
+                        <div class="item-box">
+                            <div class="product-item">
+                                <h2 class="product-title">
+                                    <a href="@Url.RouteUrl("Product", new { SeName = seName })">@product.Name</a>
+                                </h2>
+                                <div class="description">
+                                    @product.ShortDescription
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="no-result">
+                No amazing discounts at the moment.
+            </div>
+        }
+    </div>
+</div>

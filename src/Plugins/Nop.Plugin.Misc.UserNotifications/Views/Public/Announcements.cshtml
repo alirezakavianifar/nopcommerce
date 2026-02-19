@@ -1,0 +1,14 @@
+@using Nop.Plugin.Misc.UserNotifications.Domain
+@model IList<NotificationAnnouncement>
+
+@if (Model.Any())
+{
+    <div class="user-notifications-wrapper" style="background: #fff3cd; border: 1px solid #ffeeba; padding: 10px; margin-bottom: 15px; border-radius: 4px;">
+        @foreach (var announcement in Model)
+        {
+            <div class="announcement-item" style="margin-bottom: 5px;">
+                <strong>@announcement.Title</strong>: @Html.Raw(announcement.Body)
+            </div>
+        }
+    </div>
+}
