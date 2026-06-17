@@ -1,0 +1,88 @@
+@model Nop.Plugin.Misc.GroupPurchase.Models.RewardRuleModel
+
+<div asp-validation-summary="All"></div>
+<input asp-for="Id" type="hidden" />
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="form-horizontal">
+            <div class="cards-group">
+                <div class="card card-default">
+                    <div class="card-body">
+                        
+                        <div class="form-group row">
+                            <div class="col-md-3">
+                                <nop-label asp-for="TargetRoleId" />
+                            </div>
+                            <div class="col-md-9">
+                                <nop-select asp-for="TargetRoleId" asp-items="@(((Nop.Plugin.Misc.GroupPurchase.Domain.RewardRuleTargetRole)Model.TargetRoleId).ToSelectList())" />
+                                <span asp-validation-for="TargetRoleId"></span>
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <div class="col-md-3">
+                                <nop-label asp-for="RewardTypeId" />
+                            </div>
+                            <div class="col-md-9">
+                                <nop-select asp-for="RewardTypeId" asp-items="@(((Nop.Plugin.Misc.GroupPurchase.Domain.RewardType)Model.RewardTypeId).ToSelectList())" />
+                                <span asp-validation-for="RewardTypeId"></span>
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <div class="col-md-3">
+                                <nop-label asp-for="CalculationTypeId" />
+                            </div>
+                            <div class="col-md-9">
+                                <nop-select asp-for="CalculationTypeId" asp-items="@(((Nop.Plugin.Misc.GroupPurchase.Domain.CalculationType)Model.CalculationTypeId).ToSelectList())" />
+                                <span asp-validation-for="CalculationTypeId"></span>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group row">
+                            <div class="col-md-3">
+                                <nop-label asp-for="Value" />
+                            </div>
+                            <div class="col-md-9">
+                                <nop-editor asp-for="Value" />
+                                <span asp-validation-for="Value"></span>
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <div class="col-md-3">
+                                <nop-label asp-for="CategoryId" />
+                            </div>
+                            <div class="col-md-9">
+                                <nop-editor asp-for="CategoryId" />
+                                <span asp-validation-for="CategoryId"></span>
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <div class="col-md-3">
+                                <nop-label asp-for="MinCartAmount" />
+                            </div>
+                            <div class="col-md-9">
+                                <nop-editor asp-for="MinCartAmount" />
+                                <span asp-validation-for="MinCartAmount"></span>
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <div class="col-md-3">
+                                <nop-label asp-for="MinMembers" />
+                            </div>
+                            <div class="col-md-9">
+                                <nop-editor asp-for="MinMembers" />
+                                <span asp-validation-for="MinMembers"></span>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

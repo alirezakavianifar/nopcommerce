@@ -1,0 +1,37 @@
+﻿<form method="get" id="small-search-box-form" action="/search">
+        <input type="text" class="search-box-text" id="small-searchterms" autocomplete="off" name="q" placeholder="Search store" aria-label="Search store" />
+        <button type="submit" class="button-1 search-box-button">Search</button>
+        
+            
+</form>
+<form method="post" autocomplete="off" action="/login?returnurl=%2FAdmin">
+                    
+                    <h2 class="title">
+                        Returning Customer
+                    </h2>
+                    <div class="form-fields">
+                            <div class="inputs">
+                                <label for="Email">Email:</label>
+                                <input class="email" autofocus="autofocus" type="email" data-val="true" data-val-regex="Wrong email" data-val-regex-pattern="^(([^&lt;&gt;()\[\]\\.,;:\s@&quot;]&#x2B;(\.[^&lt;&gt;()\[\]\\.,;:\s@&quot;]&#x2B;)*)|(&quot;.&#x2B;&quot;))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]&#x2B;\.)&#x2B;[a-zA-Z]{2,}))$" data-val-required="Please enter your email" id="Email" name="Email" value="" />
+                                <span class="field-validation-valid" data-valmsg-for="Email" data-valmsg-replace="true"></span>
+                            </div>
+                        <div class="inputs">
+                            <label for="Password">Password:</label>
+                            <div class="login-password">
+                                <input class="password" type="password" id="Password" name="Password" />
+                                <span class="password-eye"></span>
+                            </div>
+                            <span class="field-validation-valid" data-valmsg-for="Password" data-valmsg-replace="true"></span>
+                        </div>
+                        <div class="inputs reversed">
+                            <input type="checkbox" data-val="true" data-val-required="The Remember me? field is required." id="RememberMe" name="RememberMe" value="true" />
+                            <label for="RememberMe">Remember me?</label>
+                            <span class="forgot-password">
+                                <a href="/passwordrecovery">Forgot password?</a>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="buttons">
+                        <button type="submit" class="button-1 login-button">Log in</button>
+                    </div>
+                <input name="__RequestVerificationToken" type="hidden" value="CfDJ8OGdhSc-ud5JoVXmH4wboKuWpTBxV0FAnocFweHTKFcUTwOPrFQhbPX9_n0XOmueVbZZUAgei806EELkqbeMmlC94rPuq6aOhmPmw1f2-Cr3JoKNBKDY2d-TsCmRilPbp8YT0XMBsRAG49UsDg2GAd8" /><input name="RememberMe" type="hidden" value="false" /></form>

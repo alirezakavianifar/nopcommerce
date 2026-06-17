@@ -1,0 +1,55 @@
+<div class="group-purchase-widget" style="margin: 20px 0; padding: 15px; border: 1px dashed #ccc; border-radius: 5px; background: #f9f9f9;">
+    <h3>@T("Plugins.Misc.GroupPurchase.SectionTitle")</h3>
+    <p>@T("Plugins.Misc.GroupPurchase.SectionDescription")</p>
+    
+    <div class="group-purchase-actions">
+        <button type="button" id="btn-convert-group" class="button-2">@T("Plugins.Misc.GroupPurchase.Button.Convert")</button>
+        
+        <div style="margin-top: 15px;">
+            <input type="text" id="group-code" placeholder="@T("Plugins.Misc.GroupPurchase.Fields.UniqueCode")" class="form-control" style="width: 150px; display: inline-block;" />
+            <button type="button" id="btn-join-group" class="button-2">@T("Plugins.Misc.GroupPurchase.Button.Join")</button>
+        </div>
+    </div>
+    
+    <div id="group-purchase-result" style="margin-top: 10px; font-weight: bold;"></div>
+</div>
+
+<script asp-location="Footer">
+    $(document).ready(function() {
+        $('#btn-convert-group').on('click', function() {
+            $.ajax({
+                url: '/GroupPurchase/Convert',
+                type: 'POST',
+                success: function(data) {
+                    if (data.success) {
+                        $('#group-purchase-result').html('Successfully converted! Your code: ' + data.code);
+                        // Optional: refresh page or show more details
+                    } else {
+                        alert('Error: ' + data.message);
+                    }
+                }
+            });
+        });
+
+        $('#btn-join-group').on('click', function() {
+            var code = $('#group-code').val();
+            if (!code) {
+                alert('Please enter a code');
+                return;
+            }
+            $.ajax({
+                url: '/GroupPurchase/Join',
+                type: 'POST',
+                data: { code: code },
+                success: function(data) {
+                    if (data.success) {
+                        $('#group-purchase-result').html('Successfully joined group!');
+                        location.reload();
+                    } else {
+                        alert('Error: ' + data.message);
+                    }
+                }
+            });
+        });
+    });
+</script>

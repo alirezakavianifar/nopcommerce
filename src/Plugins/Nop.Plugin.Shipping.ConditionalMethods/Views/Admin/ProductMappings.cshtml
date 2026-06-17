@@ -1,0 +1,147 @@
+@model ProductMappingSearchModel
+
+@{
+    Layout = "_AdminLayout";
+    ViewBag.PageTitle = T("Plugins.Shipping.ConditionalMethods.ProductMappings.Title").Text;
+    NopHtml.SetActiveMenuItemSystemName("Shipping.ConditionalMethods");
+}
+
+<div class="content-header clearfix">
+    <h1 class="float-left">
+        @T("Plugins.Shipping.ConditionalMethods.ProductMappings.Title")
+    </h1>
+    <div class="float-right">
+        <button type="button" class="btn btn-primary" id="btn-add-product-mapping">
+            <i class="fas fa-plus-square"></i>
+            @T("Plugins.Shipping.ConditionalMethods.ProductMappings.AddNew")
+        </button>
+        <a href="@Url.Action("Configure")" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i>
+            @T("Admin.Common.BackToSettings")
+        </a>
+    </div>
+</div>
+
+<section class="content">
+    <div class="container-fluid">
+
+        <div class="card card-default" id="add-product-mapping-card" style="display:none;">
+            <div class="card-header">
+                <h3 class="card-title">@T("Plugins.Shipping.ConditionalMethods.ProductMappings.AddNew")</h3>
+            </div>
+            <div class="card-body">
+                <div class="form-group row">
+                    <div class="col-md-3">
+                        <label>@T("Plugins.Shipping.ConditionalMethods.Fields.ShippingType")</label>
+                    </div>
+                    <div class="col-md-9">
+                        <select class="form-control" id="pm-shipping-type">
+                            @foreach (var item in Model.AvailableShippingTypes)
+                            {
+                                if (item.Value != "0")
+                                {
+                                    <option value="@item.Value">@item.Text</option>
+                                }
+                            }
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-md-3">
+                        <label>@T("Plugins.Shipping.ConditionalMethods.Fields.ProductId")</label>
+                    </div>
+                    <div class="col-md-9">
+                        <input type="number" class="form-control" id="pm-product-id" placeholder="Product ID..." min="1" />
+                        <small class="text-muted">Enter the nopCommerce Product ID</small>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-md-9 offset-md-3">
+                        <button type="button" class="btn btn-success" id="btn-save-product-mapping">
+                            <i class="fas fa-save"></i> Save
+                        </button>
+                        <button type="button" class="btn btn-secondary" id="btn-cancel-product-mapping">
+                            Cancel
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="cards-group">
+            <div class="card card-default">
+                <div class="card-body">
+                    @await Html.PartialAsync("Table", new DataTablesModel
+                    {
+                        Name = "product-mapping-grid",
+                        UrlRead = new DataUrl("ProductMappingListData", "ConditionalShippingAdmin", null),
+                        Length = Model.PageSize,
+                        LengthMenu = Model.AvailablePageSizes,
+                        SearchButtonId = "btn-search-product-mappings",
+                        Filters = new List<FilterParameter>
+                        {
+                            new FilterParameter(nameof(Model.ShippingTypeId))
+                        },
+                        ColumnCollection = new List<ColumnProperty>
+                        {
+                            new ColumnProperty(nameof(ProductMappingModel.ShippingTypeName))
+                            {
+                                Title = T("Plugins.Shipping.ConditionalMethods.Fields.ShippingType").Text,
+                                Width = "150"
+                            },
+                            new ColumnProperty(nameof(ProductMappingModel.ProductId))
+                            {
+                                Title = T("Plugins.Shipping.ConditionalMethods.Fields.ProductId").Text,
+                                Width = "100"
+                            },
+                            new ColumnProperty(nameof(ProductMappingModel.ProductName))
+                            {
+                                Title = "Product Name"
+                            },
+                            new ColumnProperty(nameof(ProductMappingModel.Id))
+                            {
+                                Title = T("Admin.Common.Delete").Text,
+                                Width = "80",
+                                ClassName = NopColumnClassDefaults.Button,
+                                Render = new RenderButtonRemove(T("Admin.Common.Delete").Text)
+                            }
+                        }
+                    })
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+    $(document).ready(function () {
+        $('#btn-add-product-mapping').on('click', function () {
+            $('#add-product-mapping-card').show();
+        });
+
+        $('#btn-cancel-product-mapping').on('click', function () {
+            $('#add-product-mapping-card').hide();
+        });
+
+        $('#btn-save-product-mapping').on('click', function () {
+            var data = {
+                ShippingTypeId: $('#pm-shipping-type').val(),
+                ProductId: $('#pm-product-id').val()
+            };
+
+            $.ajax({
+                url: '@Url.Action("CreateProductMapping", "ConditionalShippingAdmin", new { area = "Admin" })',
+                type: 'POST',
+                data: data,
+                success: function (result) {
+                    if (result.success) {
+                        $('#add-product-mapping-card').hide();
+                        updateTable('product-mapping-grid');
+                    } else {
+                        alert(result.error || 'An error occurred.');
+                    }
+                }
+            });
+        });
+    });
+</script>

@@ -1,0 +1,147 @@
+@model WarehouseMappingSearchModel
+
+@{
+    Layout = "_AdminLayout";
+    ViewBag.PageTitle = T("Plugins.Shipping.ConditionalMethods.WarehouseMappings.Title").Text;
+    NopHtml.SetActiveMenuItemSystemName("Shipping.ConditionalMethods");
+}
+
+<div class="content-header clearfix">
+    <h1 class="float-left">
+        @T("Plugins.Shipping.ConditionalMethods.WarehouseMappings.Title")
+    </h1>
+    <div class="float-right">
+        <button type="button" class="btn btn-primary" id="btn-add-warehouse-mapping">
+            <i class="fas fa-plus-square"></i>
+            @T("Plugins.Shipping.ConditionalMethods.WarehouseMappings.AddNew")
+        </button>
+        <a href="@Url.Action("Configure")" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i>
+            @T("Admin.Common.BackToSettings")
+        </a>
+    </div>
+</div>
+
+<section class="content">
+    <div class="container-fluid">
+
+        <div class="card card-default" id="add-warehouse-mapping-card" style="display:none;">
+            <div class="card-header">
+                <h3 class="card-title">@T("Plugins.Shipping.ConditionalMethods.WarehouseMappings.AddNew")</h3>
+            </div>
+            <div class="card-body">
+                <div class="form-group row">
+                    <div class="col-md-3">
+                        <label>@T("Plugins.Shipping.ConditionalMethods.Fields.ShippingType")</label>
+                    </div>
+                    <div class="col-md-9">
+                        <select class="form-control" id="wm-shipping-type">
+                            @foreach (var item in Model.AvailableShippingTypes)
+                            {
+                                if (item.Value != "0")
+                                {
+                                    <option value="@item.Value">@item.Text</option>
+                                }
+                            }
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-md-3">
+                        <label>@T("Plugins.Shipping.ConditionalMethods.Fields.WarehouseId")</label>
+                    </div>
+                    <div class="col-md-9">
+                        <input type="number" class="form-control" id="wm-warehouse-id" placeholder="Warehouse ID..." min="1" />
+                        <small class="text-muted">Enter the nopCommerce Warehouse ID</small>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-md-9 offset-md-3">
+                        <button type="button" class="btn btn-success" id="btn-save-warehouse-mapping">
+                            <i class="fas fa-save"></i> Save
+                        </button>
+                        <button type="button" class="btn btn-secondary" id="btn-cancel-warehouse-mapping">
+                            Cancel
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="cards-group">
+            <div class="card card-default">
+                <div class="card-body">
+                    @await Html.PartialAsync("Table", new DataTablesModel
+                    {
+                        Name = "warehouse-mapping-grid",
+                        UrlRead = new DataUrl("WarehouseMappingListData", "ConditionalShippingAdmin", null),
+                        Length = Model.PageSize,
+                        LengthMenu = Model.AvailablePageSizes,
+                        SearchButtonId = "btn-search-warehouse-mappings",
+                        Filters = new List<FilterParameter>
+                        {
+                            new FilterParameter(nameof(Model.ShippingTypeId))
+                        },
+                        ColumnCollection = new List<ColumnProperty>
+                        {
+                            new ColumnProperty(nameof(WarehouseMappingModel.ShippingTypeName))
+                            {
+                                Title = T("Plugins.Shipping.ConditionalMethods.Fields.ShippingType").Text,
+                                Width = "150"
+                            },
+                            new ColumnProperty(nameof(WarehouseMappingModel.WarehouseId))
+                            {
+                                Title = T("Plugins.Shipping.ConditionalMethods.Fields.WarehouseId").Text,
+                                Width = "100"
+                            },
+                            new ColumnProperty(nameof(WarehouseMappingModel.WarehouseName))
+                            {
+                                Title = "Warehouse Name"
+                            },
+                            new ColumnProperty(nameof(WarehouseMappingModel.Id))
+                            {
+                                Title = T("Admin.Common.Delete").Text,
+                                Width = "80",
+                                ClassName = NopColumnClassDefaults.Button,
+                                Render = new RenderButtonRemove(T("Admin.Common.Delete").Text)
+                            }
+                        }
+                    })
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+    $(document).ready(function () {
+        $('#btn-add-warehouse-mapping').on('click', function () {
+            $('#add-warehouse-mapping-card').show();
+        });
+
+        $('#btn-cancel-warehouse-mapping').on('click', function () {
+            $('#add-warehouse-mapping-card').hide();
+        });
+
+        $('#btn-save-warehouse-mapping').on('click', function () {
+            var data = {
+                ShippingTypeId: $('#wm-shipping-type').val(),
+                WarehouseId: $('#wm-warehouse-id').val()
+            };
+
+            $.ajax({
+                url: '@Url.Action("CreateWarehouseMapping", "ConditionalShippingAdmin", new { area = "Admin" })',
+                type: 'POST',
+                data: data,
+                success: function (result) {
+                    if (result.success) {
+                        $('#add-warehouse-mapping-card').hide();
+                        updateTable('warehouse-mapping-grid');
+                    } else {
+                        alert(result.error || 'An error occurred.');
+                    }
+                }
+            });
+        });
+    });
+</script>

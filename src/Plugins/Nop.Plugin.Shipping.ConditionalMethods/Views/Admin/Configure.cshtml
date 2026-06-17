@@ -1,0 +1,305 @@
+@model ConfigurationModel
+
+@{
+    Layout = "_AdminLayout";
+    ViewBag.PageTitle = T("Plugins.Shipping.ConditionalMethods.Configure.Title").Text;
+    NopHtml.SetActiveMenuItemSystemName("Shipping.ConditionalMethods");
+}
+
+<div class="content-header clearfix">
+    <h1 class="float-left">
+        @T("Plugins.Shipping.ConditionalMethods.Configure.Title")
+    </h1>
+    <div class="float-right">
+        <a href="@Url.Action("CityMappings")" class="btn btn-secondary">
+            <i class="fas fa-map-marked-alt"></i>
+            @T("Plugins.Shipping.ConditionalMethods.AdminMenu.CityMappings")
+        </a>
+        <a href="@Url.Action("ProductMappings")" class="btn btn-secondary">
+            <i class="fas fa-box"></i>
+            @T("Plugins.Shipping.ConditionalMethods.AdminMenu.ProductMappings")
+        </a>
+        <a href="@Url.Action("WarehouseMappings")" class="btn btn-secondary">
+            <i class="fas fa-warehouse"></i>
+            @T("Plugins.Shipping.ConditionalMethods.AdminMenu.WarehouseMappings")
+        </a>
+    </div>
+</div>
+
+<section class="content">
+    <div class="container-fluid">
+        <form asp-controller="ConditionalShippingAdmin" asp-action="SaveConfigure" method="post">
+            <div class="cards-group">
+
+                @* ── Express ── *@
+                <div class="card card-default">
+                    <div class="card-header">
+                        <h3 class="card-title">@T("Plugins.Shipping.ConditionalMethods.Configure.Express")</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-group row">
+                            <div class="col-md-3">
+                                <nop-label asp-for="ExpressEnabled" />
+                            </div>
+                            <div class="col-md-9">
+                                <nop-editor asp-for="ExpressEnabled" />
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-md-3">
+                                <nop-label asp-for="ExpressPostalBaseRate" />
+                            </div>
+                            <div class="col-md-9">
+                                <nop-editor asp-for="ExpressPostalBaseRate" />
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-md-3">
+                                <nop-label asp-for="ExpressPercentageIncrease" />
+                            </div>
+                            <div class="col-md-9">
+                                <nop-editor asp-for="ExpressPercentageIncrease" />
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-md-3">
+                                <nop-label asp-for="ExpressFixedAddition" />
+                            </div>
+                            <div class="col-md-9">
+                                <nop-editor asp-for="ExpressFixedAddition" />
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-md-3">
+                                <nop-label asp-for="ExpressMinAddition" />
+                            </div>
+                            <div class="col-md-9">
+                                <nop-editor asp-for="ExpressMinAddition" />
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-md-3">
+                                <nop-label asp-for="ExpressMaxAddition" />
+                            </div>
+                            <div class="col-md-9">
+                                <nop-editor asp-for="ExpressMaxAddition" />
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-md-3">
+                                <nop-label asp-for="ExpressCourierApiKey" />
+                            </div>
+                            <div class="col-md-9">
+                                <nop-editor asp-for="ExpressCourierApiKey" />
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-md-3">
+                                <nop-label asp-for="ExpressCourierApiEndpoint" />
+                            </div>
+                            <div class="col-md-9">
+                                <nop-editor asp-for="ExpressCourierApiEndpoint" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                @* ── Transportation ── *@
+                <div class="card card-default">
+                    <div class="card-header">
+                        <h3 class="card-title">@T("Plugins.Shipping.ConditionalMethods.Configure.Transportation")</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-group row">
+                            <div class="col-md-3">
+                                <nop-label asp-for="TransportationEnabled" />
+                            </div>
+                            <div class="col-md-9">
+                                <nop-editor asp-for="TransportationEnabled" />
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-md-3">
+                                <nop-label asp-for="TransportationBaseRate" />
+                            </div>
+                            <div class="col-md-9">
+                                <nop-editor asp-for="TransportationBaseRate" />
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-md-3">
+                                <nop-label asp-for="TransportationPercentageDecrease" />
+                            </div>
+                            <div class="col-md-9">
+                                <nop-editor asp-for="TransportationPercentageDecrease" />
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-md-3">
+                                <nop-label asp-for="TransportationFixedDeduction" />
+                            </div>
+                            <div class="col-md-9">
+                                <nop-editor asp-for="TransportationFixedDeduction" />
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-md-3">
+                                <nop-label asp-for="TransportationMinDeduction" />
+                            </div>
+                            <div class="col-md-9">
+                                <nop-editor asp-for="TransportationMinDeduction" />
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-md-3">
+                                <nop-label asp-for="TransportationMaxDeduction" />
+                            </div>
+                            <div class="col-md-9">
+                                <nop-editor asp-for="TransportationMaxDeduction" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                @* ── Courier ── *@
+                <div class="card card-default">
+                    <div class="card-header">
+                        <h3 class="card-title">@T("Plugins.Shipping.ConditionalMethods.Configure.Courier")</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-group row">
+                            <div class="col-md-3">
+                                <nop-label asp-for="CourierEnabled" />
+                            </div>
+                            <div class="col-md-9">
+                                <nop-editor asp-for="CourierEnabled" />
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-md-3">
+                                <nop-label asp-for="CourierApiKey" />
+                            </div>
+                            <div class="col-md-9">
+                                <nop-editor asp-for="CourierApiKey" />
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-md-3">
+                                <nop-label asp-for="CourierApiEndpoint" />
+                            </div>
+                            <div class="col-md-9">
+                                <nop-editor asp-for="CourierApiEndpoint" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                @* ── Freight / Cargo ── *@
+                <div class="card card-default">
+                    <div class="card-header">
+                        <h3 class="card-title">@T("Plugins.Shipping.ConditionalMethods.Configure.Freight")</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-group row">
+                            <div class="col-md-3">
+                                <nop-label asp-for="FreightEnabled" />
+                            </div>
+                            <div class="col-md-9">
+                                <nop-editor asp-for="FreightEnabled" />
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-md-3">
+                                <nop-label asp-for="FreightCostModeId" />
+                            </div>
+                            <div class="col-md-9">
+                                <select asp-for="FreightCostModeId" asp-items="Model.AvailableFreightCostModes" class="form-control"></select>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-md-3">
+                                <nop-label asp-for="FreightFixedRate" />
+                            </div>
+                            <div class="col-md-9">
+                                <nop-editor asp-for="FreightFixedRate" />
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-md-3">
+                                <nop-label asp-for="FreightCostPerKg" />
+                            </div>
+                            <div class="col-md-9">
+                                <nop-editor asp-for="FreightCostPerKg" />
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-md-3">
+                                <nop-label asp-for="FreightMinCostPerKg" />
+                            </div>
+                            <div class="col-md-9">
+                                <nop-editor asp-for="FreightMinCostPerKg" />
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-md-3">
+                                <nop-label asp-for="FreightMaxCostPerKg" />
+                            </div>
+                            <div class="col-md-9">
+                                <nop-editor asp-for="FreightMaxCostPerKg" />
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-md-3">
+                                <nop-label asp-for="FreightCostPerKm" />
+                            </div>
+                            <div class="col-md-9">
+                                <nop-editor asp-for="FreightCostPerKm" />
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-md-3">
+                                <nop-label asp-for="FreightMinCostPerKm" />
+                            </div>
+                            <div class="col-md-9">
+                                <nop-editor asp-for="FreightMinCostPerKm" />
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-md-3">
+                                <nop-label asp-for="FreightMaxCostPerKm" />
+                            </div>
+                            <div class="col-md-9">
+                                <nop-editor asp-for="FreightMaxCostPerKm" />
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-md-3">
+                                <nop-label asp-for="FreightApiKey" />
+                            </div>
+                            <div class="col-md-9">
+                                <nop-editor asp-for="FreightApiKey" />
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-md-3">
+                                <nop-label asp-for="FreightApiEndpoint" />
+                            </div>
+                            <div class="col-md-9">
+                                <nop-editor asp-for="FreightApiEndpoint" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card card-default">
+                    <div class="card-body">
+                        <button type="submit" class="btn btn-primary">
+                            @T("Admin.Common.Save")
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </form>
+    </div>
+</section>

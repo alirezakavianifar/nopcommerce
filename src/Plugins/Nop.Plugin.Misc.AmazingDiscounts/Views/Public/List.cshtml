@@ -1,43 +1,308 @@
 @model Nop.Plugin.Misc.AmazingDiscounts.Models.AmazingDiscountPublicModel
-@using Nop.Services.Seo
-@inject Nop.Services.Seo.IUrlRecordService urlRecordService
 
 @{
     Layout = "_ColumnsOne";
-    Html.AddTitleParts(T("Plugins.Misc.AmazingDiscounts.PageTitle").Text);
+    NopHtml.AddTitleParts(T("Plugins.Misc.AmazingDiscounts.PageTitle").Text);
 }
 
-<div class="page amazing-discounts-page">
-    <div class="page-title">
+<style>
+    /* Amazing Discounts Custom Visual Theme */
+    .amazing-discounts-container {
+        font-family: 'Outfit', 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        padding: 20px 0 60px 0;
+    }
+
+    .amazing-discounts-hero {
+        background: linear-gradient(135deg, #5b21b6, #8b5cf6, #ec4899);
+        border-radius: 20px;
+        padding: 60px 24px;
+        text-align: center;
+        color: #ffffff;
+        margin-bottom: 48px;
+        box-shadow: 0 12px 40px rgba(139, 92, 246, 0.15);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .amazing-discounts-hero::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(255,255,255,0.12) 0%, transparent 60%);
+        pointer-events: none;
+        animation: rotate-radial 25s linear infinite;
+    }
+
+    @@keyframes rotate-radial {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+    }
+
+    .amazing-discounts-hero h1 {
+        font-size: 3rem;
+        font-weight: 850;
+        margin-bottom: 12px;
+        letter-spacing: -0.5px;
+        text-shadow: 0 3px 6px rgba(0,0,0,0.15);
+        color: #ffffff;
+    }
+
+    .amazing-discounts-hero p {
+        font-size: 1.25rem;
+        font-weight: 400;
+        opacity: 0.95;
+        max-width: 650px;
+        margin: 0 auto;
+        line-height: 1.6;
+        text-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    .amazing-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+        gap: 36px;
+        padding: 10px 0;
+    }
+
+    .amazing-card {
+        background: #ffffff;
+        border-radius: 20px;
+        border: 1px solid rgba(0,0,0,0.05);
+        box-shadow: 0 6px 24px rgba(0, 0, 0, 0.03);
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        position: relative;
+        transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+    }
+
+    .amazing-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 16px 36px rgba(139, 92, 246, 0.12);
+        border-color: rgba(139, 92, 246, 0.2);
+    }
+
+    .amazing-badge-container {
+        position: absolute;
+        top: 16px;
+        left: 16px;
+        z-index: 10;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        align-items: flex-start;
+    }
+
+    .amazing-badge-label {
+        background: linear-gradient(135deg, #ec4899, #f43f5e);
+        color: #ffffff;
+        font-size: 0.75rem;
+        font-weight: 750;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        padding: 5px 12px;
+        border-radius: 30px;
+        box-shadow: 0 3px 10px rgba(236, 72, 153, 0.3);
+    }
+
+    .amazing-badge-discount {
+        background: linear-gradient(135deg, #10b981, #059669);
+        color: #ffffff;
+        font-size: 0.8rem;
+        font-weight: 800;
+        padding: 5px 12px;
+        border-radius: 30px;
+        box-shadow: 0 3px 10px rgba(16, 185, 129, 0.3);
+    }
+
+    .amazing-img-container {
+        width: 100%;
+        height: 260px;
+        position: relative;
+        background: #fbfbfd;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        border-bottom: 1px solid rgba(0,0,0,0.02);
+    }
+
+    .amazing-img-container img {
+        max-width: 85%;
+        max-height: 85%;
+        object-fit: contain;
+        transition: transform 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
+    }
+
+    .amazing-card:hover .amazing-img-container img {
+        transform: scale(1.06);
+    }
+
+    .amazing-details {
+        padding: 24px;
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+    }
+
+    .amazing-title {
+        font-size: 1.25rem;
+        font-weight: 750;
+        line-height: 1.4;
+        margin: 0 0 12px 0;
+        font-family: 'Outfit', sans-serif;
+    }
+
+    .amazing-title a {
+        color: #1f2937;
+        text-decoration: none;
+        transition: color 0.25s ease;
+    }
+
+    .amazing-title a:hover {
+        color: #8b5cf6;
+    }
+
+    .amazing-description {
+        font-size: 0.9rem;
+        color: #6b7280;
+        margin-bottom: 24px;
+        line-height: 1.6;
+        flex-grow: 1;
+    }
+
+    .amazing-footer-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: auto;
+        padding-top: 16px;
+        border-top: 1px solid rgba(0,0,0,0.03);
+    }
+
+    .amazing-prices {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .amazing-old-price {
+        font-size: 0.875rem;
+        color: #9ca3af;
+        text-decoration: line-through;
+        margin-bottom: 2px;
+        font-weight: 500;
+    }
+
+    .amazing-price {
+        font-size: 1.45rem;
+        font-weight: 850;
+        color: #111827;
+    }
+
+    .amazing-btn {
+        background: linear-gradient(135deg, #7c3aed, #6d28d9);
+        color: #ffffff !important;
+        font-weight: 600;
+        padding: 10px 22px;
+        border-radius: 30px;
+        text-decoration: none !important;
+        font-size: 0.875rem;
+        box-shadow: 0 4px 14px rgba(124, 58, 237, 0.25);
+        transition: all 0.3s ease;
+    }
+
+    .amazing-btn:hover {
+        background: linear-gradient(135deg, #6d28d9, #5b21b6);
+        box-shadow: 0 6px 20px rgba(124, 58, 237, 0.35);
+        transform: translateY(-2px);
+    }
+
+    .amazing-empty {
+        text-align: center;
+        padding: 80px 24px;
+        background: #f9fafb;
+        border: 2px dashed #e5e7eb;
+        border-radius: 20px;
+        color: #6b7280;
+        font-size: 1.15rem;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    .amazing-empty-icon {
+        font-size: 4rem;
+        color: #d1d5db;
+        margin-bottom: 20px;
+        display: block;
+    }
+</style>
+
+<div class="amazing-discounts-container">
+    <div class="amazing-discounts-hero">
         <h1>@T("Plugins.Misc.AmazingDiscounts.PageTitle")</h1>
+        <p>Unbeatable deals on top products. Grab them before they're gone!</p>
     </div>
-    <div class="page-body">
-        @if (Model.Products.Any())
-        {
-            <div class="product-grid">
-                <div class="item-grid">
-                    @foreach (var product in Model.Products)
-                    {
-                        var seName = await urlRecordService.GetSeNameAsync(product);
-                        <div class="item-box">
-                            <div class="product-item">
-                                <h2 class="product-title">
-                                    <a href="@Url.RouteUrl("Product", new { SeName = seName })">@product.Name</a>
-                                </h2>
-                                <div class="description">
-                                    @product.ShortDescription
-                                </div>
-                            </div>
+
+    @if (Model.Products.Any())
+    {
+        <div class="amazing-grid">
+            @foreach (var product in Model.Products)
+            {
+                <div class="amazing-card">
+                    <div class="amazing-badge-container">
+                        @if (!string.IsNullOrEmpty(product.CustomLabel))
+                        {
+                            <span class="amazing-badge-label">@product.CustomLabel</span>
+                        }
+                        else
+                        {
+                            <span class="amazing-badge-label">Hot Offer</span>
+                        }
+                        @if (product.DiscountPercentage > 0)
+                        {
+                            <span class="amazing-badge-discount">-@product.DiscountPercentage%</span>
+                        }
+                    </div>
+
+                    <div class="amazing-img-container">
+                        <a href="@Url.RouteUrl("Product", new { SeName = product.SeName })" title="@product.Name">
+                            <img alt="@product.Name" src="@product.PictureUrl" title="@product.Name" />
+                        </a>
+                    </div>
+
+                    <div class="amazing-details">
+                        <h2 class="amazing-title">
+                            <a href="@Url.RouteUrl("Product", new { SeName = product.SeName })">@product.Name</a>
+                        </h2>
+                        <div class="amazing-description">
+                            @Html.Raw(product.ShortDescription)
                         </div>
-                    }
+
+                        <div class="amazing-footer-row">
+                            <div class="amazing-prices">
+                                @if (!string.IsNullOrEmpty(product.OldPrice))
+                                {
+                                    <span class="amazing-old-price">@product.OldPrice</span>
+                                }
+                                <span class="amazing-price">@product.Price</span>
+                            </div>
+                            <a href="@Url.RouteUrl("Product", new { SeName = product.SeName })" class="amazing-btn">
+                                View Deal
+                            </a>
+                        </div>
+                    </div>
                 </div>
-            </div>
-        }
-        else
-        {
-            <div class="no-result">
-                No amazing discounts at the moment.
-            </div>
-        }
-    </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="amazing-empty">
+            <span class="amazing-empty-icon">🏷️</span>
+            <p>No amazing discounts at the moment. Check back soon for exclusive promotions!</p>
+        </div>
+    }
 </div>

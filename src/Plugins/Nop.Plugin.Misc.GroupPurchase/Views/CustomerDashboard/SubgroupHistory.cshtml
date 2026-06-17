@@ -1,0 +1,55 @@
+@model Nop.Plugin.Misc.GroupPurchase.Models.CustomerSubgroupHistoryListModel
+@{
+    Layout = "_ColumnsTwo";
+}
+
+@section accountNavigation
+{
+    @await Component.InvokeAsync("CustomerNavigation", new { selectedTabId = 0 })
+}
+
+<div class="page account-page">
+    <div class="page-title">
+        <h1>My Subgroup History</h1>
+    </div>
+    <div class="page-body">
+        @if (Model.Data.Any())
+        {
+            <div class="table-wrapper">
+                <table class="data-table">
+                    <colgroup>
+                        <col />
+                        <col />
+                        <col />
+                        <col />
+                    </colgroup>
+                    <thead>
+                        <tr>
+                            <th>Group Code</th>
+                            <th>Status</th>
+                            <th>Joined On</th>
+                            <th>Leader Email</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.Data)
+                        {
+                            <tr>
+                                <td>@item.UniqueCode</td>
+                                <td>@item.Status</td>
+                                <td>@item.JoinedOnUtc.ToString("g")</td>
+                                <td>@item.LeaderEmail</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="no-data">
+                You have not joined any group purchases yet.
+            </div>
+        }
+    </div>
+</div>

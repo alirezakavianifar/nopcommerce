@@ -1,0 +1,18 @@
+@using Nop.Web.Framework.UI
+@using Microsoft.AspNetCore.Mvc.Routing
+@{
+    var showWallet = true; 
+}
+
+<li class="@if (Url.ActionContext.RouteData.Values["action"]?.ToString() == "LeaderGroups") { <text>active</text> }">
+    <a href="@Url.Action("LeaderGroups", "CustomerDashboard")" class="inactive">My Leader Groups</a>
+</li>
+<li class="@if (Url.ActionContext.RouteData.Values["action"]?.ToString() == "SubgroupHistory") { <text>active</text> }">
+    <a href="@Url.Action("SubgroupHistory", "CustomerDashboard")" class="inactive">My Subgroup History</a>
+</li>
+<li class="@if (Url.ActionContext.RouteData.Values["action"]?.ToString() == "Wallet") { <text>active</text> }">
+    <a href="@Url.Action("Wallet", "CustomerDashboard")" class="inactive">My Wallet</a>
+</li>
+<li class="@if (Url.ActionContext.RouteData.Values["action"]?.ToString() == "Lottery") { <text>active</text> }">
+    <a href="@Url.Action("Lottery", "CustomerDashboard")" class="inactive">My Lottery Points</a>
+</li>

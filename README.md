@@ -1,5 +1,8 @@
-﻿﻿nopCommerce: free and open-source eCommerce solution
+﻿nopCommerce: free and open-source eCommerce solution
 ===========
+
+[**🚀 Quick Start: How to Run nopCommerce Locally**](RUNNING.md)
+
 
 [nopCommerce](https://www.nopcommerce.com/?utm_source=github&utm_medium=content&utm_campaign=homepage) is the best open-source eCommerce platform. nopCommerce is free, and it is the most popular ASP.NET Core shopping cart.
 

@@ -15,6 +15,7 @@ namespace Nop.Plugin.Misc.AmazingDiscounts.Controllers;
 
 [AuthorizeAdmin]
 [Area(AreaNames.ADMIN)]
+[Route("Admin/AmazingDiscounts")]
 [AutoValidateAntiforgeryToken]
 public class AmazingDiscountAdminController : BasePluginController
 {
@@ -38,6 +39,7 @@ public class AmazingDiscountAdminController : BasePluginController
     }
 
     [CheckPermission(StandardPermission.Catalog.PRODUCTS_VIEW)]
+    [Route("List")]
     public virtual async Task<IActionResult> List()
     {
         var model = new AmazingDiscountSearchModel();
@@ -46,6 +48,7 @@ public class AmazingDiscountAdminController : BasePluginController
 
     [HttpPost]
     [CheckPermission(StandardPermission.Catalog.PRODUCTS_VIEW)]
+    [Route("List")]
     public virtual async Task<IActionResult> List(AmazingDiscountSearchModel searchModel)
     {
         var products = await _amazingDiscountService.GetAllAmazingDiscountProductsAsync(searchModel.Page - 1, searchModel.PageSize);
@@ -70,6 +73,7 @@ public class AmazingDiscountAdminController : BasePluginController
     }
 
     [CheckPermission(StandardPermission.Catalog.PRODUCTS_CREATE_EDIT_DELETE)]
+    [Route("Create")]
     public virtual async Task<IActionResult> Create()
     {
         var model = new AmazingDiscountProductModel();
@@ -78,6 +82,7 @@ public class AmazingDiscountAdminController : BasePluginController
 
     [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
     [CheckPermission(StandardPermission.Catalog.PRODUCTS_CREATE_EDIT_DELETE)]
+    [Route("Create")]
     public virtual async Task<IActionResult> Create(AmazingDiscountProductModel model, bool continueEditing)
     {
         if (ModelState.IsValid)
@@ -105,6 +110,7 @@ public class AmazingDiscountAdminController : BasePluginController
     }
 
     [CheckPermission(StandardPermission.Catalog.PRODUCTS_CREATE_EDIT_DELETE)]
+    [Route("Edit/{id}")]
     public virtual async Task<IActionResult> Edit(int id)
     {
         var product = await _amazingDiscountService.GetByIdAsync(id);
@@ -128,6 +134,7 @@ public class AmazingDiscountAdminController : BasePluginController
 
     [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
     [CheckPermission(StandardPermission.Catalog.PRODUCTS_CREATE_EDIT_DELETE)]
+    [Route("Edit/{id}")]
     public virtual async Task<IActionResult> Edit(AmazingDiscountProductModel model, bool continueEditing)
     {
         var product = await _amazingDiscountService.GetByIdAsync(model.Id);
@@ -157,6 +164,7 @@ public class AmazingDiscountAdminController : BasePluginController
 
     [HttpPost]
     [CheckPermission(StandardPermission.Catalog.PRODUCTS_CREATE_EDIT_DELETE)]
+    [Route("Delete/{id}")]
     public virtual async Task<IActionResult> Delete(int id)
     {
         var product = await _amazingDiscountService.GetByIdAsync(id);

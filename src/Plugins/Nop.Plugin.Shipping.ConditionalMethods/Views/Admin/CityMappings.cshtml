@@ -1,0 +1,176 @@
+@model CityMappingSearchModel
+
+@{
+    Layout = "_AdminLayout";
+    ViewBag.PageTitle = T("Plugins.Shipping.ConditionalMethods.CityMappings.Title").Text;
+    NopHtml.SetActiveMenuItemSystemName("Shipping.ConditionalMethods");
+}
+
+<div class="content-header clearfix">
+    <h1 class="float-left">
+        @T("Plugins.Shipping.ConditionalMethods.CityMappings.Title")
+    </h1>
+    <div class="float-right">
+        <button type="button" class="btn btn-primary" id="btn-add-city-mapping">
+            <i class="fas fa-plus-square"></i>
+            @T("Plugins.Shipping.ConditionalMethods.CityMappings.AddNew")
+        </button>
+        <a href="@Url.Action("Configure")" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i>
+            @T("Admin.Common.BackToSettings")
+        </a>
+    </div>
+</div>
+
+<section class="content">
+    <div class="container-fluid">
+
+        @* Add form (hidden by default) *@
+        <div class="card card-default" id="add-city-mapping-card" style="display:none;">
+            <div class="card-header">
+                <h3 class="card-title">@T("Plugins.Shipping.ConditionalMethods.CityMappings.AddNew")</h3>
+            </div>
+            <div class="card-body">
+                <form id="add-city-mapping-form">
+                    <div class="form-group row">
+                        <div class="col-md-3">
+                            <label>@T("Plugins.Shipping.ConditionalMethods.Fields.ShippingType")</label>
+                        </div>
+                        <div class="col-md-9">
+                            <select name="ShippingTypeId" class="form-control" id="cm-shipping-type">
+                                @foreach (var item in Model.AvailableShippingTypes)
+                                {
+                                    if (item.Value != "0")
+                                    {
+                                        <option value="@item.Value">@item.Text</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-md-3">
+                            <label>@T("Plugins.Shipping.ConditionalMethods.Fields.CityName")</label>
+                        </div>
+                        <div class="col-md-9">
+                            <input type="text" name="CityName" class="form-control" id="cm-city-name" placeholder="City name..." />
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-md-3">
+                            <label>@T("Plugins.Shipping.ConditionalMethods.Fields.StateProvinceId")</label>
+                        </div>
+                        <div class="col-md-9">
+                            <input type="number" name="StateProvinceId" class="form-control" id="cm-state" value="0" min="0" />
+                            <small class="text-muted">Enter 0 to match any state/province</small>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-md-3">
+                            <label>@T("Plugins.Shipping.ConditionalMethods.Fields.IsActive")</label>
+                        </div>
+                        <div class="col-md-9">
+                            <input type="checkbox" name="IsActive" id="cm-is-active" checked="checked" value="true" />
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-md-9 offset-md-3">
+                            <button type="button" class="btn btn-success" id="btn-save-city-mapping">
+                                <i class="fas fa-save"></i> Save
+                            </button>
+                            <button type="button" class="btn btn-secondary" id="btn-cancel-city-mapping">
+                                Cancel
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="cards-group">
+            <div class="card card-default">
+                <div class="card-body">
+                    @await Html.PartialAsync("Table", new DataTablesModel
+                    {
+                        Name = "city-mapping-grid",
+                        UrlRead = new DataUrl("CityMappingListData", "ConditionalShippingAdmin", null),
+                        Length = Model.PageSize,
+                        LengthMenu = Model.AvailablePageSizes,
+                        SearchButtonId = "btn-search-city-mappings",
+                        Filters = new List<FilterParameter>
+                        {
+                            new FilterParameter(nameof(Model.ShippingTypeId)),
+                            new FilterParameter(nameof(Model.CityName))
+                        },
+                        ColumnCollection = new List<ColumnProperty>
+                        {
+                            new ColumnProperty(nameof(CityMappingModel.ShippingTypeName))
+                            {
+                                Title = T("Plugins.Shipping.ConditionalMethods.Fields.ShippingType").Text,
+                                Width = "150"
+                            },
+                            new ColumnProperty(nameof(CityMappingModel.CityName))
+                            {
+                                Title = T("Plugins.Shipping.ConditionalMethods.Fields.CityName").Text,
+                                Width = "200"
+                            },
+                            new ColumnProperty(nameof(CityMappingModel.StateProvinceName))
+                            {
+                                Title = T("Plugins.Shipping.ConditionalMethods.Fields.StateProvinceId").Text,
+                                Width = "150"
+                            },
+                            new ColumnProperty(nameof(CityMappingModel.IsActive))
+                            {
+                                Title = T("Plugins.Shipping.ConditionalMethods.Fields.IsActive").Text,
+                                Width = "80",
+                                Render = new RenderBoolean()
+                            },
+                            new ColumnProperty(nameof(CityMappingModel.Id))
+                            {
+                                Title = T("Admin.Common.Delete").Text,
+                                Width = "80",
+                                ClassName = NopColumnClassDefaults.Button,
+                                Render = new RenderButtonRemove(T("Admin.Common.Delete").Text)
+                            }
+                        }
+                    })
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+    $(document).ready(function () {
+        $('#btn-add-city-mapping').on('click', function () {
+            $('#add-city-mapping-card').show();
+        });
+
+        $('#btn-cancel-city-mapping').on('click', function () {
+            $('#add-city-mapping-card').hide();
+        });
+
+        $('#btn-save-city-mapping').on('click', function () {
+            var data = {
+                ShippingTypeId: $('#cm-shipping-type').val(),
+                CityName: $('#cm-city-name').val(),
+                StateProvinceId: $('#cm-state').val(),
+                IsActive: $('#cm-is-active').is(':checked')
+            };
+
+            $.ajax({
+                url: '@Url.Action("CreateCityMapping", "ConditionalShippingAdmin", new { area = "Admin" })',
+                type: 'POST',
+                data: data,
+                success: function (result) {
+                    if (result.success) {
+                        $('#add-city-mapping-card').hide();
+                        updateTable('city-mapping-grid');
+                    } else {
+                        alert(result.error || 'An error occurred.');
+                    }
+                }
+            });
+        });
+    });
+</script>

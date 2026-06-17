@@ -1,0 +1,29 @@
+@model Nop.Plugin.Misc.GroupPurchase.Models.CustomerLotteryModel
+@{
+    Layout = "_ColumnsTwo";
+}
+
+@section accountNavigation
+{
+    @await Component.InvokeAsync("CustomerNavigation", new { selectedTabId = 0 })
+}
+
+<div class="page account-page">
+    <div class="page-title">
+        <h1>My Lottery Points</h1>
+    </div>
+    <div class="page-body">
+        <div class="fieldset">
+            <div class="title">
+                <strong>Lottery Points Summary</strong>
+            </div>
+            <div class="form-fields">
+                <div class="inputs">
+                    <label>Total Earned Points:</label>
+                    <span class="value">@Model.TotalPoints</span>
+                </div>
+            </div>
+            <p>You can use these points to enter our regular lotteries and win big prizes! Check back for updates on lottery scheduling.</p>
+        </div>
+    </div>
+</div>
