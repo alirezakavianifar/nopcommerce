@@ -1,3 +1,5 @@
+﻿@import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@100..900&display=swap');
+
 /*********** CSS RESET **********/
 :root {
   --accent-blue-color: #4ab2f1;
@@ -80,7 +82,7 @@ body {
   max-width: 100%;
   overflow-x: hidden;
   background-color: #fff;
-  font: normal 14px Arial, Helvetica, sans-serif;
+  font: normal 14px 'Vazirmatn', 'Vazirmatn', Arial, Helvetica, sans-serif;
   color: var(--gray-color);
 }
 
@@ -116,7 +118,7 @@ textarea, select {
 
 input, textarea, select, button {
   font-size: 14px;
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'Vazirmatn', Arial, Helvetica, sans-serif;
   color: var(--gray-color);
 }
 
@@ -718,7 +720,7 @@ label, label + * {
   /*override jQuery UI styles, do not delete doubled properties*/
   border-radius: 0;
   padding: 0;
-  font: normal 14px Arial, Helvetica, sans-serif;
+  font: normal 14px 'Vazirmatn', Arial, Helvetica, sans-serif;
 }
 
 .ui-dialog:before {
@@ -1082,7 +1084,7 @@ label, label + * {
   /*override jQuery UI styles, do not delete doubled properties*/
   border-radius: 0;
   padding: 0;
-  font: normal 14px Arial, Helvetica, sans-serif;
+  font: normal 14px 'Vazirmatn', Arial, Helvetica, sans-serif;
 }
 
 .ui-autocomplete li {
@@ -2953,7 +2955,7 @@ label, label + * {
   border: none;
   border-radius: 0;
   padding: 0;
-  font: normal 14px Arial, Helvetica, sans-serif;
+  font: normal 14px 'Vazirmatn', Arial, Helvetica, sans-serif;
   color: var(--gray-color);
 }
 
@@ -6732,7 +6734,7 @@ label, label + * {
   border-radius: 0;
   background: none;
   padding: 0;
-  font: normal 14px Arial, Helvetica, sans-serif;
+  font: normal 14px 'Vazirmatn', Arial, Helvetica, sans-serif;
   color: var(--gray-color);
 }
 
@@ -6870,7 +6872,7 @@ label, label + * {
   /*override jQuery UI styles, do not delete doubled properties*/
   line-height: normal;
   font-size: 14px;
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'Vazirmatn', Arial, Helvetica, sans-serif;
   color: var(--gray-color);
 }
 
@@ -6896,7 +6898,7 @@ label, label + * {
   /*override jQuery UI styles, do not delete doubled properties*/
   line-height: normal;
   font-size: 14px;
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'Vazirmatn', Arial, Helvetica, sans-serif;
   color: var(--gray-color);
 }
 
