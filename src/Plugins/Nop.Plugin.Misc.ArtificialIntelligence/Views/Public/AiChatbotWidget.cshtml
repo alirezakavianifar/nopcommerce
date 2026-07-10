@@ -1,0 +1,360 @@
+@using Nop.Core
+@using Nop.Services.Localization
+@inject ILocalizationService localizationService
+
+@{
+    var title = await localizationService.GetResourceAsync("Plugins.Misc.ArtificialIntelligence.Chatbot.Title");
+    var placeholder = await localizationService.GetResourceAsync("Plugins.Misc.ArtificialIntelligence.Chatbot.Placeholder");
+    var handoffMessage = await localizationService.GetResourceAsync("Plugins.Misc.ArtificialIntelligence.Chatbot.HandoffMessage");
+    var handoffButton = await localizationService.GetResourceAsync("Plugins.Misc.ArtificialIntelligence.Chatbot.HandoffButton");
+    var handoffSuccess = await localizationService.GetResourceAsync("Plugins.Misc.ArtificialIntelligence.Chatbot.HandoffSuccess");
+}
+
+<style>
+    .ai-chat-bubble {
+        position: fixed;
+        bottom: 25px;
+        right: 25px;
+        width: 60px;
+        height: 60px;
+        background: linear-gradient(135deg, #7c5dfa 0%, #ff57b9 100%);
+        border-radius: 50%;
+        box-shadow: 0 5px 20px rgba(124, 93, 250, 0.4);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #ffffff;
+        font-size: 24px;
+        cursor: pointer;
+        z-index: 99999;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .ai-chat-bubble:hover {
+        transform: scale(1.08);
+        box-shadow: 0 8px 25px rgba(124, 93, 250, 0.5);
+    }
+    
+    .ai-chat-window {
+        display: none;
+        position: fixed;
+        bottom: 95px;
+        right: 25px;
+        width: 380px;
+        height: 500px;
+        background: #ffffff;
+        border-radius: 12px;
+        box-shadow: 0 10px 30px rgba(9, 26, 40, 0.2);
+        z-index: 99999;
+        flex-direction: column;
+        overflow: hidden;
+        border: 1px solid rgba(124, 93, 250, 0.15);
+        font-family: inherit;
+    }
+    .ai-chat-window.dark-mode {
+        background: #091a28;
+        border-color: rgba(255, 87, 185, 0.2);
+        color: #e0e0e0;
+    }
+    .ai-chat-header {
+        background: linear-gradient(135deg, #7c5dfa 0%, #ff57b9 100%);
+        color: #ffffff;
+        padding: 15px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-weight: bold;
+    }
+    .ai-chat-close {
+        cursor: pointer;
+        font-size: 20px;
+        opacity: 0.8;
+    }
+    .ai-chat-close:hover {
+        opacity: 1;
+    }
+    
+    .ai-chat-messages {
+        flex: 1;
+        padding: 15px;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+    .ai-message {
+        max-width: 80%;
+        padding: 10px 14px;
+        border-radius: 15px;
+        font-size: 13px;
+        line-height: 1.4;
+    }
+    .ai-message.assistant {
+        background: #f1f3f9;
+        align-self: flex-start;
+        border-bottom-left-radius: 2px;
+        color: #333333;
+    }
+    .ai-chat-window.dark-mode .ai-message.assistant {
+        background: #15293c;
+        color: #e0e0e0;
+    }
+    .ai-message.user {
+        background: #7c5dfa;
+        color: #ffffff;
+        align-self: flex-end;
+        border-bottom-right-radius: 2px;
+    }
+    
+    .ai-chat-footer {
+        padding: 12px;
+        border-top: 1px solid #f0f0f0;
+        display: flex;
+        gap: 8px;
+    }
+    .ai-chat-window.dark-mode .ai-chat-footer {
+        border-top-color: #122232;
+    }
+    .ai-chat-input {
+        flex: 1;
+        border: 1px solid #e0e0e0;
+        border-radius: 20px;
+        padding: 8px 16px;
+        outline: none;
+        font-size: 13px;
+    }
+    .ai-chat-window.dark-mode .ai-chat-input {
+        background: #122232;
+        border-color: #1a324a;
+        color: #e0e0e0;
+    }
+    .ai-chat-send {
+        background: #7c5dfa;
+        color: #ffffff;
+        border: none;
+        border-radius: 50%;
+        width: 36px;
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+    .ai-chat-send:hover {
+        background: #ff57b9;
+    }
+
+    /* Handoff form styling */
+    .ai-handoff-overlay {
+        display: none;
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(9, 26, 40, 0.9);
+        z-index: 10;
+        flex-direction: column;
+        padding: 20px;
+        justify-content: center;
+        color: #ffffff;
+    }
+    .ai-handoff-form {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+    .ai-handoff-form input,
+    .ai-handoff-form textarea {
+        background: #122232;
+        border: 1px solid #1a324a;
+        border-radius: 6px;
+        padding: 8px;
+        color: #ffffff;
+        font-size: 13px;
+        outline: none;
+    }
+    .ai-handoff-submit {
+        background: #ff57b9;
+        color: #ffffff;
+        border: none;
+        padding: 10px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: bold;
+    }
+    .ai-handoff-submit:hover {
+        background: #7c5dfa;
+    }
+</style>
+
+<div class="ai-chat-bubble" id="aiChatBubble">
+    <i class="far fa-comments"></i>
+</div>
+
+<div class="ai-chat-window" id="aiChatWindow">
+    <div class="ai-chat-header">
+        <span>@title</span>
+        <span class="ai-chat-close" id="aiChatClose">&times;</span>
+    </div>
+    
+    <div class="ai-chat-messages" id="aiChatMessages">
+        <div class="ai-message assistant">
+            سلام! من پشتیبان هوشمند شما هستم. چطور می‌توانم به شما کمک کنم؟
+        </div>
+    </div>
+    
+    <div class="ai-chat-footer">
+        <input type="text" class="ai-chat-input" id="aiChatInput" placeholder="@placeholder" />
+        <button type="button" class="ai-chat-send" id="aiChatSend">
+            <i class="fas fa-paper-plane"></i>
+        </button>
+    </div>
+
+    <!-- Handoff Contact Us Overlay -->
+    <div class="ai-handoff-overlay" id="aiHandoffOverlay">
+        <h5 class="text-center mb-3">Support Request Handoff</h5>
+        <p class="small text-center text-muted mb-3">@handoffMessage</p>
+        <div class="ai-handoff-form">
+            <input type="text" id="aiHandoffName" placeholder="Your Name" required />
+            <input type="email" id="aiHandoffEmail" placeholder="Your Email" required />
+            <textarea id="aiHandoffMessage" rows="3" placeholder="Description of your request..." required></textarea>
+            <button type="button" class="ai-handoff-submit" id="aiHandoffSubmit">@handoffButton</button>
+            <button type="button" class="btn btn-sm btn-link text-white mt-1" id="aiHandoffCancel">Cancel</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var bubble = document.getElementById("aiChatBubble");
+        var win = document.getElementById("aiChatWindow");
+        var close = document.getElementById("aiChatClose");
+        var messages = document.getElementById("aiChatMessages");
+        var chatInput = document.getElementById("aiChatInput");
+        var sendBtn = document.getElementById("aiChatSend");
+
+        // Handoff form items
+        var handoffOverlay = document.getElementById("aiHandoffOverlay");
+        var handoffSubmit = document.getElementById("aiHandoffSubmit");
+        var handoffCancel = document.getElementById("aiHandoffCancel");
+
+        var chatHistory = []; // stores { role: "user"/"assistant", content: "..." }
+
+        // Match site theme
+        if (document.documentElement.getAttribute("data-theme") === "dark") {
+            win.classList.add("dark-mode");
+        }
+
+        bubble.addEventListener("click", function() {
+            var isVisible = win.style.display === "flex";
+            win.style.display = isVisible ? "none" : "flex";
+            if (!isVisible) {
+                chatInput.focus();
+                messages.scrollTop = messages.scrollHeight;
+            }
+        });
+
+        close.addEventListener("click", function() {
+            win.style.display = "none";
+        });
+
+        async function sendMessage() {
+            var text = chatInput.value.trim();
+            if (!text) return;
+
+            chatInput.value = "";
+
+            // Render User Message
+            renderMessage(text, "user");
+            chatHistory.push({ role: "user", content: text });
+
+            // Add placeholder assistant loader
+            var loader = document.createElement("div");
+            loader.className = "ai-message assistant loader-placeholder";
+            loader.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Writing...';
+            messages.appendChild(loader);
+            messages.scrollTop = messages.scrollHeight;
+
+            try {
+                var response = await fetch("/AiChat/SendMessage", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(chatHistory)
+                });
+                var result = await response.json();
+                messages.removeChild(loader);
+
+                if (result.success) {
+                    renderMessage(result.reply, "assistant");
+                    chatHistory.push({ role: "assistant", content: result.reply });
+
+                    if (result.triggerHandoff) {
+                        setTimeout(function() {
+                            document.getElementById("aiHandoffMessage").value = text; // prefill description
+                            handoffOverlay.style.display = "flex";
+                        }, 500);
+                    }
+                } else {
+                    renderMessage("Error: Could not retrieve response.", "assistant");
+                }
+            } catch(e) {
+                messages.removeChild(loader);
+                renderMessage("Network error.", "assistant");
+            }
+        }
+
+        function renderMessage(text, role) {
+            var msgEl = document.createElement("div");
+            msgEl.className = "ai-message " + role;
+            msgEl.innerText = text;
+            messages.appendChild(msgEl);
+            messages.scrollTop = messages.scrollHeight;
+        }
+
+        sendBtn.addEventListener("click", sendMessage);
+        chatInput.addEventListener("keydown", function(e) {
+            if (e.key === "Enter") {
+                sendMessage();
+            }
+        });
+
+        // Handoff submissions
+        handoffSubmit.addEventListener("click", async function() {
+            var name = document.getElementById("aiHandoffName").value.trim();
+            var email = document.getElementById("aiHandoffEmail").value.trim();
+            var desc = document.getElementById("aiHandoffMessage").value.trim();
+
+            if (!name || !email || !desc) {
+                alert("Please fill in all fields.");
+                return;
+            }
+
+            handoffSubmit.disabled = true;
+            handoffSubmit.innerText = "Submitting...";
+
+            try {
+                var response = await fetch(`/AiChat/Handoff?name=${encodeURIComponent(name)}&email=${encodeURIComponent(email)}&message=${encodeURIComponent(desc)}`, {
+                    method: "POST"
+                });
+                var result = await response.json();
+                if (result.success) {
+                    alert("@handoffSuccess");
+                    handoffOverlay.style.display = "none";
+                    renderMessage("@handoffSuccess", "assistant");
+                } else {
+                    alert(result.message || "Failed to submit handoff request.");
+                }
+            } catch(e) {
+                alert("Network error.");
+            } finally {
+                handoffSubmit.disabled = false;
+                handoffSubmit.innerText = "@handoffButton";
+            }
+        });
+
+        handoffCancel.addEventListener("click", function() {
+            handoffOverlay.style.display = "none";
+        });
+    });
+</script>

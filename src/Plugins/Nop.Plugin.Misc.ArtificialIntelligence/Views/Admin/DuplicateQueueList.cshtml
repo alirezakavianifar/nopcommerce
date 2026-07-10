@@ -1,0 +1,112 @@
+@model IList<Nop.Plugin.Misc.ArtificialIntelligence.Models.AiDuplicateProductModel>
+@using Nop.Plugin.Misc.ArtificialIntelligence.Domain
+
+@{
+    Layout = "_AdminLayout";
+    ViewBag.PageTitle = "AI Duplicate Product Queue";
+}
+
+<div class="content-header clearfix">
+    <h1 class="float-left">
+        AI Duplicate Product Queue
+    </h1>
+</div>
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="card card-default">
+            <div class="card-header">
+                <h3 class="card-title"><i class="far fa-copy"></i> Items Flagged for Duplicate Review</h3>
+            </div>
+            <div class="card-body">
+                @if (Model == null || !Model.Any())
+                {
+                    <div class="alert alert-info">
+                        No duplicate items currently logged in the queue.
+                    </div>
+                }
+                else
+                {
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Product ID</th>
+                                    <th>Product Name / SKU</th>
+                                    <th>Matched Duplicate</th>
+                                    <th>Vendor</th>
+                                    <th>Blocked On</th>
+                                    <th>Status</th>
+                                    <th>Vendor Explanation</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model)
+                                {
+                                    <tr>
+                                        <td>@item.ProductId</td>
+                                        <td>
+                                            <a href="/Admin/Product/Edit/@item.ProductId" target="_blank">@item.ProductName</a><br />
+                                            <small class="text-muted">SKU: @item.ProductSku</small>
+                                        </td>
+                                        <td>
+                                            <a href="/Admin/Product/Edit/@item.DuplicateProductId" target="_blank">@item.DuplicateProductName</a>
+                                        </td>
+                                        <td>@item.VendorName</td>
+                                        <td>@item.CreatedOnUtc.ToString("yyyy-MM-dd HH:mm:ss")</td>
+                                        <td>
+                                            @if (item.StatusId == (int)DuplicateStatus.Pending)
+                                            {
+                                                <span class="badge badge-warning">Pending Review</span>
+                                            }
+                                            else if (item.StatusId == (int)DuplicateStatus.ApprovedAsNew)
+                                            {
+                                                <span class="badge badge-success">Approved as New</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge badge-danger">Blocked / Duplicate</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            @if (string.IsNullOrWhiteSpace(item.Explanation))
+                                            {
+                                                <span class="text-muted">No explanation submitted yet.</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="text-italic">"@item.Explanation"</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            @if (item.StatusId == (int)DuplicateStatus.Pending)
+                                            {
+                                                <div class="btn-group">
+                                                    <form asp-controller="AiAdmin" asp-action="ApproveAsNew" asp-route-id="@item.Id" method="post" class="mr-1">
+                                                        <button type="submit" class="btn btn-sm btn-success">
+                                                            <i class="fas fa-check"></i> Approve
+                                                        </button>
+                                                    </form>
+                                                    <form asp-controller="AiAdmin" asp-action="RejectBlock" asp-route-id="@item.Id" method="post">
+                                                        <button type="submit" class="btn btn-sm btn-danger">
+                                                            <i class="fas fa-ban"></i> Block
+                                                        </button>
+                                                    </form>
+                                                </div>
+                                            }
+                                            else
+                                            {
+                                                <span class="text-muted">Decision made</span>
+                                            }
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</section>

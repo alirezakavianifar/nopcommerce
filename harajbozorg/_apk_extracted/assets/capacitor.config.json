@@ -1,0 +1,12 @@
+{
+	"appId": "com.foroshgostar.harajbozorg",
+	"appName": "حراج بزرگ",
+	"webDir": "www",
+	"plugins": {
+		"SplashScreen": {
+			"launchAutoHide": false,
+			"showSpinner": true
+		}
+	},
+	"cordova": {}
+}

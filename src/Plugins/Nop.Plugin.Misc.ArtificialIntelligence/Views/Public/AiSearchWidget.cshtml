@@ -1,0 +1,319 @@
+@using Nop.Core
+@using Nop.Services.Localization
+@inject ILocalizationService localizationService
+
+@{
+    var titleVoice = await localizationService.GetResourceAsync("Plugins.Misc.ArtificialIntelligence.Search.VoiceSearch");
+    var titleVisual = await localizationService.GetResourceAsync("Plugins.Misc.ArtificialIntelligence.Search.VisualSearch");
+    var listeningText = await localizationService.GetResourceAsync("Plugins.Misc.ArtificialIntelligence.Search.Listening");
+    var micError = await localizationService.GetResourceAsync("Plugins.Misc.ArtificialIntelligence.Search.MicrophoneAccessBlocked");
+}
+
+<style>
+    .ai-search-container {
+        display: inline-flex;
+        align-items: center;
+        position: absolute;
+        right: 70px;
+        top: 50%;
+        transform: translateY(-50%);
+        z-index: 10;
+        gap: 8px;
+    }
+    .btn-ai-action {
+        background: none;
+        border: none;
+        color: #7c5dfa;
+        cursor: pointer;
+        font-size: 16px;
+        transition: color 0.2s, transform 0.2s;
+        padding: 4px;
+        outline: none !important;
+    }
+    .btn-ai-action:hover {
+        color: #ff57b9;
+        transform: scale(1.1);
+    }
+    
+    /* Voice visual overlay */
+    .ai-voice-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(9, 26, 40, 0.85);
+        z-index: 99999;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        color: #ffffff;
+    }
+    .ai-voice-pulse {
+        width: 80px;
+        height: 80px;
+        background: #7c5dfa;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 32px;
+        box-shadow: 0 0 0 0 rgba(124, 93, 250, 0.7);
+        animation: ai-pulse 1.5s infinite;
+        margin-bottom: 20px;
+        cursor: pointer;
+    }
+    @@keyframes ai-pulse {
+        0% {
+            transform: scale(0.95);
+            box-shadow: 0 0 0 0 rgba(124, 93, 250, 0.7);
+        }
+        70% {
+            transform: scale(1);
+            box-shadow: 0 0 0 20px rgba(124, 93, 250, 0);
+        }
+        100% {
+            transform: scale(0.95);
+            box-shadow: 0 0 0 0 rgba(124, 93, 250, 0);
+        }
+    }
+
+    /* Visual search result popup dropdown */
+    .ai-visual-dropdown {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: #ffffff;
+        border: 1px solid rgba(124, 93, 250, 0.2);
+        box-shadow: 0 10px 25px rgba(9, 26, 40, 0.15);
+        border-radius: 8px;
+        z-index: 9999;
+        padding: 12px;
+        margin-top: 5px;
+    }
+    .ai-visual-dropdown.dark-mode {
+        background: #091a28;
+        border-color: rgba(255, 87, 185, 0.2);
+        color: #e0e0e0;
+    }
+    .ai-visual-header {
+        font-size: 14px;
+        font-weight: bold;
+        margin-bottom: 8px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .ai-visual-close {
+        cursor: pointer;
+        color: #ff57b9;
+    }
+    .ai-visual-items {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        gap: 12px;
+        max-height: 300px;
+        overflow-y: auto;
+    }
+    .ai-visual-item {
+        border: 1px solid #f0f0f0;
+        border-radius: 6px;
+        padding: 8px;
+        text-align: center;
+        transition: transform 0.2s;
+        text-decoration: none !important;
+        color: inherit !important;
+    }
+    .ai-visual-item:hover {
+        transform: translateY(-3px);
+        border-color: #7c5dfa;
+    }
+    .ai-visual-item img {
+        max-width: 100%;
+        height: 80px;
+        object-fit: contain;
+        margin-bottom: 6px;
+    }
+    .ai-visual-name {
+        font-size: 11px;
+        font-weight: 500;
+        height: 32px;
+        overflow: hidden;
+        margin-bottom: 4px;
+    }
+    .ai-visual-price {
+        font-size: 12px;
+        color: #7c5dfa;
+        font-weight: bold;
+    }
+</style>
+
+<div class="ai-voice-overlay" id="aiVoiceOverlay">
+    <div class="ai-voice-pulse" id="aiVoiceStopBtn">
+        <i class="fas fa-microphone"></i>
+    </div>
+    <div class="h4" id="aiVoiceStatus">@listeningText</div>
+    <small class="text-muted mt-2">Click icon to finish speaking</small>
+</div>
+
+<input type="file" id="aiVisualFileInput" accept="image/*" style="display: none;" />
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var searchInput = document.getElementById("small-searchterms");
+        if (!searchInput) return;
+
+        // Position parent for relative placement
+        var parent = searchInput.parentNode;
+        parent.style.position = "relative";
+
+        // Create AI buttons container
+        var aiContainer = document.createElement("div");
+        aiContainer.className = "ai-search-container";
+        aiContainer.innerHTML = `
+            <button type="button" class="btn-ai-action" id="aiVoiceSearchBtn" title="@titleVoice"><i class="fas fa-microphone"></i></button>
+            <button type="button" class="btn-ai-action" id="aiVisualSearchBtn" title="@titleVisual"><i class="fas fa-camera"></i></button>
+        `;
+        parent.appendChild(aiContainer);
+
+        // Create Visual Search Results Dropdown
+        var resultsDropdown = document.createElement("div");
+        resultsDropdown.className = "ai-visual-dropdown";
+        resultsDropdown.id = "aiVisualDropdown";
+        if (document.documentElement.getAttribute("data-theme") === "dark") {
+            resultsDropdown.classList.add("dark-mode");
+        }
+        resultsDropdown.innerHTML = `
+            <div class="ai-visual-header">
+                <span>AI Search Results</span>
+                <span class="ai-visual-close" id="aiVisualClose">&times;</span>
+            </div>
+            <div class="ai-visual-items" id="aiVisualItems"></div>
+        `;
+        parent.appendChild(resultsDropdown);
+
+        // Voice Search logic
+        var mediaRecorder;
+        var audioChunks = [];
+        var voiceBtn = document.getElementById("aiVoiceSearchBtn");
+        var voiceOverlay = document.getElementById("aiVoiceOverlay");
+        var voiceStopBtn = document.getElementById("aiVoiceStopBtn");
+        var voiceStatus = document.getElementById("aiVoiceStatus");
+
+        voiceBtn.addEventListener("click", async function() {
+            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                alert("@micError");
+                return;
+            }
+
+            try {
+                var stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                audioChunks = [];
+                mediaRecorder = new MediaRecorder(stream);
+                
+                mediaRecorder.ondataavailable = function(e) {
+                    audioChunks.push(e.data);
+                };
+
+                mediaRecorder.onstop = async function() {
+                    voiceStatus.innerText = "Transcribing...";
+                    var audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+                    
+                    var formData = new FormData();
+                    formData.append("file", audioBlob, "voice-search.webm");
+
+                    try {
+                        var response = await fetch("/AiSearch/VoiceSearch", {
+                            method: "POST",
+                            body: formData
+                        });
+                        var result = await response.json();
+                        if (result.success) {
+                            if (result.query) {
+                                searchInput.value = result.query;
+                                // Auto submit form if matches found
+                                searchInput.closest("form").submit();
+                            } else {
+                                alert("No speech was identified.");
+                            }
+                        } else {
+                            alert(result.message || "Transcription failed.");
+                        }
+                    } catch(e) {
+                        alert("Network error during voice search.");
+                    } finally {
+                        voiceOverlay.style.display = "none";
+                        stream.getTracks().forEach(track => track.stop());
+                    }
+                };
+
+                voiceOverlay.style.display = "flex";
+                voiceStatus.innerText = "@listeningText";
+                mediaRecorder.start();
+            } catch(e) {
+                alert("@micError");
+            }
+        });
+
+        voiceStopBtn.addEventListener("click", function() {
+            if (mediaRecorder && mediaRecorder.state === "recording") {
+                mediaRecorder.stop();
+            }
+        });
+
+        // Visual Search logic
+        var visualBtn = document.getElementById("aiVisualSearchBtn");
+        var fileInput = document.getElementById("aiVisualFileInput");
+        var dropdown = document.getElementById("aiVisualDropdown");
+        var dropdownClose = document.getElementById("aiVisualClose");
+        var dropdownItems = document.getElementById("aiVisualItems");
+
+        visualBtn.addEventListener("click", function() {
+            fileInput.click();
+        });
+
+        fileInput.addEventListener("change", async function() {
+            if (fileInput.files.length === 0) return;
+            
+            var file = fileInput.files[0];
+            var formData = new FormData();
+            formData.append("file", file);
+
+            dropdownItems.innerHTML = '<div class="text-center w-100 py-3"><i class="fas fa-spinner fa-spin fa-2x text-primary"></i><br/><small class="text-muted mt-2 d-block">Analyzing Image...</small></div>';
+            dropdown.style.display = "block";
+
+            try {
+                var response = await fetch("/AiSearch/VisualSearch", {
+                    method: "POST",
+                    body: formData
+                });
+                var result = await response.json();
+                if (result.success && result.products && result.products.length > 0) {
+                    dropdownItems.innerHTML = "";
+                    result.products.forEach(function(product) {
+                        var itemEl = document.createElement("a");
+                        itemEl.className = "ai-visual-item";
+                        itemEl.href = product.url;
+                        itemEl.innerHTML = `
+                            <img src="${product.pictureUrl}" alt="${product.name}"/>
+                            <div class="ai-visual-name">${product.name}</div>
+                            <div class="ai-visual-price">${product.price}</div>
+                        `;
+                        dropdownItems.appendChild(itemEl);
+                    });
+                } else {
+                    dropdownItems.innerHTML = '<div class="text-center w-100 py-3 text-muted">No similar products found.</div>';
+                }
+            } catch(e) {
+                dropdownItems.innerHTML = '<div class="text-center w-100 py-3 text-danger">Search error.</div>';
+            }
+        });
+
+        dropdownClose.addEventListener("click", function() {
+            dropdown.style.display = "none";
+        });
+    });
+</script>

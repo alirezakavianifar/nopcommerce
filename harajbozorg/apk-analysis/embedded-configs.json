@@ -1,0 +1,44 @@
+[
+  {
+    "athorizationScheme": "Basic",
+    "paymentResultPage": "paymentResult",
+    "appIsDemo": false,
+    "googleMapApiKey": "AIzaSyAmyLV7MZURz2A6rvWUIvr6s0OIB18wrjk",
+    "devTeam": {
+      "title": "فروش گستر",
+      "email": "info@foroshgostar.com",
+      "webpage": "https://www.foroshgostar.com"
+    },
+    "appVersion": "6.1.1",
+    "appReleaseDate": "11/30/2025 5:00:00"
+  },
+  {
+    "mainUrl": "https://www.harajbozorg.com",
+    "appUrlScheme": "harajbozorgcomapp",
+    "notificationTopic": "harajbozorgcomapp",
+    "cartItemUpdateDelayMs": 700,
+    "valueSeparator": ",",
+    "mainPageRootCategoryID": 0,
+    "introEnabled": false,
+    "addToCardFromProductPic": true,
+    "statusBarColor": "#ef394e",
+    "showProductsInRowInProductPage": true,
+    "geofenceEnabled": false,
+    "GeofenceSettings": {
+      "latitude": 35.734151,
+      "longitude": 51.356665,
+      "radius": 100,
+      "transitionType": 3,
+      "title": "فروش گستر",
+      "text": "سیستم مدیریت فروش آنلاین"
+    },
+    "googleAnalitycsId": "",
+    "commissionsEnabled": false,
+    "isWholesellerApp": false,
+    "owner": {
+      "title": "حراج بزرگ",
+      "email": "info@harajbozorg.com",
+      "webpage": "https://www.harajbozorg.com"
+    }
+  }
+]

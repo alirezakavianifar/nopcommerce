@@ -1,0 +1,11 @@
+{
+  "Group": "Misc",
+  "FriendlyName": "Artificial Intelligence Integration (AvalAI)",
+  "SystemName": "Misc.ArtificialIntelligence",
+  "Version": "1.00",
+  "SupportedVersions": [ "4.90" ],
+  "Author": "AI Assistant",
+  "DisplayOrder": 1,
+  "FileName": "Nop.Plugin.Misc.ArtificialIntelligence.dll",
+  "Description": "Integrates AvalAI API for multimodal visual/voice search, AI chatbot with human email handoff, and product duplicate prevention."
+}
