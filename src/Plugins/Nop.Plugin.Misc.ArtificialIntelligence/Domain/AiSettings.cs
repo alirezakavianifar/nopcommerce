@@ -11,4 +11,5 @@ public class AiSettings : ISettings
     public string VisionModel { get; set; } = "gpt-5.5";
     public string EmbeddingModel { get; set; } = "text-embedding-3-small";
     public decimal DuplicateSimilarityThreshold { get; set; } = 0.85m;
+    public decimal CreditThreshold { get; set; } = 30000m;
 }

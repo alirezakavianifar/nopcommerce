@@ -11,6 +11,7 @@ using Nop.Web.Framework.Controllers;
 using Nop.Web.Framework.Mvc.Filters;
 using Nop.Plugin.Misc.ArtificialIntelligence.Domain;
 using Nop.Plugin.Misc.ArtificialIntelligence.Models;
+using Nop.Plugin.Misc.ArtificialIntelligence.Services;
 
 namespace Nop.Plugin.Misc.ArtificialIntelligence.Controllers;
 
@@ -26,6 +27,7 @@ public class AiAdminController : BasePluginController
     private readonly IVendorService _vendorService;
     private readonly INotificationService _notificationService;
     private readonly ILocalizationService _localizationService;
+    private readonly IAvalAiClient _avalAiClient;
 
     public AiAdminController(
         ISettingService settingService,
@@ -34,7 +36,8 @@ public class AiAdminController : BasePluginController
         IProductService productService,
         IVendorService vendorService,
         INotificationService notificationService,
-        ILocalizationService localizationService)
+        ILocalizationService localizationService,
+        IAvalAiClient avalAiClient)
     {
         _settingService = settingService;
         _duplicateQueueRepository = duplicateQueueRepository;
@@ -43,6 +46,7 @@ public class AiAdminController : BasePluginController
         _vendorService = vendorService;
         _notificationService = notificationService;
         _localizationService = localizationService;
+        _avalAiClient = avalAiClient;
     }
 
     [HttpGet]
@@ -57,8 +61,77 @@ public class AiAdminController : BasePluginController
             ChatbotModel = settings.ChatbotModel,
             VisionModel = settings.VisionModel,
             EmbeddingModel = settings.EmbeddingModel,
-            DuplicateSimilarityThreshold = settings.DuplicateSimilarityThreshold
+            DuplicateSimilarityThreshold = settings.DuplicateSimilarityThreshold,
+            CreditThreshold = settings.CreditThreshold
         };
+
+        decimal totalRemainingIrt = 0;
+        bool hasCreditInfo = false;
+
+        if (settings.SandboxMode)
+        {
+            totalRemainingIrt = 125000m; // Mock balance
+            hasCreditInfo = true;
+        }
+        else if (!string.IsNullOrEmpty(settings.ApiKey))
+        {
+            var creditInfo = await _avalAiClient.GetCreditAsync(settings.ApiKey, settings.BaseUrl);
+            if (creditInfo != null)
+            {
+                totalRemainingIrt = creditInfo.RemainingIrt;
+                if (creditInfo.CreditSources?.Grants != null)
+                {
+                    foreach (var grant in creditInfo.CreditSources.Grants)
+                    {
+                        if (decimal.TryParse(grant.RemainingIrt, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out var grantVal))
+                        {
+                            totalRemainingIrt += grantVal;
+                        }
+                    }
+                }
+                if (creditInfo.CreditSources?.Packages != null)
+                {
+                    foreach (var package in creditInfo.CreditSources.Packages)
+                    {
+                        if (decimal.TryParse(package.RemainingIrt, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out var pkgVal))
+                        {
+                            totalRemainingIrt += pkgVal;
+                        }
+                    }
+                }
+                hasCreditInfo = true;
+            }
+            else
+            {
+                var warningFormat = await _localizationService.GetResourceAsync("Plugins.Misc.ArtificialIntelligence.CreditFetchError");
+                if (string.IsNullOrEmpty(warningFormat) || warningFormat.Equals("Plugins.Misc.ArtificialIntelligence.CreditFetchError"))
+                {
+                    warningFormat = "Could not retrieve AvalAI credit information. Please verify your API Key and connection.";
+                }
+                _notificationService.WarningNotification(warningFormat);
+            }
+        }
+
+        if (hasCreditInfo)
+        {
+            model.CurrentCredit = totalRemainingIrt;
+
+            if (totalRemainingIrt <= settings.CreditThreshold)
+            {
+                var warningFormat = await _localizationService.GetResourceAsync("Plugins.Misc.ArtificialIntelligence.CreditWarning");
+                if (string.IsNullOrEmpty(warningFormat) || warningFormat.Equals("Plugins.Misc.ArtificialIntelligence.CreditWarning"))
+                {
+                    warningFormat = "AvalAI credit is low. Remaining credit is {0} Tomans, which is below the threshold of {1} Tomans.";
+                }
+
+                var text = string.Format(warningFormat, totalRemainingIrt.ToString("N0"), settings.CreditThreshold.ToString("N0"));
+                if (settings.SandboxMode)
+                {
+                    text = $"[Sandbox] {text}";
+                }
+                _notificationService.WarningNotification(text);
+            }
+        }
 
         return View("~/Plugins/Misc.ArtificialIntelligence/Views/Admin/Configure.cshtml", model);
     }
@@ -77,6 +150,7 @@ public class AiAdminController : BasePluginController
         settings.VisionModel = model.VisionModel;
         settings.EmbeddingModel = model.EmbeddingModel;
         settings.DuplicateSimilarityThreshold = model.DuplicateSimilarityThreshold;
+        settings.CreditThreshold = model.CreditThreshold;
 
         await _settingService.SaveSettingAsync(settings);
         _notificationService.SuccessNotification(await _localizationService.GetResourceAsync("Admin.Common.Updated"));

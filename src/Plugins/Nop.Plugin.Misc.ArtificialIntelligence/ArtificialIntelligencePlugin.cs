@@ -97,7 +97,11 @@ public class ArtificialIntelligencePlugin : BasePlugin, IMiscPlugin, IAdminMenuP
             ["Plugins.Misc.ArtificialIntelligence.Chatbot.Placeholder"] = "Ask a question...",
             ["Plugins.Misc.ArtificialIntelligence.Chatbot.HandoffMessage"] = "I will route your request to our support team. Please enter your name, email, and description below:",
             ["Plugins.Misc.ArtificialIntelligence.Chatbot.HandoffButton"] = "Submit Handoff Request",
-            ["Plugins.Misc.ArtificialIntelligence.Chatbot.HandoffSuccess"] = "Your request has been submitted. Our support team will contact you via email."
+            ["Plugins.Misc.ArtificialIntelligence.Chatbot.HandoffSuccess"] = "Your request has been submitted. Our support team will contact you via email.",
+            ["Plugins.Misc.ArtificialIntelligence.CreditThreshold"] = "Low Credit Warning Threshold (Tomans)",
+            ["Plugins.Misc.ArtificialIntelligence.CreditWarning"] = "AvalAI credit is low. Remaining credit is {0} Tomans, which is below the threshold of {1} Tomans.",
+            ["Plugins.Misc.ArtificialIntelligence.CreditFetchError"] = "Could not retrieve AvalAI credit information. Please verify your API Key and connection.",
+            ["Plugins.Misc.ArtificialIntelligence.CurrentCredit"] = "Current Remaining Credit"
         };
 
         var faResources = new Dictionary<string, string>
@@ -126,7 +130,11 @@ public class ArtificialIntelligencePlugin : BasePlugin, IMiscPlugin, IAdminMenuP
             ["Plugins.Misc.ArtificialIntelligence.Chatbot.Placeholder"] = "سوال خود را مطرح کنید...",
             ["Plugins.Misc.ArtificialIntelligence.Chatbot.HandoffMessage"] = "من درخواست شما را به تیم پشتیبانی ارجاع می‌دهم. لطفا نام، ایمیل و شرح درخواست خود را در زیر وارد کنید:",
             ["Plugins.Misc.ArtificialIntelligence.Chatbot.HandoffButton"] = "ارسال درخواست ارجاع",
-            ["Plugins.Misc.ArtificialIntelligence.Chatbot.HandoffSuccess"] = "درخواست شما ارسال شد. تیم پشتیبانی ما از طریق ایمیل با شما تماس خواهد گرفت."
+            ["Plugins.Misc.ArtificialIntelligence.Chatbot.HandoffSuccess"] = "درخواست شما ارسال شد. تیم پشتیبانی ما از طریق ایمیل با شما تماس خواهد گرفت.",
+            ["Plugins.Misc.ArtificialIntelligence.CreditThreshold"] = "حد آستانه هشدار اعتبار کم (تومان)",
+            ["Plugins.Misc.ArtificialIntelligence.CreditWarning"] = "اعتبار پلتفرم AvalAI رو به اتمام است. اعتبار باقی‌مانده {0} تومان است که کمتر از حد آستانه {1} تومان می‌باشد.",
+            ["Plugins.Misc.ArtificialIntelligence.CreditFetchError"] = "امکان دریافت اطلاعات اعتبار پلتفرم AvalAI وجود ندارد. لطفا کلید API و اتصال خود را بررسی کنید.",
+            ["Plugins.Misc.ArtificialIntelligence.CurrentCredit"] = "اعتبار باقی‌مانده فعلی"
         };
 
         await _localizationService.AddOrUpdateLocaleResourceAsync(enResources, enLang?.Id);

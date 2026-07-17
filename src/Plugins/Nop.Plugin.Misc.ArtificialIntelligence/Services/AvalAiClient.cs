@@ -199,4 +199,44 @@ public class AvalAiClient : IAvalAiClient
             return string.Empty;
         }
     }
+
+    public async Task<AvalAiCreditResponse> GetCreditAsync(string apiKey, string baseUrl)
+    {
+        try
+        {
+            var client = CreateClient(apiKey, baseUrl);
+            
+            // Resolve the absolute URL relative to base URL (authority-level rewrite)
+            string creditUrl;
+            if (Uri.TryCreate(baseUrl, UriKind.Absolute, out var baseUri))
+            {
+                creditUrl = $"{baseUri.Scheme}://{baseUri.Authority}/user/v1/credit";
+            }
+            else
+            {
+                creditUrl = "https://api.avalai.ir/user/v1/credit";
+            }
+
+            var response = await client.GetAsync(creditUrl);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var errContent = await response.Content.ReadAsStringAsync();
+                await _logger.ErrorAsync($"AvalAI credit check error: {response.StatusCode} - {errContent}");
+                return null;
+            }
+
+            var jsonString = await response.Content.ReadAsStringAsync();
+            var options = new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            };
+            return JsonSerializer.Deserialize<AvalAiCreditResponse>(jsonString, options);
+        }
+        catch (Exception ex)
+        {
+            await _logger.ErrorAsync("AvalAI Exception in GetCreditAsync", ex);
+            return null;
+        }
+    }
 }

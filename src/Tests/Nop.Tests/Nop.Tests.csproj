@@ -1,7 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
-    <Copyright>Copyright © Nop Solutions, Ltd</Copyright>
+    <Copyright>Copyright Â© Nop Solutions, Ltd</Copyright>
     <Company>Nop Solutions, Ltd</Company>
     <Authors>Nop Solutions, Ltd</Authors>
     <Version>4.90</Version>
@@ -10,7 +9,6 @@
     <PackageProjectUrl>https://www.nopcommerce.com/</PackageProjectUrl>
     <RepositoryUrl>https://github.com/nopSolutions/nopCommerce</RepositoryUrl>
   </PropertyGroup>
-
   <ItemGroup>
     <PackageReference Include="FluentAssertions" Version="7.2.0" />
     <PackageReference Include="Microsoft.Data.Sqlite" Version="8.0.8" />
@@ -22,16 +20,14 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
   </ItemGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\..\Presentation\Nop.Web\Nop.Web.csproj" />
+    <ProjectReference Include="..\..\Plugins\Nop.Plugin.Misc.ArtificialIntelligence\Nop.Plugin.Misc.ArtificialIntelligence.csproj" />
   </ItemGroup>
-
   <ItemGroup>
     <EmbeddedResource Update="Connections.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Connections.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
-
 </Project>

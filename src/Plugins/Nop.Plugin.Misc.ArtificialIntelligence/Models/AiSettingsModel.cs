@@ -9,4 +9,6 @@ public class AiSettingsModel
     public string VisionModel { get; set; }
     public string EmbeddingModel { get; set; }
     public decimal DuplicateSimilarityThreshold { get; set; }
+    public decimal CreditThreshold { get; set; }
+    public decimal? CurrentCredit { get; set; }
 }

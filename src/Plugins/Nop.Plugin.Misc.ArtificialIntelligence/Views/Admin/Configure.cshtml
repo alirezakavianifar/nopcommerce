@@ -3,17 +3,17 @@
 
 @{
     Layout = "_AdminLayout";
-    ViewBag.PageTitle = "Configure AI Settings (AvalAI)";
+    ViewBag.PageTitle = T("Plugins.Misc.ArtificialIntelligence.Configure").Text;
 }
 
 <form asp-controller="AiAdmin" asp-action="Configure" method="post">
     <div class="content-header clearfix">
         <h1 class="float-left">
-            Configure AI Settings (AvalAI)
+            @T("Plugins.Misc.ArtificialIntelligence.Configure")
         </h1>
         <div class="float-right">
             <button type="submit" name="save" class="btn btn-primary">
-                <i class="far fa-save"></i> Save Settings
+                <i class="far fa-save"></i> @T("Admin.Common.Save")
             </button>
         </div>
     </div>
@@ -23,12 +23,12 @@
             <div class="form-horizontal">
                 <div class="card card-default">
                     <div class="card-header">
-                        <h3 class="card-title"><i class="fas fa-cog"></i> API Connection Settings</h3>
+                        <h3 class="card-title"><i class="fas fa-cog"></i> @T("Admin.Configuration")</h3>
                     </div>
                     <div class="card-body">
                         <div class="form-group row">
                             <div class="col-md-3">
-                                <label asp-for="SandboxMode" class="col-form-label">Sandbox / Mock Mode</label>
+                                <label asp-for="SandboxMode" class="col-form-label">@T("Plugins.Misc.ArtificialIntelligence.SandboxMode")</label>
                             </div>
                             <div class="col-md-9">
                                 <div class="custom-control custom-switch">
@@ -41,7 +41,7 @@
 
                         <div class="form-group row">
                             <div class="col-md-3">
-                                <label asp-for="ApiKey" class="col-form-label">AvalAI API Key</label>
+                                <label asp-for="ApiKey" class="col-form-label">@T("Plugins.Misc.ArtificialIntelligence.ApiKey")</label>
                             </div>
                             <div class="col-md-9">
                                 <input asp-for="ApiKey" class="form-control" placeholder="Enter AvalAI API Key (Bearer Token)" />
@@ -51,13 +51,38 @@
 
                         <div class="form-group row">
                             <div class="col-md-3">
-                                <label asp-for="BaseUrl" class="col-form-label">Base API URL</label>
+                                <label asp-for="BaseUrl" class="col-form-label">@T("Plugins.Misc.ArtificialIntelligence.BaseUrl")</label>
                             </div>
                             <div class="col-md-9">
                                 <input asp-for="BaseUrl" class="form-control" />
                                 <span asp-validation-for="BaseUrl" class="text-danger"></span>
                             </div>
                         </div>
+
+                        <div class="form-group row">
+                            <div class="col-md-3">
+                                <label asp-for="CreditThreshold" class="col-form-label">@T("Plugins.Misc.ArtificialIntelligence.CreditThreshold")</label>
+                            </div>
+                            <div class="col-md-9">
+                                <input asp-for="CreditThreshold" type="number" class="form-control" placeholder="Enter threshold in Tomans" />
+                                <span asp-validation-for="CreditThreshold" class="text-danger"></span>
+                                <small class="form-text text-muted">A system warning will be triggered when the remaining credit reaches or drops below this threshold.</small>
+                            </div>
+                        </div>
+
+                        @if (Model.CurrentCredit.HasValue)
+                        {
+                            <div class="form-group row">
+                                <div class="col-md-3">
+                                    <label class="col-form-label">@T("Plugins.Misc.ArtificialIntelligence.CurrentCredit")</label>
+                                </div>
+                                <div class="col-md-9">
+                                    <div class="form-control-plaintext font-weight-bold @(Model.CurrentCredit <= Model.CreditThreshold ? "text-danger" : "text-success")">
+                                        @Model.CurrentCredit.Value.ToString("N0") Tomans
+                                    </div>
+                                </div>
+                            </div>
+                        }
                     </div>
                 </div>
 
@@ -68,7 +93,7 @@
                     <div class="card-body">
                         <div class="form-group row">
                             <div class="col-md-3">
-                                <label asp-for="ChatbotModel" class="col-form-label">Chatbot Completions Model</label>
+                                <label asp-for="ChatbotModel" class="col-form-label">@T("Plugins.Misc.ArtificialIntelligence.ChatbotModel")</label>
                             </div>
                             <div class="col-md-9">
                                 <input asp-for="ChatbotModel" class="form-control" />
@@ -78,7 +103,7 @@
 
                         <div class="form-group row">
                             <div class="col-md-3">
-                                <label asp-for="VisionModel" class="col-form-label">Vision/Image analysis Model</label>
+                                <label asp-for="VisionModel" class="col-form-label">@T("Plugins.Misc.ArtificialIntelligence.VisionModel")</label>
                             </div>
                             <div class="col-md-9">
                                 <input asp-for="VisionModel" class="form-control" />
@@ -88,7 +113,7 @@
 
                         <div class="form-group row">
                             <div class="col-md-3">
-                                <label asp-for="EmbeddingModel" class="col-form-label">Embeddings Model</label>
+                                <label asp-for="EmbeddingModel" class="col-form-label">@T("Plugins.Misc.ArtificialIntelligence.EmbeddingModel")</label>
                             </div>
                             <div class="col-md-9">
                                 <input asp-for="EmbeddingModel" class="form-control" />
@@ -98,7 +123,7 @@
 
                         <div class="form-group row">
                             <div class="col-md-3">
-                                <label asp-for="DuplicateSimilarityThreshold" class="col-form-label">Duplicate Similarity Threshold (0.0 - 1.0)</label>
+                                <label asp-for="DuplicateSimilarityThreshold" class="col-form-label">@T("Plugins.Misc.ArtificialIntelligence.DuplicateSimilarityThreshold")</label>
                             </div>
                             <div class="col-md-9">
                                 <input asp-for="DuplicateSimilarityThreshold" type="number" step="0.01" min="0" max="1" class="form-control" />
