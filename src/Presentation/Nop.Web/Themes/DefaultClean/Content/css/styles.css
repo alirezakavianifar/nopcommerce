@@ -1129,6 +1129,7 @@ label, label + * {
   border-bottom: 1px solid #ddd;
   overflow: hidden;
   padding-block: 40px;
+  padding-inline: 30px;
   display: flex;
   flex-flow: row wrap;
   justify-content: center;
@@ -1247,7 +1248,8 @@ label, label + * {
   width: 95%;
   margin: auto;
   overflow: hidden;
-  padding: 25px 0;
+  padding-block: 25px;
+  padding-inline: 30px;
   font-size: 12px;
 }
 
@@ -8610,6 +8612,10 @@ label, label + * {
 
   .newsletter-validation .field-validation-valid {
     text-align: left;
+  }
+
+  .footer-upper {
+    width: 980px;
   }
 
   .footer-lower {

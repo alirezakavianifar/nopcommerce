@@ -1,4 +1,4 @@
-﻿@import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@100..900&display=swap');
 
 /*********** CSS RESET **********/
 :root {
@@ -1133,10 +1133,12 @@ label, label + * {
 }
 
 .footer-upper {
+  width: 95%;
   margin-inline: auto;
   border-bottom: 1px solid #ddd;
   overflow: hidden;
   padding-block: 40px;
+  padding-inline: 30px;
   display: flex;
   flex-flow: row wrap;
   justify-content: center;
@@ -1266,7 +1268,8 @@ label, label + * {
   width: 95%;
   margin: auto;
   overflow: hidden;
-  padding: 25px 0;
+  padding-block: 25px;
+  padding-inline: 30px;
   font-size: 12px;
 }
 
@@ -8699,6 +8702,10 @@ label, label + * {
 
   .newsletter-validation .field-validation-valid {
     text-align: right;
+  }
+
+  .footer-upper {
+    width: 980px;
   }
 
   .footer-lower {

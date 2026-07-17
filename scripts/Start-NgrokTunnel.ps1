@@ -31,7 +31,8 @@
 param(
     [int]$Port = 59580,
     [string]$AuthToken = "",
-    [string]$SubDomain = ""
+    [string]$SubDomain = "",
+    [switch]$StartApp = $false
 )
 
 # ---------------------------------------------
@@ -64,16 +65,69 @@ Write-Banner
 # ---------------------------------------------
 Write-Step "Checking" "Checking local app on port $Port..." "Yellow"
 
+$appRunning = $false
 try {
     $null = Invoke-WebRequest -Uri "http://localhost:$Port" -TimeoutSec 5 -UseBasicParsing -ErrorAction Stop
     Write-Step "OK" "nopCommerce is running on port $Port." "Green"
+    $appRunning = $true
 } catch {
     Write-Step "WARN" "Could not reach http://localhost:$Port  - is the app running?" "Yellow"
-    Write-Host ""
-    $continue = Read-Host "  Continue anyway? (y/N)"
-    if ($continue -notmatch "^[Yy]") {
-        Write-Host "  Exiting." -ForegroundColor Red
-        exit 1
+}
+
+$appProc = $null
+if (-not $appRunning) {
+    $shouldStart = $StartApp
+    if (-not $shouldStart) {
+        Write-Host ""
+        $response = Read-Host "  Would you like to start the app now? (Y/n)"
+        if ($response -eq "" -or $response -match "^[Yy]") {
+            $shouldStart = $true
+        }
+    }
+
+    if ($shouldStart) {
+        Write-Step "Launch" "Starting the app process..." "Cyan"
+        $repoRoot = (Resolve-Path "$PSScriptRoot\..").Path
+        $runScript = Join-Path $repoRoot "run.ps1"
+        if (Test-Path $runScript) {
+            $appProc = Start-Process -FilePath "powershell.exe" -ArgumentList "-NoExit", "-File", "`"$runScript`"" -WorkingDirectory $repoRoot -PassThru
+            Write-Step "OK" "App launched in a new window." "Green"
+            
+            # Wait for the app to start up and become reachable
+            Write-Host "  Waiting for the app to initialize on port $Port..." -ForegroundColor Yellow
+            $started = $false
+            $maxAppWait = 30
+            $appElapsed = 0
+            while ($appElapsed -lt $maxAppWait) {
+                Start-Sleep -Seconds 2
+                $appElapsed += 2
+                try {
+                    $null = Invoke-WebRequest -Uri "http://localhost:$Port" -TimeoutSec 2 -UseBasicParsing -ErrorAction Stop
+                    $started = $true
+                    break
+                } catch {
+                    # Not ready yet
+                }
+            }
+            if ($started) {
+                Write-Step "OK" "nopCommerce is now running on port $Port." "Green"
+            } else {
+                Write-Step "WARN" "App was launched but could not verify it running on port $Port after $maxAppWait seconds." "Yellow"
+            }
+        } else {
+            Write-Step "ERROR" "Could not find run.ps1 at $runScript" "Red"
+            $continue = Read-Host "  Continue anyway? (y/N)"
+            if ($continue -notmatch "^[Yy]") {
+                Write-Host "  Exiting." -ForegroundColor Red
+                exit 1
+            }
+        }
+    } else {
+        $continue = Read-Host "  Continue anyway? (y/N)"
+        if ($continue -notmatch "^[Yy]") {
+            Write-Host "  Exiting." -ForegroundColor Red
+            exit 1
+        }
     }
 }
 
@@ -216,6 +270,8 @@ Write-Host "  +---------------------------------------------------------+" -Fore
 Write-Host "  |  Public URL:   $publicUrl" -ForegroundColor White
 Write-Host "  |  Local URL:    http://localhost:$Port" -ForegroundColor White
 Write-Host "  |  Inspector:    http://localhost:4040" -ForegroundColor White
+Write-Host "  |  Admin Email:  admin@yourStore.com" -ForegroundColor White
+Write-Host "  |  Admin Pass:   admin" -ForegroundColor White
 Write-Host "  +---------------------------------------------------------+" -ForegroundColor Green
 Write-Host ""
 
@@ -269,6 +325,11 @@ try {
     Write-Host ""
     Write-Step "Stopping" "Stopping ngrok tunnel..." "Red"
     if ($ngrokProc) { Stop-Process -Id $ngrokProc.Id -Force -ErrorAction SilentlyContinue }
+
+    if ($appProc) {
+        Write-Step "Stopping" "Stopping app process..." "Red"
+        Stop-Process -Id $appProc.Id -Force -ErrorAction SilentlyContinue
+    }
 
     # Kill any remaining ngrok process
     Get-Process -Name "ngrok" -ErrorAction SilentlyContinue | Stop-Process -Force

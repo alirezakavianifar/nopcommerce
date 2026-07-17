@@ -11,7 +11,7 @@
     var supportRtl = await Html.ShouldUseRtlThemeAsync();
 
     //add main CSS file
-    NopHtml.AppendCssFileParts($"~/Themes/{themeName}/Content/css/styles{(supportRtl ? ".rtl" : "")}.css?v=2.0");
+    NopHtml.AppendCssFileParts($"~/Themes/{themeName}/Content/css/styles{(supportRtl ? ".rtl" : "")}.css?v=2.1");
     
     //add swiper css file
     if (catalogSettings.DisplayAllPicturesOnCatalogPages)
