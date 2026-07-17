@@ -34,34 +34,34 @@ param(
     [string]$SubDomain = ""
 )
 
-# ─────────────────────────────────────────────
+# ---------------------------------------------
 #  Helpers
-# ─────────────────────────────────────────────
+# ---------------------------------------------
 function Write-Banner {
     Clear-Host
     Write-Host ""
-    Write-Host "  ╔══════════════════════════════════════════════════╗" -ForegroundColor Cyan
-    Write-Host "  ║       nopCommerce  ▸  ngrok Tunnel Launcher      ║" -ForegroundColor Cyan
-    Write-Host "  ╚══════════════════════════════════════════════════╝" -ForegroundColor Cyan
+    Write-Host "  +--------------------------------------------------+" -ForegroundColor Cyan
+    Write-Host "  |       nopCommerce  -  ngrok Tunnel Launcher      |" -ForegroundColor Cyan
+    Write-Host "  +--------------------------------------------------+" -ForegroundColor Cyan
     Write-Host ""
 }
 
 function Write-Step([string]$Icon, [string]$Message, [string]$Color = "White") {
-    Write-Host "  $Icon  $Message" -ForegroundColor $Color
+    Write-Host "  [$Icon] $Message" -ForegroundColor $Color
 }
 
 function Write-Divider {
-    Write-Host "  ─────────────────────────────────────────────────────" -ForegroundColor DarkGray
+    Write-Host "  -----------------------------------------------------" -ForegroundColor DarkGray
 }
 
-# ─────────────────────────────────────────────
+# ---------------------------------------------
 #  Step 1 - Display banner
-# ─────────────────────────────────────────────
+# ---------------------------------------------
 Write-Banner
 
-# ─────────────────────────────────────────────
+# ---------------------------------------------
 #  Step 2 - Check if the local app is reachable
-# ─────────────────────────────────────────────
+# ---------------------------------------------
 Write-Step "Checking" "Checking local app on port $Port..." "Yellow"
 
 try {
@@ -79,9 +79,9 @@ try {
 
 Write-Divider
 
-# ─────────────────────────────────────────────
+# ---------------------------------------------
 #  Step 3 - Locate / install ngrok
-# ─────────────────────────────────────────────
+# ---------------------------------------------
 Write-Step "Searching" "Looking for ngrok..." "Yellow"
 
 $ngrokCmd = Get-Command ngrok -ErrorAction SilentlyContinue
@@ -140,9 +140,9 @@ $ngrokVersion = (ngrok version 2>&1)
 Write-Step "OK" "ngrok found: $ngrokVersion" "Green"
 Write-Divider
 
-# ─────────────────────────────────────────────
+# ---------------------------------------------
 #  Step 4 - Configure authtoken (if provided)
-# ─────────────────────────────────────────────
+# ---------------------------------------------
 if ($AuthToken -ne "") {
     Write-Step "Key" "Saving ngrok authtoken..." "Yellow"
     ngrok config add-authtoken $AuthToken | Out-Null
@@ -150,9 +150,9 @@ if ($AuthToken -ne "") {
     Write-Divider
 }
 
-# ─────────────────────────────────────────────
+# ---------------------------------------------
 #  Step 5 - Build ngrok command and start tunnel
-# ─────────────────────────────────────────────
+# ---------------------------------------------
 Write-Step "Launch" "Starting ngrok tunnel -> http://localhost:$Port" "Cyan"
 Write-Host ""
 
@@ -162,11 +162,8 @@ if ($SubDomain -ne "") {
     $ngrokArgs += "--subdomain=$SubDomain"
 }
 
-# Start ngrok as a background job so we can query its API
-$ngrokJob = Start-Job -ScriptBlock {
-    param($args)
-    & ngrok @args
-} -ArgumentList (, $ngrokArgs)
+# Start ngrok as a background process so we can query its API
+$ngrokProc = Start-Process -FilePath "ngrok" -ArgumentList $ngrokArgs -PassThru -NoNewWindow
 
 # Wait for ngrok API to become available
 $publicUrl  = $null
@@ -204,14 +201,13 @@ if (-not $publicUrl) {
     Write-Host "  Get your free authtoken at: https://dashboard.ngrok.com/get-started/your-authtoken" -ForegroundColor Cyan
     Write-Host "  Then re-run:  .\Start-NgrokTunnel.ps1 -AuthToken ""your_token_here""" -ForegroundColor Cyan
     Write-Host ""
-    Stop-Job $ngrokJob -ErrorAction SilentlyContinue
-    Remove-Job $ngrokJob -ErrorAction SilentlyContinue
+    if ($ngrokProc) { Stop-Process -Id $ngrokProc.Id -Force -ErrorAction SilentlyContinue }
     exit 1
 }
 
-# ─────────────────────────────────────────────
+# ---------------------------------------------
 #  Step 6 - Display results
-# ─────────────────────────────────────────────
+# ---------------------------------------------
 Write-Banner
 
 Write-Host "  Tunnel is LIVE!" -ForegroundColor Green
@@ -243,9 +239,9 @@ Write-Host ""
 Write-Host "  Press Ctrl+C to stop the tunnel." -ForegroundColor Red
 Write-Host ""
 
-# ─────────────────────────────────────────────
+# ---------------------------------------------
 #  Step 7 - Keep alive + refresh URL display
-# ─────────────────────────────────────────────
+# ---------------------------------------------
 try {
     while ($true) {
         Start-Sleep -Seconds 30
@@ -272,8 +268,7 @@ try {
 } finally {
     Write-Host ""
     Write-Step "Stopping" "Stopping ngrok tunnel..." "Red"
-    Stop-Job  $ngrokJob -ErrorAction SilentlyContinue
-    Remove-Job $ngrokJob -ErrorAction SilentlyContinue
+    if ($ngrokProc) { Stop-Process -Id $ngrokProc.Id -Force -ErrorAction SilentlyContinue }
 
     # Kill any remaining ngrok process
     Get-Process -Name "ngrok" -ErrorAction SilentlyContinue | Stop-Process -Force
