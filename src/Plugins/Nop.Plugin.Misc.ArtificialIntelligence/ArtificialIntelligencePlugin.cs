@@ -158,7 +158,7 @@ public class ArtificialIntelligencePlugin : BasePlugin, IMiscPlugin, IAdminMenuP
             var aiNode = new AdminMenuItem
             {
                 SystemName = "Misc.ArtificialIntelligence",
-                Title = "AI Hub (AvalAI)",
+                Title = await _localizationService.GetResourceAsync("Plugins.Misc.ArtificialIntelligence.Title") ?? "AI Hub (AvalAI)",
                 Url = "/Admin/ArtificialIntelligence/Configure",
                 IconClass = "fas fa-brain",
                 Visible = true
@@ -168,7 +168,7 @@ public class ArtificialIntelligencePlugin : BasePlugin, IMiscPlugin, IAdminMenuP
             var duplicateQueueNode = new AdminMenuItem
             {
                 SystemName = "Misc.ArtificialIntelligence.DuplicateQueue",
-                Title = "AI Duplicate Queue",
+                Title = await _localizationService.GetResourceAsync("Plugins.Misc.ArtificialIntelligence.DuplicateQueue.Title") ?? "AI Duplicate Queue",
                 Url = "/Admin/AiDuplicateProduct/List",
                 IconClass = "far fa-copy",
                 Visible = true

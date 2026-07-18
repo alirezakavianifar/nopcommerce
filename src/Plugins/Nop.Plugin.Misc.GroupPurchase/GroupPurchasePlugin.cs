@@ -151,7 +151,7 @@ public class GroupPurchasePlugin : BasePlugin, IMiscPlugin, IAdminMenuPlugin, IW
             var walletNode = new AdminMenuItem
             {
                 SystemName = "Misc.GroupPurchase.Wallets",
-                Title = "Customer Wallets",
+                Title = await _localizationService.GetResourceAsync("Plugins.Misc.GroupPurchase.Wallets.Title") ?? "Customer Wallets",
                 Url = "/Admin/CustomerWallet/List",
                 IconClass = "fas fa-wallet",
                 Visible = true
