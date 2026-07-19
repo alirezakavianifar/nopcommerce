@@ -1,0 +1,74 @@
+@model SMSTokenModel
+@{
+    Layout = "_ColumnsOne";
+}
+
+<div class="page login-page">
+    <div class="page-title">
+        <h1>Device Verification Challenge</h1>
+    </div>
+    <div class="page-body">
+        <div class="sms-verification-login-container card card-default" style="max-width: 500px; margin: 0 auto; padding: 20px;">
+            <div class="card-body">
+                <div class="instruction" style="margin-bottom: 15px;">
+                    This device or browser is not recognized. For security purposes, a verification code must be sent to your registered phone number.
+                </div>
+
+                <div class="form-horizontal">
+                    <div class="form-group row" style="margin-bottom: 15px;">
+                        <div class="col-md-9 offset-md-3">
+                            <button type="button" id="sms2fa-login-send-btn" class="button-2 btn btn-secondary">@T("Plugins.MultiFactorAuth.SMS.Customer.SendCode")</button>
+                        </div>
+                    </div>
+
+                    <form asp-controller="SMSAuthentication" asp-action="VerifyDeviceToken" method="post">
+                        <div class="inputs form-group row">
+                            <label asp-for="Token" class="col-md-3 col-form-label" asp-postfix=":"></label>
+                            <div class="col-md-9">
+                                <input asp-for="Token" class="form-control" autocomplete="off" autofocus="autofocus" />
+                                <span asp-validation-for="Token" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="form-group row" style="margin-top: 15px;">    
+                            <div class="col-md-9 offset-md-3 buttons">
+                                <button type="submit" class="button-1 btn btn-primary">Verify and Register Device</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript" asp-location="Footer">
+    $(document).ready(function () {
+        // Automatically request code on page load
+        sendLoginCode();
+
+        $('#sms2fa-login-send-btn').click(function () {
+            sendLoginCode();
+        });
+
+        function sendLoginCode() {
+            var postData = {};
+            addAntiForgeryToken(postData);
+            $.ajax({
+                cache: false,
+                type: 'POST',
+                url: '@Url.Action("RequestLoginCode", "SMSAuthentication")',
+                data: postData,
+                success: function (data) {
+                    if (data.success) {
+                        alert(data.message + (data.code ? " (For testing, OTP code: " + data.code + ")" : ""));
+                    } else {
+                        alert(data.message);
+                    }
+                },
+                error: function () {
+                    alert('Error requesting login code.');
+                }
+            });
+        }
+    });
+</script>

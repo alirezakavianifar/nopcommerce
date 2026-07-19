@@ -1,0 +1,89 @@
+@model SMSAuthModel
+
+<div class="sms-authenticator-container card card-default">
+    <div class="card-body">
+        <div class="instruction" style="margin-bottom: 15px;">
+            @T("Plugins.MultiFactorAuth.SMS.Customer.Instruction")
+        </div>
+
+        @if (Model.IsSMS2FAActive)
+        {
+            <div class="alert alert-success">
+                @T("Plugins.MultiFactorAuth.SMS.Customer.SMSEnabled") (<strong>@Model.PhoneNumber</strong>)
+            </div>
+            <form asp-controller="SMSAuthentication" asp-action="DisableSMS2FA" method="post">
+                <button type="submit" class="button-2 disable-sms-2fa-button btn btn-danger">@T("Plugins.MultiFactorAuth.SMS.Customer.DisableButton")</button>
+            </form>
+        }
+        else
+        {
+            <div class="alert alert-warning">
+                @T("Plugins.MultiFactorAuth.SMS.Customer.SMSDisabled")
+            </div>
+
+            <div class="form-horizontal">
+                <div class="form-group row">
+                    <label asp-for="PhoneNumber" class="col-md-3 col-form-label" asp-postfix=":"></label>
+                    <div class="col-md-6">
+                        <input asp-for="PhoneNumber" id="sms2fa-phone-input" class="form-control" placeholder="+1234567890" value="@Model.PhoneNumber" />
+                        <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-3">
+                        <button type="button" id="sms2fa-send-code-btn" class="button-1 btn btn-secondary">@T("Plugins.MultiFactorAuth.SMS.Customer.SendCode")</button>
+                    </div>
+                </div>
+
+                <div id="sms2fa-otp-section" style="display: none; margin-top: 15px;">
+                    <form asp-controller="SMSAuthentication" asp-action="RegisterSMS2FA" method="post">
+                        <input type="hidden" asp-for="PhoneNumber" id="sms2fa-phone-hidden" />
+                        <div class="form-group row">
+                            <label asp-for="Code" class="col-md-3 col-form-label" asp-postfix=":"></label>
+                            <div class="col-md-6">
+                                <input asp-for="Code" class="form-control" autocomplete="off" />
+                                <span asp-validation-for="Code" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-md-9 offset-md-3">
+                                <button type="submit" class="button-1 btn btn-primary">@T("Plugins.MultiFactorAuth.SMS.Customer.VerifyAndEnable")</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <script type="text/javascript" asp-location="Footer">
+                $(document).ready(function () {
+                    $('#sms2fa-send-code-btn').click(function () {
+                        var phone = $('#sms2fa-phone-input').val();
+                        if (!phone) {
+                            alert('Please enter a phone number.');
+                            return;
+                        }
+
+                        var postData = { phoneNumber: phone };
+                        addAntiForgeryToken(postData);
+                        $.ajax({
+                            cache: false,
+                            type: 'POST',
+                            url: '@Url.Action("RequestEnrollmentCode", "SMSAuthentication")',
+                            data: postData,
+                            success: function (data) {
+                                if (data.success) {
+                                    alert(data.message + (data.code ? " (For testing, OTP code: " + data.code + ")" : ""));
+                                    $('#sms2fa-phone-hidden').val(phone);
+                                    $('#sms2fa-otp-section').slideDown();
+                                } else {
+                                    alert(data.message);
+                                }
+                            },
+                            error: function () {
+                                alert('Error sending request.');
+                            }
+                        });
+                    });
+                });
+            </script>
+        }
+    </div>
+</div>

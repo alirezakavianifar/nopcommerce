@@ -1,0 +1,59 @@
+@model SMSTokenModel
+
+<div class="sms-verification-login-container">
+    <div class="instruction" style="margin-bottom: 15px;">
+        @T("Plugins.MultiFactorAuth.SMS.Customer.InstructionVerification")
+    </div>
+
+    <div class="form-horizontal">
+        <div class="form-group row" style="margin-bottom: 15px;">
+            <div class="col-md-9 offset-md-3">
+                <button type="button" id="sms2fa-login-send-btn" class="button-2 btn btn-secondary">@T("Plugins.MultiFactorAuth.SMS.Customer.SendCode")</button>
+            </div>
+        </div>
+
+        <form asp-controller="SMSAuthentication" asp-action="VerifySMS2FA" method="post">
+            <div class="inputs form-group row">
+                <label asp-for="Token" class="col-md-3 col-form-label" asp-postfix=":"></label>
+                <div class="col-md-6">
+                    <input asp-for="Token" class="form-control username" autocomplete="off" autofocus="autofocus" />
+                    <span asp-validation-for="Token" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="form-group row" style="margin-top: 15px;">    
+                <div class="col-md-9 offset-md-3 buttons">
+                    <button type="submit" class="button-1 save-customer-info-button btn btn-primary">Confirm</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script type="text/javascript" asp-location="Footer">
+    $(document).ready(function () {
+        // Automatically request code on page load
+        sendLoginCode();
+
+        $('#sms2fa-login-send-btn').click(function () {
+            sendLoginCode();
+        });
+
+        function sendLoginCode() {
+            $.ajax({
+                cache: false,
+                type: 'POST',
+                url: '@Url.Action("RequestLoginCode", "SMSAuthentication")',
+                success: function (data) {
+                    if (data.success) {
+                        alert(data.message + (data.code ? " (For testing, OTP code: " + data.code + ")" : ""));
+                    } else {
+                        alert(data.message);
+                    }
+                },
+                error: function () {
+                    alert('Error requesting login code.');
+                }
+            });
+        }
+    });
+</script>

@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Hosting;
@@ -74,6 +74,9 @@ public sealed class HttpsRequirementAttribute : TypeFilterAttribute
         private async Task CheckHttpsRequirementAsync(AuthorizationFilterContext context)
         {
             ArgumentNullException.ThrowIfNull(context);
+
+            if (_webHostEnvironment.IsDevelopment())
+                return;
 
             //only in GET requests, otherwise the browser might not propagate the verb and request body correctly
             if (!context.HttpContext.Request.IsGetRequest())

@@ -1,0 +1,139 @@
+@model IList<Nop.Plugin.MultiFactorAuth.SMS.Domains.CustomerSecurityRestriction>
+
+<nop-card asp-name="customer-security-restrictions" asp-icon="fas fa-shield-halved" asp-title="IP and Device Restrictions" asp-hide-block-attribute-name="CustomerPage.HideSecurityRestrictionsBlock" asp-hide="false" asp-advanced="false">
+    <div class="card-body">
+        <!-- IP Restriction Section -->
+        <div class="form-group row">
+            <div class="col-md-3">
+                <label class="col-form-label">Allowed IP Addresses</label>
+            </div>
+            <div class="col-md-7">
+                <input type="text" id="allowed-ips-input" class="form-control" value="@ViewBag.AllowedIps" placeholder="e.g. 192.168.1.1, 10.0.0.0/24" />
+                <span class="help-block text-muted">Comma-separated list of exact IPs or CIDR blocks. Leave empty to allow all IP addresses.</span>
+            </div>
+            <div class="col-md-2">
+                <button type="button" id="save-ip-restriction-btn" class="btn btn-primary">Save IPs</button>
+            </div>
+        </div>
+
+        <hr />
+
+        <!-- Device Binding Section -->
+        <div class="form-group row">
+            <div class="col-12">
+                <h4>Bound Devices & Browsers</h4>
+                @if (Model.Any())
+                {
+                    <table class="table table-bordered table-striped">
+                        <thead>
+                            <tr>
+                               <th>Device Browser Agent</th>
+                               <th>Date Registered</th>
+                               <th>Last Login</th>
+                               <th>Status</th>
+                               <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var device in Model)
+                            {
+                                <tr>
+                                    <td>@device.DeviceName</td>
+                                    <td>@device.CreatedOnUtc.ToLocalTime().ToString("g")</td>
+                                    <td>@(device.LastUsedUtc?.ToLocalTime().ToString("g") ?? "N/A")</td>
+                                    <td>
+                                        @if (device.IsApproved)
+                                        {
+                                            <span class="badge badge-success">Approved / Trusted</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge badge-warning">Pending Approval</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (!device.IsApproved)
+                                        {
+                                            <button type="button" class="btn btn-sm btn-success approve-device-btn" data-id="@device.Id">Approve</button>
+                                        }
+                                        <button type="button" class="btn btn-sm btn-danger revoke-device-btn" data-id="@device.Id">Revoke</button>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+                else
+                {
+                    <div class="alert alert-info">No devices registered for this user yet. Device registration happens upon successful OTP authentication on unrecognized browsers.</div>
+                }
+            </div>
+        </div>
+    </div>
+</nop-card>
+
+<script type="text/javascript" asp-location="Footer">
+    $(document).ready(function () {
+        $('#save-ip-restriction-btn').click(function () {
+            var ips = $('#allowed-ips-input').val();
+            $.ajax({
+                cache: false,
+                type: 'POST',
+                url: '@Url.Action("SaveCustomerRestrictions", "SMSAuthenticationAdmin")',
+                data: { customerId: @ViewBag.CustomerId, allowedIps: ips },
+                success: function (data) {
+                    alert(data.message);
+                },
+                error: function () {
+                    alert('Error saving IP restrictions.');
+                }
+            });
+        });
+
+        $('.approve-device-btn').click(function () {
+            var btn = $(this);
+            var id = btn.data('id');
+            $.ajax({
+                cache: false,
+                type: 'POST',
+                url: '@Url.Action("ApproveDevice", "SMSAuthenticationAdmin")',
+                data: { restrictionId: id },
+                success: function (data) {
+                    if (data.success) {
+                        alert(data.message);
+                        location.reload();
+                    } else {
+                        alert(data.message);
+                    }
+                },
+                error: function () {
+                    alert('Error approving device.');
+                }
+            });
+        });
+
+        $('.revoke-device-btn').click(function () {
+            var btn = $(this);
+            var id = btn.data('id');
+            if (confirm('Are you sure you want to revoke this device? The user will have to re-verify next time they use it.')) {
+                $.ajax({
+                    cache: false,
+                    type: 'POST',
+                    url: '@Url.Action("RevokeDevice", "SMSAuthenticationAdmin")',
+                    data: { restrictionId: id },
+                    success: function (data) {
+                        if (data.success) {
+                            alert(data.message);
+                            location.reload();
+                        } else {
+                            alert(data.message);
+                        }
+                    },
+                    error: function () {
+                        alert('Error revoking device.');
+                    }
+                });
+            }
+        });
+    });
+</script>

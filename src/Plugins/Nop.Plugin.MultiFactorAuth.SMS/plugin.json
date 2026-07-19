@@ -1,0 +1,11 @@
+{
+  "Group": "Multi-factor authentication",
+  "FriendlyName": "SMS Authenticator",
+  "SystemName": "MultiFactorAuth.SMS",
+  "Version": "4.90.3",
+  "SupportedVersions": [ "4.90" ],
+  "Author": "Antigravity",
+  "DisplayOrder": 2,
+  "FileName": "Nop.Plugin.MultiFactorAuth.SMS.dll",
+  "Description": "SMS-based Two-Factor Authentication (SMS 2FA) that sends OTP codes via configured SMS Gateways."
+}
