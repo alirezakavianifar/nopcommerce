@@ -161,11 +161,21 @@ public class ArtificialIntelligencePlugin : BasePlugin, IMiscPlugin, IAdminMenuP
             {
                 SystemName = "Misc.ArtificialIntelligence",
                 Title = await _localizationService.GetResourceAsync("Plugins.Misc.ArtificialIntelligence.Title") ?? "AI Hub (AvalAI)",
-                Url = "/Admin/ArtificialIntelligence/Configure",
+                Url = string.Empty,
                 IconClass = "fas fa-brain",
                 Visible = true
             };
             promotionsMenu.ChildNodes.Add(aiNode);
+
+            var configNode = new AdminMenuItem
+            {
+                SystemName = "Misc.ArtificialIntelligence.Configure",
+                Title = await _localizationService.GetResourceAsync("Plugins.Misc.ArtificialIntelligence.Configure") ?? "Configure AI Settings",
+                Url = "/Admin/ArtificialIntelligence/Configure",
+                IconClass = "fas fa-cog",
+                Visible = true
+            };
+            aiNode.ChildNodes.Add(configNode);
 
             var duplicateQueueNode = new AdminMenuItem
             {
