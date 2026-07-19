@@ -450,9 +450,9 @@
                 });
                 var result = await response.json();
                 if (result.success) {
-                    alert("@handoffSuccess");
+                    alert("@Html.Raw(JavaScriptEncoder.Default.Encode(handoffSuccess))");
                     handoffOverlay.style.display = "none";
-                    renderMessage("@handoffSuccess", "assistant");
+                    renderMessage("@Html.Raw(handoffSuccess)", "assistant");
                 } else {
                     alert(result.message || "Failed to submit handoff request.");
                 }
@@ -460,7 +460,7 @@
                 alert("Network error.");
             } finally {
                 handoffSubmit.disabled = false;
-                handoffSubmit.innerText = "@handoffButton";
+                handoffSubmit.innerText = "@Html.Raw(handoffButton)";
             }
         });
 

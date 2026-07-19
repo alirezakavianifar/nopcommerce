@@ -9,21 +9,40 @@
     var micError = await localizationService.GetResourceAsync("Plugins.Misc.ArtificialIntelligence.Search.MicrophoneAccessBlocked");
 }
 
+<link rel="stylesheet" href="~/lib_npm/@@fortawesome/fontawesome-free/css/all.min.css"/>
+
 <style>
+    .ai-search-wrapper {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+        vertical-align: middle;
+    }
     .ai-search-container {
         display: inline-flex;
         align-items: center;
         position: absolute;
-        right: 70px;
+        right: 10px;
         top: 50%;
         transform: translateY(-50%);
         z-index: 10;
         gap: 8px;
     }
+    html[dir="rtl"] .ai-search-container {
+        right: auto;
+        left: 10px;
+    }
+    .ai-search-wrapper input.search-box-text {
+        padding-right: 65px !important;
+    }
+    html[dir="rtl"] .ai-search-wrapper input.search-box-text {
+        padding-right: 15px !important;
+        padding-left: 65px !important;
+    }
     .btn-ai-action {
         background: none;
         border: none;
-        color: #7c5dfa;
+        color: #a0a0a0;
         cursor: pointer;
         font-size: 16px;
         transition: color 0.2s, transform 0.2s;
@@ -31,8 +50,8 @@
         outline: none !important;
     }
     .btn-ai-action:hover {
-        color: #ff57b9;
-        transform: scale(1.1);
+        color: #4ab2f1;
+        transform: scale(1.15);
     }
     
     /* Voice visual overlay */
@@ -162,22 +181,25 @@
 <input type="file" id="aiVisualFileInput" accept="image/*" style="display: none;" />
 
 <script>
-    document.addEventListener("DOMContentLoaded", function() {
+    function initAiSearch() {
         var searchInput = document.getElementById("small-searchterms");
         if (!searchInput) return;
+        if (document.getElementById("aiVoiceSearchBtn")) return; // prevent double injection
 
-        // Position parent for relative placement
-        var parent = searchInput.parentNode;
-        parent.style.position = "relative";
+        // Create AI wrapper and place searchInput inside it
+        var wrapper = document.createElement("div");
+        wrapper.className = "ai-search-wrapper";
+        searchInput.parentNode.insertBefore(wrapper, searchInput);
+        wrapper.appendChild(searchInput);
 
         // Create AI buttons container
         var aiContainer = document.createElement("div");
         aiContainer.className = "ai-search-container";
         aiContainer.innerHTML = `
-            <button type="button" class="btn-ai-action" id="aiVoiceSearchBtn" title="@titleVoice"><i class="fas fa-microphone"></i></button>
-            <button type="button" class="btn-ai-action" id="aiVisualSearchBtn" title="@titleVisual"><i class="fas fa-camera"></i></button>
+            <button type="button" class="btn-ai-action" id="aiVoiceSearchBtn" title="@Html.Raw(titleVoice)"><i class="fas fa-microphone"></i></button>
+            <button type="button" class="btn-ai-action" id="aiVisualSearchBtn" title="@Html.Raw(titleVisual)"><i class="fas fa-camera"></i></button>
         `;
-        parent.appendChild(aiContainer);
+        wrapper.appendChild(aiContainer);
 
         // Create Visual Search Results Dropdown
         var resultsDropdown = document.createElement("div");
@@ -193,7 +215,7 @@
             </div>
             <div class="ai-visual-items" id="aiVisualItems"></div>
         `;
-        parent.appendChild(resultsDropdown);
+        wrapper.appendChild(resultsDropdown);
 
         // Voice Search logic
         var mediaRecorder;
@@ -205,7 +227,7 @@
 
         voiceBtn.addEventListener("click", async function() {
             if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-                alert("@micError");
+                alert("@Html.Raw(JavaScriptEncoder.Default.Encode(micError))");
                 return;
             }
 
@@ -251,10 +273,10 @@
                 };
 
                 voiceOverlay.style.display = "flex";
-                voiceStatus.innerText = "@listeningText";
+                voiceStatus.innerText = "@Html.Raw(listeningText)";
                 mediaRecorder.start();
             } catch(e) {
-                alert("@micError");
+                alert("@Html.Raw(JavaScriptEncoder.Default.Encode(micError))");
             }
         });
 
@@ -315,5 +337,11 @@
         dropdownClose.addEventListener("click", function() {
             dropdown.style.display = "none";
         });
-    });
+    }
+
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", initAiSearch);
+    } else {
+        initAiSearch();
+    }
 </script>
