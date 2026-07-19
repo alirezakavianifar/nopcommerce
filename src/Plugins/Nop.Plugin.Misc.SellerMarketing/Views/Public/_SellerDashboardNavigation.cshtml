@@ -1,0 +1,3 @@
+<li class="customer-seller-dashboard @if (Url.ActionContext.RouteData.Values["controller"]?.ToString() == "SellerMarketingPublic" && Url.ActionContext.RouteData.Values["action"]?.ToString() == "Dashboard") { <text>active</text> }">
+    <a href="@Url.RouteUrl("Plugin.Misc.SellerMarketing.Public.Dashboard")" class="inactive">@T("Plugins.Misc.SellerMarketing.Dashboard.MyAccountTab")</a>
+</li>

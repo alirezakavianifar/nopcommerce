@@ -1,0 +1,11 @@
+{
+  "Group": "Misc",
+  "FriendlyName": "Support & Seller Marketing",
+  "SystemName": "Misc.SellerMarketing",
+  "Version": "1.00",
+  "SupportedVersions": [ "4.90" ],
+  "Author": "Seller Marketing",
+  "DisplayOrder": 1,
+  "FileName": "Nop.Plugin.Misc.SellerMarketing.dll",
+  "Description": "Allows vendors to upload products and images which go live after administrator approval."
+}

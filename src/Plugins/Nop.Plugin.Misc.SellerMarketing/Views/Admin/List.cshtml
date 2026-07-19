@@ -1,0 +1,95 @@
+@model Nop.Plugin.Misc.SellerMarketing.Models.AdminSubmissionListModel
+@using Nop.Web.Framework.UI
+@{
+    Layout = "_AdminLayout";
+    ViewBag.PageTitle = T("Plugins.Misc.SellerMarketing.Admin.Title").Text;
+}
+
+<div class="content-header clearfix">
+    <h1 class="float-left">
+        @T("Plugins.Misc.SellerMarketing.Admin.PendingSubmissions")
+    </h1>
+</div>
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="cards-group">
+            <div class="card card-default">
+                <div class="card-body">
+                    @if (!Model.Submissions.Any())
+                    {
+                        <div class="no-data" style="padding: 30px; text-align: center; color: #7f8c8d;">
+                            <i class="far fa-smile" style="font-size: 36px; margin-bottom: 10px; color: #bdc3c7; display: block;"></i>
+                            @T("Plugins.Misc.SellerMarketing.Admin.NoSubmissions")
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-hover table-striped">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 80px; text-align: center; vertical-align: middle;">@T("Plugins.Misc.SellerMarketing.Admin.Details")</th>
+                                        <th style="vertical-align: middle;">@T("Plugins.Misc.SellerMarketing.Admin.ProductName")</th>
+                                        <th style="vertical-align: middle;">@T("Plugins.Misc.SellerMarketing.Admin.Vendor")</th>
+                                        <th style="width: 120px; vertical-align: middle;">@T("Plugins.Misc.SellerMarketing.Admin.SKU")</th>
+                                        <th style="width: 120px; text-align: right; vertical-align: middle;">@T("Plugins.Misc.SellerMarketing.Admin.Price")</th>
+                                        <th style="width: 150px; text-align: center; vertical-align: middle;">Submitted Date</th>
+                                        <th style="width: 320px; text-align: center; vertical-align: middle;">Review Decision</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model.Submissions)
+                                    {
+                                        <tr>
+                                            <td style="text-align: center; vertical-align: middle;">
+                                                <div style="width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; background: #fdfdfd; border: 1px solid #ddd; border-radius: 4px;">
+                                                    <img src="@item.ImageUrl" alt="@item.ProductName" style="max-width: 100%; max-height: 100%; object-fit: contain;" />
+                                                </div>
+                                            </td>
+                                            <td style="vertical-align: middle;">
+                                                <a href="/Admin/Product/Edit/@item.ProductId" target="_blank" style="font-weight: 600; color: #3c8dbc;">
+                                                    @item.ProductName <i class="fas fa-external-link-alt" style="font-size: 11px; margin-left: 3px;"></i>
+                                                </a>
+                                            </td>
+                                            <td style="vertical-align: middle;">
+                                                <strong>@item.VendorName</strong>
+                                            </td>
+                                            <td style="vertical-align: middle;">
+                                                <code>@item.Sku</code>
+                                            </td>
+                                            <td style="text-align: right; font-weight: 600; vertical-align: middle;">
+                                                @item.Price.ToString("N0") <span style="font-size: 11px; color: #777;">@T("Currency.Standard")</span>
+                                            </td>
+                                            <td style="text-align: center; vertical-align: middle; color: #666; font-size: 13px;">
+                                                @item.SubmittedOnUtc.ToString("yyyy-MM-dd HH:mm")
+                                            </td>
+                                            <td style="vertical-align: middle;">
+                                                <div style="display: flex; flex-direction: column; gap: 8px;">
+                                                    <!-- Direct Approval Action -->
+                                                    <form asp-action="Approve" asp-controller="SellerMarketingAdmin" asp-route-id="@item.Id" method="post" style="display: inline;">
+                                                        <button type="submit" class="btn btn-success btn-sm btn-block" style="font-weight: 600;">
+                                                            <i class="fas fa-check-circle"></i> @T("Plugins.Misc.SellerMarketing.Admin.Approve")
+                                                        </button>
+                                                    </form>
+
+                                                    <!-- Direct Rejection Form -->
+                                                    <form asp-action="Reject" asp-controller="SellerMarketingAdmin" asp-route-id="@item.Id" method="post" style="display: flex; gap: 5px;">
+                                                        <input type="text" name="comment" placeholder="@T("Plugins.Misc.SellerMarketing.Admin.CommentPlaceholder")" class="form-control form-control-sm" required style="font-size: 12px; height: 31px;" />
+                                                        <button type="submit" class="btn btn-danger btn-sm" style="font-weight: 600; white-space: nowrap;">
+                                                            <i class="fas fa-times-circle"></i> @T("Plugins.Misc.SellerMarketing.Admin.Reject")
+                                                        </button>
+                                                    </form>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
