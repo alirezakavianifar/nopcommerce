@@ -1,4 +1,10 @@
-﻿/* COMMON */
+@import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@100..900&display=swap');
+
+body, input, button, select, textarea, .form-control, .btn, .main-header, .main-sidebar, .content-wrapper, .modal-content, .brand-link {
+  font-family: 'Vazirmatn', sans-serif !important;
+}
+
+/* COMMON */
 .content, .content-wrapper > .content {
   padding-bottom: 55px;
 }

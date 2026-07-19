@@ -1,6 +1,7 @@
 @using Nop.Core
 @using Nop.Services.Localization
 @inject ILocalizationService localizationService
+@inject IWorkContext workContext
 
 @{
     var title = await localizationService.GetResourceAsync("Plugins.Misc.ArtificialIntelligence.Chatbot.Title");
@@ -8,6 +9,15 @@
     var handoffMessage = await localizationService.GetResourceAsync("Plugins.Misc.ArtificialIntelligence.Chatbot.HandoffMessage");
     var handoffButton = await localizationService.GetResourceAsync("Plugins.Misc.ArtificialIntelligence.Chatbot.HandoffButton");
     var handoffSuccess = await localizationService.GetResourceAsync("Plugins.Misc.ArtificialIntelligence.Chatbot.HandoffSuccess");
+
+    var workingLanguage = await workContext.GetWorkingLanguageAsync();
+    var isPersian = workingLanguage?.LanguageCulture?.StartsWith("fa", StringComparison.OrdinalIgnoreCase) ?? false;
+    
+    var languageId = workingLanguage?.Id ?? 0;
+    var labelResource = await localizationService.GetResourceAsync("Plugins.Misc.ArtificialIntelligence.Chatbot.Label", languageId, logIfNotFound: false, defaultValue: "", returnEmptyIfNotFound: true);
+    var labelText = !string.IsNullOrEmpty(labelResource) && !labelResource.Equals("plugins.misc.artificialintelligence.chatbot.label", StringComparison.OrdinalIgnoreCase) 
+        ? labelResource 
+        : (isPersian ? "پشتیبان هوشمند" : "AI Chatbot");
 }
 
 <style>
@@ -15,23 +25,47 @@
         position: fixed;
         bottom: 25px;
         right: 25px;
-        width: 60px;
-        height: 60px;
+        height: 50px;
         background: linear-gradient(135deg, #7c5dfa 0%, #ff57b9 100%);
-        border-radius: 50%;
+        border-radius: 25px;
         box-shadow: 0 5px 20px rgba(124, 93, 250, 0.4);
         display: flex;
         align-items: center;
         justify-content: center;
         color: #ffffff;
-        font-size: 24px;
         cursor: pointer;
         z-index: 99999;
-        transition: transform 0.2s, box-shadow 0.2s;
+        transition: transform 0.2s, box-shadow 0.2s, background-color 0.2s;
+        padding: 0 20px;
+        font-family: inherit;
+        font-weight: 600;
+        font-size: 14px;
+        box-sizing: border-box;
+        text-decoration: none;
+        user-select: none;
     }
     .ai-chat-bubble:hover {
-        transform: scale(1.08);
+        transform: translateY(-2px) scale(1.02);
         box-shadow: 0 8px 25px rgba(124, 93, 250, 0.5);
+    }
+    .ai-chat-bubble-text {
+        margin-left: 8px;
+        white-space: nowrap;
+    }
+    .ai-chat-bubble-svg {
+        width: 24px;
+        height: 24px;
+        flex-shrink: 0;
+    }
+    
+    /* RTL layout alignments */
+    .ai-chat-bubble.rtl {
+        right: auto;
+        left: 25px;
+    }
+    .ai-chat-bubble.rtl .ai-chat-bubble-text {
+        margin-left: 0;
+        margin-right: 8px;
     }
     
     .ai-chat-window {
@@ -49,6 +83,11 @@
         overflow: hidden;
         border: 1px solid rgba(124, 93, 250, 0.15);
         font-family: inherit;
+    }
+    .ai-chat-window.rtl {
+        right: auto;
+        left: 25px;
+        direction: rtl;
     }
     .ai-chat-window.dark-mode {
         background: #091a28;
@@ -68,6 +107,7 @@
         cursor: pointer;
         font-size: 20px;
         opacity: 0.8;
+        line-height: 1;
     }
     .ai-chat-close:hover {
         opacity: 1;
@@ -105,11 +145,22 @@
         border-bottom-right-radius: 2px;
     }
     
+    /* RTL Speech bubble corners */
+    .ai-chat-window.rtl .ai-message.assistant {
+        border-bottom-left-radius: 15px;
+        border-bottom-right-radius: 2px;
+    }
+    .ai-chat-window.rtl .ai-message.user {
+        border-bottom-right-radius: 15px;
+        border-bottom-left-radius: 2px;
+    }
+    
     .ai-chat-footer {
         padding: 12px;
         border-top: 1px solid #f0f0f0;
         display: flex;
         gap: 8px;
+        align-items: center;
     }
     .ai-chat-window.dark-mode .ai-chat-footer {
         border-top-color: #122232;
@@ -139,9 +190,59 @@
         justify-content: center;
         cursor: pointer;
         transition: background 0.2s;
+        flex-shrink: 0;
     }
     .ai-chat-send:hover {
         background: #ff57b9;
+    }
+    .ai-chat-send-svg {
+        width: 16px;
+        height: 16px;
+    }
+    
+    /* RTL Flip send icon */
+    .ai-chat-window.rtl .ai-chat-send-svg {
+        transform: scaleX(-1);
+    }
+
+    /* CSS Loader spinner */
+    .ai-spinner {
+        display: inline-block;
+        width: 12px;
+        height: 12px;
+        border: 2px solid rgba(124, 93, 250, 0.2);
+        border-radius: 50%;
+        border-top-color: #7c5dfa;
+        animation: ai-spin 0.8s linear infinite;
+        vertical-align: middle;
+        margin-right: 5px;
+    }
+    .ai-chat-window.rtl .ai-spinner {
+        margin-right: 0;
+        margin-left: 5px;
+    }
+    @@keyframes ai-spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    /* Responsive */
+    @@media (max-width: 768px) {
+        .ai-chat-bubble {
+            width: 50px;
+            height: 50px;
+            padding: 0;
+            border-radius: 50%;
+        }
+        .ai-chat-bubble-text {
+            display: none;
+        }
+        .ai-chat-window {
+            width: calc(100% - 50px);
+            left: 25px;
+            right: 25px;
+            bottom: 90px;
+        }
     }
 
     /* Handoff form styling */
@@ -188,11 +289,17 @@
     }
 </style>
 
-<div class="ai-chat-bubble" id="aiChatBubble">
-    <i class="far fa-comments"></i>
+<div class="ai-chat-bubble @(isPersian ? "rtl" : "")" id="aiChatBubble">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ai-chat-bubble-svg">
+        <path d="M12 8V4m0 0a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3ZM5 8h14a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2Z" />
+        <circle cx="8.5" cy="14" r="1" fill="currentColor" />
+        <circle cx="15.5" cy="14" r="1" fill="currentColor" />
+        <path d="M10 17h4" />
+    </svg>
+    <span class="ai-chat-bubble-text">@labelText</span>
 </div>
 
-<div class="ai-chat-window" id="aiChatWindow">
+<div class="ai-chat-window @(isPersian ? "rtl" : "")" id="aiChatWindow">
     <div class="ai-chat-header">
         <span>@title</span>
         <span class="ai-chat-close" id="aiChatClose">&times;</span>
@@ -200,33 +307,37 @@
     
     <div class="ai-chat-messages" id="aiChatMessages">
         <div class="ai-message assistant">
-            سلام! من پشتیبان هوشمند شما هستم. چطور می‌توانم به شما کمک کنم؟
+            @(isPersian ? "سلام! من پشتیبان هوشمند شما هستم. چطور می‌توانم به شما کمک کنم؟" : "Hello! I am your AI assistant. How can I help you today?")
         </div>
     </div>
     
     <div class="ai-chat-footer">
         <input type="text" class="ai-chat-input" id="aiChatInput" placeholder="@placeholder" />
-        <button type="button" class="ai-chat-send" id="aiChatSend">
-            <i class="fas fa-paper-plane"></i>
+        <button type="button" class="ai-chat-send" id="aiChatSend" title="@(isPersian ? "ارسال" : "Send")">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ai-chat-send-svg">
+                <line x1="22" y1="2" x2="11" y2="13" />
+                <polygon points="22 2 15 22 11 13 2 9 22 2" />
+            </svg>
         </button>
     </div>
 
     <!-- Handoff Contact Us Overlay -->
     <div class="ai-handoff-overlay" id="aiHandoffOverlay">
-        <h5 class="text-center mb-3">Support Request Handoff</h5>
+        <h5 class="text-center mb-3">@(isPersian ? "ارجاع درخواست به پشتیبانی" : "Support Request Handoff")</h5>
         <p class="small text-center text-muted mb-3">@handoffMessage</p>
         <div class="ai-handoff-form">
-            <input type="text" id="aiHandoffName" placeholder="Your Name" required />
-            <input type="email" id="aiHandoffEmail" placeholder="Your Email" required />
-            <textarea id="aiHandoffMessage" rows="3" placeholder="Description of your request..." required></textarea>
+            <input type="text" id="aiHandoffName" placeholder="@(isPersian ? "نام شما" : "Your Name")" required />
+            <input type="email" id="aiHandoffEmail" placeholder="@(isPersian ? "ایمیل شما" : "Your Email")" required />
+            <textarea id="aiHandoffMessage" rows="3" placeholder="@(isPersian ? "شرح درخواست شما..." : "Description of your request...")" required></textarea>
             <button type="button" class="ai-handoff-submit" id="aiHandoffSubmit">@handoffButton</button>
-            <button type="button" class="btn btn-sm btn-link text-white mt-1" id="aiHandoffCancel">Cancel</button>
+            <button type="button" class="btn btn-sm btn-link text-white mt-1" id="aiHandoffCancel">@(isPersian ? "انصراف" : "Cancel")</button>
         </div>
     </div>
 </div>
 
 <script>
     document.addEventListener("DOMContentLoaded", function() {
+        var isPersian = @(isPersian.ToString().ToLower());
         var bubble = document.getElementById("aiChatBubble");
         var win = document.getElementById("aiChatWindow");
         var close = document.getElementById("aiChatClose");
@@ -272,7 +383,7 @@
             // Add placeholder assistant loader
             var loader = document.createElement("div");
             loader.className = "ai-message assistant loader-placeholder";
-            loader.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Writing...';
+            loader.innerHTML = '<span class="ai-spinner"></span> ' + (isPersian ? 'در حال پاسخ...' : 'Writing...');
             messages.appendChild(loader);
             messages.scrollTop = messages.scrollHeight;
 

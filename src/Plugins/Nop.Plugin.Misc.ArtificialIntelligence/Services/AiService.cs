@@ -136,28 +136,114 @@ public class AiService : IAiService
         }
 
         var sourceText = $"{product.Name} {product.FullDescription}";
-        var sourceVector = await GetEmbeddingAsync(sourceText);
+        var sourceHash = GetMd5Hash(sourceText);
+
+        // Fetch existing cache entry for this product if it exists
+        var existingCache = (await _embeddingCacheRepository.GetAllAsync(query =>
+            query.Where(c => c.ProductId == productId)
+        )).FirstOrDefault();
+
+        float[] sourceVector = null;
+        bool cacheMatched = false;
+
+        if (existingCache != null)
+        {
+            try
+            {
+                var trimmedJson = existingCache.VectorJson.Trim();
+                if (trimmedJson.StartsWith("{"))
+                {
+                    var cachedData = JsonSerializer.Deserialize<ProductEmbeddingData>(existingCache.VectorJson);
+                    if (cachedData != null && cachedData.Vector != null && cachedData.Vector.Length > 0)
+                    {
+                        if (cachedData.Hash == sourceHash)
+                        {
+                            sourceVector = cachedData.Vector;
+                            cacheMatched = true;
+                        }
+                    }
+                }
+                else if (trimmedJson.StartsWith("["))
+                {
+                    // Old format: just the vector. We reuse it, but we don't have a hash to match.
+                    // For backward-compatibility and token saving, we assume it matches, but we will update it later to save the hash.
+                    sourceVector = JsonSerializer.Deserialize<float[]>(existingCache.VectorJson);
+                    cacheMatched = true;
+                }
+            }
+            catch (Exception ex)
+            {
+                await _logger.ErrorAsync($"Failed to deserialize embedding cache for product {productId}", ex);
+            }
+        }
 
         if (sourceVector == null || sourceVector.Length == 0)
         {
-            return new AiDuplicateCheckResult { IsDuplicate = false };
+            sourceVector = await GetEmbeddingAsync(sourceText);
+            if (sourceVector == null || sourceVector.Length == 0)
+            {
+                return new AiDuplicateCheckResult { IsDuplicate = false };
+            }
+            cacheMatched = false;
         }
 
-        // Cache the embedding for the new product
-        var cacheEntry = new ProductEmbeddingCache
+        // Cache the embedding if it's new or hash has changed/needs update
+        if (!cacheMatched)
         {
-            ProductId = product.Id,
-            VectorJson = JsonSerializer.Serialize(sourceVector),
-            LastUpdatedOnUtc = DateTime.UtcNow
-        };
-        await _embeddingCacheRepository.InsertAsync(cacheEntry);
+            var serializedCache = JsonSerializer.Serialize(new ProductEmbeddingData
+            {
+                Vector = sourceVector,
+                Hash = sourceHash
+            });
+
+            if (existingCache != null)
+            {
+                existingCache.VectorJson = serializedCache;
+                existingCache.LastUpdatedOnUtc = DateTime.UtcNow;
+                await _embeddingCacheRepository.UpdateAsync(existingCache);
+            }
+            else
+            {
+                var cacheEntry = new ProductEmbeddingCache
+                {
+                    ProductId = product.Id,
+                    VectorJson = serializedCache,
+                    LastUpdatedOnUtc = DateTime.UtcNow
+                };
+                await _embeddingCacheRepository.InsertAsync(cacheEntry);
+            }
+        }
 
         // Fetch existing cached embeddings for comparison (exclude current product)
         var allCaches = await _embeddingCacheRepository.GetAllAsync(query => query.Where(c => c.ProductId != productId));
         
-        foreach (var cache in allCaches)
+        // Group by ProductId and pick the latest one to handle duplicate database rows gracefully
+        var uniqueCaches = allCaches
+            .GroupBy(c => c.ProductId)
+            .Select(g => g.OrderByDescending(c => c.LastUpdatedOnUtc).First())
+            .ToList();
+
+        foreach (var cache in uniqueCaches)
         {
-            var targetVector = JsonSerializer.Deserialize<float[]>(cache.VectorJson);
+            float[] targetVector = null;
+            try
+            {
+                var trimmedJson = cache.VectorJson.Trim();
+                if (trimmedJson.StartsWith("{"))
+                {
+                    var cachedData = JsonSerializer.Deserialize<ProductEmbeddingData>(cache.VectorJson);
+                    targetVector = cachedData?.Vector;
+                }
+                else if (trimmedJson.StartsWith("["))
+                {
+                    targetVector = JsonSerializer.Deserialize<float[]>(cache.VectorJson);
+                }
+            }
+            catch (Exception ex)
+            {
+                await _logger.ErrorAsync($"Failed to deserialize embedding cache for target product {cache.ProductId}", ex);
+            }
+
             if (targetVector == null || targetVector.Length == 0)
                 continue;
 
@@ -177,6 +263,17 @@ public class AiService : IAiService
     }
 
     #region Helpers
+
+    private string GetMd5Hash(string input)
+    {
+        if (string.IsNullOrEmpty(input))
+            return string.Empty;
+
+        using var md5 = System.Security.Cryptography.MD5.Create();
+        var bytes = System.Text.Encoding.UTF8.GetBytes(input);
+        var hashBytes = md5.ComputeHash(bytes);
+        return string.Concat(hashBytes.Select(b => b.ToString("x2")));
+    }
 
     private float[] GetSandboxEmbedding(string text)
     {
@@ -223,4 +320,10 @@ public class AiService : IAiService
     }
 
     #endregion
+}
+
+public class ProductEmbeddingData
+{
+    public float[] Vector { get; set; }
+    public string Hash { get; set; }
 }

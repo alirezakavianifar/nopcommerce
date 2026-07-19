@@ -68,11 +68,7 @@ public class ProductRegistrationConsumer : IConsumer<EntityInsertedEvent<Product
 
         if (checkResult.IsDuplicate)
         {
-            // Block the product from storefront publication
-            product.Published = false;
-            await _productRepository.UpdateAsync(product);
-
-            // Add the entry to the admin queue
+            // Add the entry to the admin queue first to prevent nested events from checking duplicates again
             var queueItem = new AiDuplicateProductQueue
             {
                 ProductId = product.Id,
@@ -84,6 +80,13 @@ public class ProductRegistrationConsumer : IConsumer<EntityInsertedEvent<Product
             };
 
             await _duplicateQueueRepository.InsertAsync(queueItem);
+
+            // Block the product from storefront publication if it is currently published
+            if (product.Published)
+            {
+                product.Published = false;
+                await _productRepository.UpdateAsync(product);
+            }
         }
     }
 }
