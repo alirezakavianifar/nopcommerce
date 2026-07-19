@@ -1,8 +1,10 @@
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
+using System.Threading.Tasks;
 using Nop.Services.Logging;
 
 namespace Nop.Plugin.Misc.ArtificialIntelligence.Services;
@@ -237,6 +239,97 @@ public class AvalAiClient : IAvalAiClient
         {
             await _logger.ErrorAsync("AvalAI Exception in GetCreditAsync", ex);
             return null;
+        }
+    }
+
+    private static readonly List<AvalAiModelInfo> DefaultModels = new()
+    {
+        // Chat & Vision Models
+        new AvalAiModelInfo { Id = "gpt-5.5", OwnedBy = "openai", InputPrice = 5.0m, OutputPrice = 30.0m, SupportsVision = true, Mode = "chat" },
+        new AvalAiModelInfo { Id = "gpt-4o-mini", OwnedBy = "openai", InputPrice = 0.15m, OutputPrice = 0.60m, SupportsVision = true, Mode = "chat" },
+        new AvalAiModelInfo { Id = "gemini-2.5-flash", OwnedBy = "google", InputPrice = 0.30m, OutputPrice = 2.50m, SupportsVision = true, Mode = "chat" },
+        new AvalAiModelInfo { Id = "deepseek-chat", OwnedBy = "deepseek", InputPrice = 0.14m, OutputPrice = 0.28m, SupportsVision = false, Mode = "chat" },
+        new AvalAiModelInfo { Id = "claude-sonnet-4-6", OwnedBy = "anthropic", InputPrice = 3.0m, OutputPrice = 15.0m, SupportsVision = false, Mode = "chat" },
+        new AvalAiModelInfo { Id = "gemini-2.5-flash-lite", OwnedBy = "google", InputPrice = 0.10m, OutputPrice = 0.40m, SupportsVision = true, Mode = "chat" },
+        new AvalAiModelInfo { Id = "qwen3-vl-flash", OwnedBy = "alibaba", InputPrice = 0.05m, OutputPrice = 0.40m, SupportsVision = true, Mode = "chat" },
+        new AvalAiModelInfo { Id = "gpt-5-nano", OwnedBy = "openai", InputPrice = 0.05m, OutputPrice = 0.40m, SupportsVision = true, Mode = "chat" },
+
+        // Embedding Models
+        new AvalAiModelInfo { Id = "text-embedding-3-small", OwnedBy = "openai", InputPrice = 0.02m, OutputPrice = 0.02m, SupportsVision = false, Mode = "embedding" },
+        new AvalAiModelInfo { Id = "text-embedding-3-large", OwnedBy = "openai", InputPrice = 0.13m, OutputPrice = 0.13m, SupportsVision = false, Mode = "embedding" },
+        new AvalAiModelInfo { Id = "nvidia_nim.bge-m3", OwnedBy = "baai", InputPrice = 0.002m, OutputPrice = 0.002m, SupportsVision = false, Mode = "embedding" }
+    };
+
+    public async Task<List<AvalAiModelInfo>> GetModelsAsync(string apiKey, string baseUrl)
+    {
+        try
+        {
+            if (string.IsNullOrEmpty(apiKey))
+            {
+                return DefaultModels;
+            }
+
+            var client = CreateClient(apiKey, baseUrl);
+            var response = await client.GetAsync("models");
+            if (!response.IsSuccessStatusCode)
+            {
+                var errContent = await response.Content.ReadAsStringAsync();
+                await _logger.WarningAsync($"AvalAI GetModelsAsync error: {response.StatusCode} - {errContent}. Falling back to default list.");
+                return DefaultModels;
+            }
+
+            var jsonString = await response.Content.ReadAsStringAsync();
+            using var doc = JsonDocument.Parse(jsonString);
+            var result = new List<AvalAiModelInfo>();
+            if (doc.RootElement.TryGetProperty("data", out var dataProp) && dataProp.ValueKind == JsonValueKind.Array)
+            {
+                foreach (var item in dataProp.EnumerateArray())
+                {
+                    var id = item.TryGetProperty("id", out var idProp) ? idProp.GetString() : null;
+                    if (string.IsNullOrEmpty(id))
+                        continue;
+
+                    var ownedBy = (item.TryGetProperty("owned_by", out var ownedProp) ? ownedProp.GetString() : "unknown") ?? "unknown";
+                    var mode = (item.TryGetProperty("mode", out var modeProp) ? modeProp.GetString() : "") ?? "";
+                    var supportsVision = item.TryGetProperty("supports_vision", out var visionProp) && visionProp.GetBoolean();
+
+                    decimal inputPrice = 0;
+                    decimal outputPrice = 0;
+                    if (item.TryGetProperty("pricing", out var pricingProp))
+                    {
+                        if (pricingProp.TryGetProperty("input", out var inputProp))
+                        {
+                            inputProp.TryGetDecimal(out inputPrice);
+                        }
+                        if (pricingProp.TryGetProperty("output", out var outputProp))
+                        {
+                            outputProp.TryGetDecimal(out outputPrice);
+                        }
+                    }
+
+                    result.Add(new AvalAiModelInfo
+                    {
+                        Id = id,
+                        OwnedBy = ownedBy,
+                        InputPrice = inputPrice,
+                        OutputPrice = outputPrice,
+                        SupportsVision = supportsVision,
+                        Mode = mode
+                    });
+                }
+            }
+
+            if (result.Count == 0)
+            {
+                return DefaultModels;
+            }
+
+            return result;
+        }
+        catch (Exception ex)
+        {
+            await _logger.ErrorAsync("AvalAI Exception in GetModelsAsync. Falling back to default list.", ex);
+            return DefaultModels;
         }
     }
 }

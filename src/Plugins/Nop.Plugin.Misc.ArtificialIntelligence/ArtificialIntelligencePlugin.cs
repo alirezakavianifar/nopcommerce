@@ -102,7 +102,23 @@ public class ArtificialIntelligencePlugin : BasePlugin, IMiscPlugin, IAdminMenuP
             ["Plugins.Misc.ArtificialIntelligence.CreditThreshold"] = "Low Credit Warning Threshold (Tomans)",
             ["Plugins.Misc.ArtificialIntelligence.CreditWarning"] = "AvalAI credit is low. Remaining credit is {0} Tomans, which is below the threshold of {1} Tomans.",
             ["Plugins.Misc.ArtificialIntelligence.CreditFetchError"] = "Could not retrieve AvalAI credit information. Please verify your API Key and connection.",
-            ["Plugins.Misc.ArtificialIntelligence.CurrentCredit"] = "Current Remaining Credit"
+            ["Plugins.Misc.ArtificialIntelligence.CurrentCredit"] = "Current Remaining Credit",
+            ["Plugins.Misc.ArtificialIntelligence.SandboxDescription"] = "Enable Sandbox (No external API calls, tests will use simulated responses)",
+            ["Plugins.Misc.ArtificialIntelligence.ApiKeyPlaceholder"] = "Enter AvalAI API Key (Bearer Token)",
+            ["Plugins.Misc.ArtificialIntelligence.CreditThresholdDescription"] = "A system warning will be triggered when the remaining credit reaches or drops below this threshold.",
+            ["Plugins.Misc.ArtificialIntelligence.ModelSelectionHeader"] = "Model Selection & Parameters",
+            ["Plugins.Misc.ArtificialIntelligence.DuplicateSimilarityThresholdDescription"] = "Cosine similarity score above which products are flagged as duplicates. Default is 0.85.",
+            ["Plugins.Misc.ArtificialIntelligence.ChatbotModelTooltip"] = "Select the model used for chatbot operations. Input/output costs are shown below.",
+            ["Plugins.Misc.ArtificialIntelligence.VisionModelTooltip"] = "Select the model used for image and vision analysis tasks.",
+            ["Plugins.Misc.ArtificialIntelligence.EmbeddingModelTooltip"] = "Select the vector embedding model used for product similarity mapping.",
+            ["Plugins.Misc.ArtificialIntelligence.Provider"] = "Provider",
+            ["Plugins.Misc.ArtificialIntelligence.InputCost"] = "Input Cost",
+            ["Plugins.Misc.ArtificialIntelligence.OutputCost"] = "Output Cost",
+            ["Plugins.Misc.ArtificialIntelligence.SupportsVision"] = "Supports Vision",
+            ["Plugins.Misc.ArtificialIntelligence.Yes"] = "Yes",
+            ["Plugins.Misc.ArtificialIntelligence.No"] = "No",
+            ["Plugins.Misc.ArtificialIntelligence.UnitsPer1kTokens"] = "units per 1K tokens",
+            ["Plugins.Misc.ArtificialIntelligence.ModelDetailsNotAvailable"] = "Configured model. Prices and details not available."
         };
 
         var faResources = new Dictionary<string, string>
@@ -136,7 +152,23 @@ public class ArtificialIntelligencePlugin : BasePlugin, IMiscPlugin, IAdminMenuP
             ["Plugins.Misc.ArtificialIntelligence.CreditThreshold"] = "حد آستانه هشدار اعتبار کم (تومان)",
             ["Plugins.Misc.ArtificialIntelligence.CreditWarning"] = "اعتبار پلتفرم AvalAI رو به اتمام است. اعتبار باقی‌مانده {0} تومان است که کمتر از حد آستانه {1} تومان می‌باشد.",
             ["Plugins.Misc.ArtificialIntelligence.CreditFetchError"] = "امکان دریافت اطلاعات اعتبار پلتفرم AvalAI وجود ندارد. لطفا کلید API و اتصال خود را بررسی کنید.",
-            ["Plugins.Misc.ArtificialIntelligence.CurrentCredit"] = "اعتبار باقی‌مانده فعلی"
+            ["Plugins.Misc.ArtificialIntelligence.CurrentCredit"] = "اعتبار باقی‌مانده فعلی",
+            ["Plugins.Misc.ArtificialIntelligence.SandboxDescription"] = "فعال‌سازی حالت تست / شبیه‌ساز (بدون فراخوانی API خارجی، تست‌ها از پاسخ‌های شبیه‌سازی شده استفاده خواهند کرد)",
+            ["Plugins.Misc.ArtificialIntelligence.ApiKeyPlaceholder"] = "کلید API پلتفرم AvalAI (توکن Bearer) را وارد کنید",
+            ["Plugins.Misc.ArtificialIntelligence.CreditThresholdDescription"] = "هنگامی که اعتبار باقی‌مانده به این حد آستانه برسد یا کمتر از آن شود، یک هشدار سیستمی صادر خواهد شد.",
+            ["Plugins.Misc.ArtificialIntelligence.ModelSelectionHeader"] = "انتخاب مدل‌ها و پارامترها",
+            ["Plugins.Misc.ArtificialIntelligence.DuplicateSimilarityThresholdDescription"] = "حد آستانه شباهت کسینوسی که بالاتر از آن محصولات به عنوان تکراری علامت‌گذاری می‌شوند. پیش‌فرض 0.85 است.",
+            ["Plugins.Misc.ArtificialIntelligence.ChatbotModelTooltip"] = "مدل مورد استفاده برای عملیات چت‌بات را انتخاب کنید. هزینه‌های ورودی/خروجی در زیر نشان داده شده است.",
+            ["Plugins.Misc.ArtificialIntelligence.VisionModelTooltip"] = "مدل مورد استفاده برای وظایف تجزیه و تحلیل تصویر و بینایی ماشین را انتخاب کنید.",
+            ["Plugins.Misc.ArtificialIntelligence.EmbeddingModelTooltip"] = "مدل تعبیه‌ساز وکتور (Embedding) مورد استفاده برای نگاشت شباهت محصولات را انتخاب کنید.",
+            ["Plugins.Misc.ArtificialIntelligence.Provider"] = "ارائه‌دهنده",
+            ["Plugins.Misc.ArtificialIntelligence.InputCost"] = "هزینه ورودی",
+            ["Plugins.Misc.ArtificialIntelligence.OutputCost"] = "هزینه خروجی",
+            ["Plugins.Misc.ArtificialIntelligence.SupportsVision"] = "پشتیبانی از پردازش تصویر",
+            ["Plugins.Misc.ArtificialIntelligence.Yes"] = "بله",
+            ["Plugins.Misc.ArtificialIntelligence.No"] = "خیر",
+            ["Plugins.Misc.ArtificialIntelligence.UnitsPer1kTokens"] = "واحد به ازای هر ۱۰۰۰ توکن",
+            ["Plugins.Misc.ArtificialIntelligence.ModelDetailsNotAvailable"] = "مدل پیکربندی شده است. قیمت‌ها و جزئیات در دسترس نیستند."
         };
 
         await _localizationService.AddOrUpdateLocaleResourceAsync(enResources, enLang?.Id);

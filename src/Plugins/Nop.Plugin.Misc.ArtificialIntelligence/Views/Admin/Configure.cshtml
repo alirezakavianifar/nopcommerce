@@ -1,9 +1,11 @@
 @model Nop.Plugin.Misc.ArtificialIntelligence.Models.AiSettingsModel
 @using Nop.Web.Framework.Extensions
+@using System.Globalization
 
 @{
     Layout = "_AdminLayout";
     ViewBag.PageTitle = T("Plugins.Misc.ArtificialIntelligence.Configure").Text;
+    var isPersian = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName.StartsWith("fa", StringComparison.OrdinalIgnoreCase);
 }
 
 <form asp-controller="AiAdmin" asp-action="Configure" method="post">
@@ -33,7 +35,7 @@
                             <div class="col-md-9">
                                 <div class="custom-control custom-switch">
                                     <input asp-for="SandboxMode" type="checkbox" class="custom-control-input" id="SandboxModeSwitch">
-                                    <label class="custom-control-label" for="SandboxModeSwitch">Enable Sandbox (No external API calls, tests will use simulated responses)</label>
+                                    <label class="custom-control-label" for="SandboxModeSwitch">@(isPersian ? "فعال‌سازی حالت تست / شبیه‌ساز (بدون فراخوانی API خارجی، تست‌ها از پاسخ‌های شبیه‌سازی شده استفاده خواهند کرد)" : "Enable Sandbox (No external API calls, tests will use simulated responses)")</label>
                                 </div>
                                 <span asp-validation-for="SandboxMode" class="text-danger"></span>
                             </div>
@@ -44,7 +46,7 @@
                                 <label asp-for="ApiKey" class="col-form-label">@T("Plugins.Misc.ArtificialIntelligence.ApiKey")</label>
                             </div>
                             <div class="col-md-9">
-                                <input asp-for="ApiKey" class="form-control" placeholder="Enter AvalAI API Key (Bearer Token)" />
+                                <input asp-for="ApiKey" class="form-control" placeholder="@(isPersian ? "کلید API پلتفرم AvalAI (توکن Bearer) را وارد کنید" : "Enter AvalAI API Key (Bearer Token)")" />
                                 <span asp-validation-for="ApiKey" class="text-danger"></span>
                             </div>
                         </div>
@@ -64,9 +66,9 @@
                                 <label asp-for="CreditThreshold" class="col-form-label">@T("Plugins.Misc.ArtificialIntelligence.CreditThreshold")</label>
                             </div>
                             <div class="col-md-9">
-                                <input asp-for="CreditThreshold" type="number" class="form-control" placeholder="Enter threshold in Tomans" />
+                                <input asp-for="CreditThreshold" type="number" class="form-control" placeholder="@(isPersian ? "حد آستانه را به تومان وارد کنید" : "Enter threshold in Tomans")" />
                                 <span asp-validation-for="CreditThreshold" class="text-danger"></span>
-                                <small class="form-text text-muted">A system warning will be triggered when the remaining credit reaches or drops below this threshold.</small>
+                                <small class="form-text text-muted">@(isPersian ? "هنگامی که اعتبار باقی‌مانده به این حد آستانه برسد یا کمتر از آن شود، یک هشدار سیستمی صادر خواهد شد." : "A system warning will be triggered when the remaining credit reaches or drops below this threshold.")</small>
                             </div>
                         </div>
 
@@ -74,11 +76,11 @@
                         {
                             <div class="form-group row">
                                 <div class="col-md-3">
-                                    <label class="col-form-label">@T("Plugins.Misc.ArtificialIntelligence.CurrentCredit")</label>
+                                    <label class="col-form-label">@(isPersian ? "اعتبار باقی‌مانده فعلی" : "Current Remaining Credit")</label>
                                 </div>
                                 <div class="col-md-9">
                                     <div class="form-control-plaintext font-weight-bold @(Model.CurrentCredit <= Model.CreditThreshold ? "text-danger" : "text-success")">
-                                        @Model.CurrentCredit.Value.ToString("N0") Tomans
+                                        @Model.CurrentCredit.Value.ToString("N0") @(isPersian ? "تومان" : "Tomans")
                                     </div>
                                 </div>
                             </div>
@@ -88,36 +90,78 @@
 
                 <div class="card card-default">
                     <div class="card-header">
-                        <h3 class="card-title"><i class="fas fa-brain"></i> Model Selection & Parameters</h3>
+                        <h3 class="card-title"><i class="fas fa-brain"></i> @(isPersian ? "انتخاب مدل‌ها و پارامترها" : "Model Selection & Parameters")</h3>
                     </div>
                     <div class="card-body">
                         <div class="form-group row">
                             <div class="col-md-3">
                                 <label asp-for="ChatbotModel" class="col-form-label">@T("Plugins.Misc.ArtificialIntelligence.ChatbotModel")</label>
+                                <i class="fas fa-info-circle text-info ml-1" data-toggle="tooltip" data-placement="top" title="@(isPersian ? "مدل مورد استفاده برای عملیات چت‌بات را انتخاب کنید. هزینه‌های ورودی/خروجی در زیر نشان داده شده است." : "Select the model used for chatbot operations. Input/output costs are shown below.")"></i>
                             </div>
                             <div class="col-md-9">
-                                <input asp-for="ChatbotModel" class="form-control" />
+                                <select asp-for="ChatbotModel" class="form-control" id="ChatbotModelSelect">
+                                    @foreach (var modelItem in Model.AvailableChatbotModels)
+                                    {
+                                        <option value="@modelItem.Value" 
+                                                selected="@(modelItem.Value == Model.ChatbotModel)"
+                                                data-input="@modelItem.InputPrice"
+                                                data-output="@modelItem.OutputPrice"
+                                                data-provider="@modelItem.Provider"
+                                                data-vision="@modelItem.SupportsVision">
+                                            @modelItem.Text
+                                        </option>
+                                    }
+                                </select>
                                 <span asp-validation-for="ChatbotModel" class="text-danger"></span>
+                                <small id="chatbot-model-info" class="form-text text-muted mt-1"></small>
                             </div>
                         </div>
 
                         <div class="form-group row">
                             <div class="col-md-3">
                                 <label asp-for="VisionModel" class="col-form-label">@T("Plugins.Misc.ArtificialIntelligence.VisionModel")</label>
+                                <i class="fas fa-info-circle text-info ml-1" data-toggle="tooltip" data-placement="top" title="@(isPersian ? "مدل مورد استفاده برای وظایف تجزیه و تحلیل تصویر و بینایی ماشین را انتخاب کنید." : "Select the model used for image and vision analysis tasks.")"></i>
                             </div>
                             <div class="col-md-9">
-                                <input asp-for="VisionModel" class="form-control" />
+                                <select asp-for="VisionModel" class="form-control" id="VisionModelSelect">
+                                    @foreach (var modelItem in Model.AvailableVisionModels)
+                                    {
+                                        <option value="@modelItem.Value" 
+                                                selected="@(modelItem.Value == Model.VisionModel)"
+                                                data-input="@modelItem.InputPrice"
+                                                data-output="@modelItem.OutputPrice"
+                                                data-provider="@modelItem.Provider"
+                                                data-vision="@modelItem.SupportsVision">
+                                            @modelItem.Text
+                                        </option>
+                                    }
+                                </select>
                                 <span asp-validation-for="VisionModel" class="text-danger"></span>
+                                <small id="vision-model-info" class="form-text text-muted mt-1"></small>
                             </div>
                         </div>
 
                         <div class="form-group row">
                             <div class="col-md-3">
                                 <label asp-for="EmbeddingModel" class="col-form-label">@T("Plugins.Misc.ArtificialIntelligence.EmbeddingModel")</label>
+                                <i class="fas fa-info-circle text-info ml-1" data-toggle="tooltip" data-placement="top" title="@(isPersian ? "مدل تعبیه‌ساز وکتور (Embedding) مورد استفاده برای نگاشت شباهت محصولات را انتخاب کنید." : "Select the vector embedding model used for product similarity mapping.")"></i>
                             </div>
                             <div class="col-md-9">
-                                <input asp-for="EmbeddingModel" class="form-control" />
+                                <select asp-for="EmbeddingModel" class="form-control" id="EmbeddingModelSelect">
+                                    @foreach (var modelItem in Model.AvailableEmbeddingModels)
+                                    {
+                                        <option value="@modelItem.Value" 
+                                                selected="@(modelItem.Value == Model.EmbeddingModel)"
+                                                data-input="@modelItem.InputPrice"
+                                                data-output="@modelItem.OutputPrice"
+                                                data-provider="@modelItem.Provider"
+                                                data-vision="@modelItem.SupportsVision">
+                                            @modelItem.Text
+                                        </option>
+                                    }
+                                </select>
                                 <span asp-validation-for="EmbeddingModel" class="text-danger"></span>
+                                <small id="embedding-model-info" class="form-text text-muted mt-1"></small>
                             </div>
                         </div>
 
@@ -128,7 +172,7 @@
                             <div class="col-md-9">
                                 <input asp-for="DuplicateSimilarityThreshold" type="number" step="0.01" min="0" max="1" class="form-control" />
                                 <span asp-validation-for="DuplicateSimilarityThreshold" class="text-danger"></span>
-                                <small class="form-text text-muted">Cosine similarity score above which products are flagged as duplicates. Default is 0.85.</small>
+                                <small class="form-text text-muted">@(isPersian ? "حد آستانه شباهت کسینوسی که بالاتر از آن محصولات به عنوان تکراری علامت‌گذاری می‌شوند. پیش‌فرض 0.85 است." : "Cosine similarity score above which products are flagged as duplicates. Default is 0.85.")</small>
                             </div>
                         </div>
                     </div>
@@ -137,3 +181,57 @@
         </div>
     </section>
 </form>
+
+<script>
+    $(document).ready(function () {
+        // Initialize tooltips
+        $('[data-toggle="tooltip"]').tooltip();
+
+        var isPersian = @(isPersian ? "true" : "false");
+        var providerLabel = isPersian ? "ارائه‌دهنده" : "Provider";
+        var inputCostLabel = isPersian ? "هزینه ورودی" : "Input Cost";
+        var outputCostLabel = isPersian ? "هزینه خروجی" : "Output Cost";
+        var supportsVisionLabel = isPersian ? "پشتیبانی از پردازش تصویر" : "Supports Vision";
+        var yesLabel = isPersian ? "بله" : "Yes";
+        var noLabel = isPersian ? "خیر" : "No";
+        var costLabel = isPersian ? "هزینه" : "Cost";
+        var unitsLabel = isPersian ? "واحد به ازای هر ۱۰۰۰ توکن" : "units per 1K tokens";
+        var notAvailableLabel = isPersian ? "مدل پیکربندی شده است. قیمت‌ها و جزئیات در دسترس نیستند." : "Configured model. Prices and details not available.";
+
+        function updateModelInfo(selectId, infoId, isEmbedding) {
+            var selectedOption = $('#' + selectId + ' option:selected');
+            if (selectedOption.length) {
+                var inputPrice = parseFloat(selectedOption.data('input'));
+                var outputPrice = parseFloat(selectedOption.data('output'));
+                var provider = selectedOption.data('provider');
+                var vision = selectedOption.data('vision');
+
+                var infoText = "";
+                if (provider === "configured") {
+                    infoText = notAvailableLabel;
+                } else if (isEmbedding) {
+                    infoText = providerLabel + ": <strong class='text-primary'>" + provider + "</strong> | " + costLabel + ": <strong class='text-success'>" + inputPrice.toFixed(3) + "</strong> " + unitsLabel;
+                } else {
+                    infoText = providerLabel + ": <strong class='text-primary'>" + provider + "</strong> | " + inputCostLabel + ": <strong class='text-success'>" + inputPrice.toFixed(3) + "</strong> | " + outputCostLabel + ": <strong class='text-success'>" + outputPrice.toFixed(3) + "</strong> | " + supportsVisionLabel + ": <strong class='" + (String(vision).toLowerCase() === 'true' ? "text-success" : "text-danger") + "'>" + (String(vision).toLowerCase() === 'true' ? yesLabel : noLabel) + "</strong>";
+                }
+                $('#' + infoId).html(infoText);
+            }
+        }
+
+        // Bind events
+        $('#ChatbotModelSelect').change(function () {
+            updateModelInfo('ChatbotModelSelect', 'chatbot-model-info', false);
+        });
+        $('#VisionModelSelect').change(function () {
+            updateModelInfo('VisionModelSelect', 'vision-model-info', false);
+        });
+        $('#EmbeddingModelSelect').change(function () {
+            updateModelInfo('EmbeddingModelSelect', 'embedding-model-info', true);
+        });
+
+        // Initial update
+        updateModelInfo('ChatbotModelSelect', 'chatbot-model-info', false);
+        updateModelInfo('VisionModelSelect', 'vision-model-info', false);
+        updateModelInfo('EmbeddingModelSelect', 'embedding-model-info', true);
+    });
+</script>

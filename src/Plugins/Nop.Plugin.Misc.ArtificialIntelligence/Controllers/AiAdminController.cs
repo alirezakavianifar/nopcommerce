@@ -1,3 +1,6 @@
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Nop.Core.Domain.Catalog;
 using Nop.Data;
@@ -132,6 +135,91 @@ public class AiAdminController : BasePluginController
                 _notificationService.WarningNotification(text);
             }
         }
+
+        // Fetch and map available models
+        var rawModels = await _avalAiClient.GetModelsAsync(settings.ApiKey, settings.BaseUrl);
+        
+        var chatbotModels = rawModels
+            .Where(m => m.Mode != null && (m.Mode.Contains("chat") || m.Mode.Contains("completion") || m.SupportsVision) && !m.Mode.Contains("embedding"))
+            .OrderBy(m => m.InputPrice)
+            .Select(m => new AvalAiModelDto
+            {
+                Value = m.Id,
+                Text = $"{m.Id} ({m.OwnedBy})",
+                InputPrice = m.InputPrice.ToString("F3"),
+                OutputPrice = m.OutputPrice.ToString("F3"),
+                Provider = m.OwnedBy,
+                SupportsVision = m.SupportsVision.ToString()
+            }).ToList();
+
+        var visionModels = rawModels
+            .Where(m => m.SupportsVision)
+            .OrderBy(m => m.InputPrice)
+            .Select(m => new AvalAiModelDto
+            {
+                Value = m.Id,
+                Text = $"{m.Id} ({m.OwnedBy})",
+                InputPrice = m.InputPrice.ToString("F3"),
+                OutputPrice = m.OutputPrice.ToString("F3"),
+                Provider = m.OwnedBy,
+                SupportsVision = m.SupportsVision.ToString()
+            }).ToList();
+
+        var embeddingModels = rawModels
+            .Where(m => m.Mode != null && m.Mode.Contains("embedding"))
+            .OrderBy(m => m.InputPrice)
+            .Select(m => new AvalAiModelDto
+            {
+                Value = m.Id,
+                Text = $"{m.Id} ({m.OwnedBy})",
+                InputPrice = m.InputPrice.ToString("F3"),
+                OutputPrice = m.OutputPrice.ToString("F3"),
+                Provider = m.OwnedBy,
+                SupportsVision = m.SupportsVision.ToString()
+            }).ToList();
+
+        if (!chatbotModels.Any(m => m.Value == settings.ChatbotModel) && !string.IsNullOrEmpty(settings.ChatbotModel))
+        {
+            chatbotModels.Insert(0, new AvalAiModelDto
+            {
+                Value = settings.ChatbotModel,
+                Text = $"{settings.ChatbotModel} (Configured)",
+                InputPrice = "0.000",
+                OutputPrice = "0.000",
+                Provider = "configured",
+                SupportsVision = "True"
+            });
+        }
+
+        if (!visionModels.Any(m => m.Value == settings.VisionModel) && !string.IsNullOrEmpty(settings.VisionModel))
+        {
+            visionModels.Insert(0, new AvalAiModelDto
+            {
+                Value = settings.VisionModel,
+                Text = $"{settings.VisionModel} (Configured)",
+                InputPrice = "0.000",
+                OutputPrice = "0.000",
+                Provider = "configured",
+                SupportsVision = "True"
+            });
+        }
+
+        if (!embeddingModels.Any(m => m.Value == settings.EmbeddingModel) && !string.IsNullOrEmpty(settings.EmbeddingModel))
+        {
+            embeddingModels.Insert(0, new AvalAiModelDto
+            {
+                Value = settings.EmbeddingModel,
+                Text = $"{settings.EmbeddingModel} (Configured)",
+                InputPrice = "0.000",
+                OutputPrice = "0.000",
+                Provider = "configured",
+                SupportsVision = "False"
+            });
+        }
+
+        model.AvailableChatbotModels = chatbotModels;
+        model.AvailableVisionModels = visionModels;
+        model.AvailableEmbeddingModels = embeddingModels;
 
         return View("~/Plugins/Misc.ArtificialIntelligence/Views/Admin/Configure.cshtml", model);
     }
