@@ -51,6 +51,46 @@ function Write-Step([string]$Icon, [string]$Message, [string]$Color = "White") {
     Write-Host "  [$Icon] $Message" -ForegroundColor $Color
 }
 
+function Stop-ProcessOnPort([int]$Port) {
+    Write-Step "Port Check" "Checking if port $Port is in use..." "Yellow"
+    $pids = @()
+    try {
+        $connections = Get-NetTCPConnection -LocalPort $Port -ErrorAction SilentlyContinue
+        if ($connections) {
+            $pids = $connections.OwningProcess | Select-Object -Unique
+        }
+    } catch {
+        # Fallback to netstat if Get-NetTCPConnection is not available or fails
+        $netstat = netstat -ano
+        foreach ($line in $netstat) {
+            if ($line -match ":$Port\s+\S+\s+\S+\s+(\d+)\s*$") {
+                $pids += [int]$Matches[1]
+            }
+        }
+        $pids = $pids | Select-Object -Unique
+    }
+    
+    # Filter out PID 0 (System Idle Process) and the current PowerShell process PID
+    $pids = $pids | Where-Object { $_ -gt 0 -and $_ -ne $PID }
+
+    if ($pids) {
+        foreach ($procId in $pids) {
+            try {
+                $proc = Get-Process -Id $procId -ErrorAction Stop
+                Write-Step "Killing" "Forcibly stopping process '$($proc.Name)' (PID: $procId) occupying port $Port..." "Cyan"
+                Stop-Process -Id $procId -Force -ErrorAction Stop
+                Write-Step "OK" "Stopped process '$($proc.Name)' (PID: $procId)." "Green"
+            } catch {
+                Write-Step "WARN" "Failed to stop process with PID ${procId}: $_" "Yellow"
+            }
+        }
+        # Give the operating system a moment to release the port
+        Start-Sleep -Seconds 1
+    } else {
+        Write-Step "OK" "Port $Port is free." "Green"
+    }
+}
+
 function Write-Divider {
     Write-Host "  -----------------------------------------------------" -ForegroundColor DarkGray
 }
@@ -86,6 +126,7 @@ if (-not $appRunning) {
     }
 
     if ($shouldStart) {
+        Stop-ProcessOnPort $Port
         Write-Step "Launch" "Starting the app process..." "Cyan"
         $repoRoot = (Resolve-Path "$PSScriptRoot\..").Path
         $runScript = Join-Path $repoRoot "run.ps1"
@@ -207,6 +248,7 @@ if ($AuthToken -ne "") {
 # ---------------------------------------------
 #  Step 5 - Build ngrok command and start tunnel
 # ---------------------------------------------
+Stop-ProcessOnPort 4040
 Write-Step "Launch" "Starting ngrok tunnel -> http://localhost:$Port" "Cyan"
 Write-Host ""
 
