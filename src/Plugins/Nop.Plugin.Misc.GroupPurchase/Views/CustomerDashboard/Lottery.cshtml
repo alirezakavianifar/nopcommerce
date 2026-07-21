@@ -1,29 +1,42 @@
 @model Nop.Plugin.Misc.GroupPurchase.Models.CustomerLotteryModel
+@inject Nop.Services.Localization.ILocalizationService localizationService
 @{
     Layout = "_ColumnsTwo";
+
+    var title = await localizationService.GetResourceAsync("Plugins.Misc.GroupPurchase.Customer.LotteryTitle");
+    if (string.IsNullOrEmpty(title) || title.ToLower().StartsWith("plugins.")) { title = "امتیازات قرعه‌کشی من"; }
+
+    var summary = await localizationService.GetResourceAsync("Plugins.Misc.GroupPurchase.Customer.LotterySummary");
+    if (string.IsNullOrEmpty(summary) || summary.ToLower().StartsWith("plugins.")) { summary = "خلاصه امتیازات قرعه‌کشی"; }
+
+    var totalPointsLabel = await localizationService.GetResourceAsync("Plugins.Misc.GroupPurchase.Customer.TotalPoints");
+    if (string.IsNullOrEmpty(totalPointsLabel) || totalPointsLabel.ToLower().StartsWith("plugins.")) { totalPointsLabel = "مجموع امتیازات کسب‌شده:"; }
+
+    var instruction = await localizationService.GetResourceAsync("Plugins.Misc.GroupPurchase.Customer.LotteryInstruction");
+    if (string.IsNullOrEmpty(instruction) || instruction.ToLower().StartsWith("plugins.")) { instruction = "شما می‌توانید از این امتیازات برای شرکت در قرعه‌کشی‌های دوره‌ای و برنده شدن جوایز ویژه استفاده کنید. جهت آگاهی از زمان‌بندی قرعه‌کشی‌ها مجدداً سر بزنید."; }
 }
 
-@section accountNavigation
+@section left
 {
     @await Component.InvokeAsync("CustomerNavigation", new { selectedTabId = 0 })
 }
 
 <div class="page account-page">
     <div class="page-title">
-        <h1>My Lottery Points</h1>
+        <h1>@title</h1>
     </div>
     <div class="page-body">
         <div class="fieldset">
             <div class="title">
-                <strong>Lottery Points Summary</strong>
+                <strong>@summary</strong>
             </div>
             <div class="form-fields">
                 <div class="inputs">
-                    <label>Total Earned Points:</label>
+                    <label>@totalPointsLabel</label>
                     <span class="value">@Model.TotalPoints</span>
                 </div>
             </div>
-            <p>You can use these points to enter our regular lotteries and win big prizes! Check back for updates on lottery scheduling.</p>
+            <p>@instruction</p>
         </div>
     </div>
 </div>

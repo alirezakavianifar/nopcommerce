@@ -1,16 +1,38 @@
 @model Nop.Plugin.Misc.GroupPurchase.Models.CustomerLeaderGroupListModel
+@inject Nop.Services.Localization.ILocalizationService localizationService
 @{
     Layout = "_ColumnsTwo";
+
+    var title = await localizationService.GetResourceAsync("Plugins.Misc.GroupPurchase.Customer.LeaderGroupsTitle");
+    if (string.IsNullOrEmpty(title) || title.ToLower().StartsWith("plugins.")) { title = "گروه‌های لیدری من"; }
+
+    var codeHeader = await localizationService.GetResourceAsync("Plugins.Misc.GroupPurchase.Customer.GroupCode");
+    if (string.IsNullOrEmpty(codeHeader) || codeHeader.ToLower().StartsWith("plugins.")) { codeHeader = "کد گروه"; }
+
+    var statusHeader = await localizationService.GetResourceAsync("Plugins.Misc.GroupPurchase.Customer.Status");
+    if (string.IsNullOrEmpty(statusHeader) || statusHeader.ToLower().StartsWith("plugins.")) { statusHeader = "وضعیت"; }
+
+    var createdHeader = await localizationService.GetResourceAsync("Plugins.Misc.GroupPurchase.Customer.CreatedOn");
+    if (string.IsNullOrEmpty(createdHeader) || createdHeader.ToLower().StartsWith("plugins.")) { createdHeader = "تاریخ ایجاد"; }
+
+    var membersHeader = await localizationService.GetResourceAsync("Plugins.Misc.GroupPurchase.Customer.Members");
+    if (string.IsNullOrEmpty(membersHeader) || membersHeader.ToLower().StartsWith("plugins.")) { membersHeader = "تعداد اعضا"; }
+
+    var cityHeader = await localizationService.GetResourceAsync("Plugins.Misc.GroupPurchase.Customer.DeliveryCity");
+    if (string.IsNullOrEmpty(cityHeader) || cityHeader.ToLower().StartsWith("plugins.")) { cityHeader = "شهر تحویل"; }
+
+    var noDataMsg = await localizationService.GetResourceAsync("Plugins.Misc.GroupPurchase.Customer.NoLeaderGroups");
+    if (string.IsNullOrEmpty(noDataMsg) || noDataMsg.ToLower().StartsWith("plugins.")) { noDataMsg = "شما هنوز هیچ گروه خریدی ایجاد نکرده‌اید."; }
 }
 
-@section accountNavigation
+@section left
 {
     @await Component.InvokeAsync("CustomerNavigation", new { selectedTabId = 0 })
 }
 
 <div class="page account-page">
     <div class="page-title">
-        <h1>My Leader Groups</h1>
+        <h1>@title</h1>
     </div>
     <div class="page-body">
         @if (Model.Data.Any())
@@ -26,11 +48,11 @@
                     </colgroup>
                     <thead>
                         <tr>
-                            <th>Group Code</th>
-                            <th>Status</th>
-                            <th>Created On</th>
-                            <th>Members</th>
-                            <th>Delivery City</th>
+                            <th>@codeHeader</th>
+                            <th>@statusHeader</th>
+                            <th>@createdHeader</th>
+                            <th>@membersHeader</th>
+                            <th>@cityHeader</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -51,7 +73,7 @@
         else
         {
             <div class="no-data">
-                You have not created any group purchases yet.
+                @noDataMsg
             </div>
         }
     </div>

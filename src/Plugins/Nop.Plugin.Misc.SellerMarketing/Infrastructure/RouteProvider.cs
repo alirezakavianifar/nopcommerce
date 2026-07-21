@@ -1,14 +1,36 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Nop.Web.Framework.Mvc.Routing;
+using Nop.Web.Infrastructure;
 
 namespace Nop.Plugin.Misc.SellerMarketing.Infrastructure;
 
-public class RouteProvider : IRouteProvider
+public class RouteProvider : BaseRouteProvider, IRouteProvider
 {
     public void RegisterRoutes(IEndpointRouteBuilder endpointRouteBuilder)
     {
-        // Public Seller Dashboard Routes
+        // Public Seller Dashboard Routes with language pattern
+        endpointRouteBuilder.MapControllerRoute(
+            name: "Plugin.Misc.SellerMarketing.Public.Dashboard.Lang",
+            pattern: "{lang:maxlength(2)}/seller/dashboard",
+            defaults: new { controller = "SellerMarketingPublic", action = "Dashboard" });
+
+        endpointRouteBuilder.MapControllerRoute(
+            name: "Plugin.Misc.SellerMarketing.Public.AddProduct.Lang",
+            pattern: "{lang:maxlength(2)}/seller/product/add",
+            defaults: new { controller = "SellerMarketingPublic", action = "AddProduct" });
+
+        endpointRouteBuilder.MapControllerRoute(
+            name: "Plugin.Misc.SellerMarketing.Public.EditProduct.Lang",
+            pattern: "{lang:maxlength(2)}/seller/product/edit/{id:int}",
+            defaults: new { controller = "SellerMarketingPublic", action = "EditProduct" });
+
+        endpointRouteBuilder.MapControllerRoute(
+            name: "Plugin.Misc.SellerMarketing.Public.DeleteProduct.Lang",
+            pattern: "{lang:maxlength(2)}/seller/product/delete/{id:int}",
+            defaults: new { controller = "SellerMarketingPublic", action = "DeleteProduct" });
+
+        // Public Seller Dashboard Routes without language pattern
         endpointRouteBuilder.MapControllerRoute(
             name: "Plugin.Misc.SellerMarketing.Public.Dashboard",
             pattern: "seller/dashboard",
@@ -46,5 +68,5 @@ public class RouteProvider : IRouteProvider
             defaults: new { controller = "SellerMarketingAdmin", action = "Reject", area = "Admin" });
     }
 
-    public int Priority => 0;
+    public int Priority => 1000;
 }

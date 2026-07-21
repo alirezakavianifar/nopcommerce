@@ -1,0 +1,1578 @@
+﻿
+
+<!DOCTYPE html>
+<html lang="en" dir="ltr" class="html-login-page">
+<head>
+    <title>Your store. Login</title>
+
+    <meta http-equiv="Content-type" content="text/html;charset=UTF-8" />
+    <meta name="description" content="" />
+    <meta name="keywords" content="" />
+    <meta name="generator" content="nopCommerce" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    
+    
+
+
+
+    <link rel="stylesheet" type="text/css" href="/lib_npm/jquery-ui-dist/jquery-ui.min.css?v=zDqUxtbs2PA_rFN9-Wevv_XeyYs" />
+<link rel="stylesheet" type="text/css" href="/Themes/DefaultClean/Content/css/styles.css" />
+<link rel="stylesheet" type="text/css" href="/lib_npm/@fortawesome/fontawesome-free/css/all.min.css?v=pRLiZUBhNwcwtwovQ5qdqAsKXEo" />
+
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+                <script async src='https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX'></script>
+                <script>
+                  window.dataLayer = window.dataLayer || [];
+                  function gtag(){dataLayer.push(arguments);}
+                  gtag('js', new Date());
+
+                  gtag('config', 'G-XXXXXXXXXX');
+                  
+                </script>
+
+    
+    
+    
+    <link rel="apple-touch-icon" sizes="180x180" href="/icons/icons_0/apple-touch-icon.png"><link rel="icon" type="image/png" sizes="32x32" href="/icons/icons_0/favicon-32x32.png"><link rel="icon" type="image/png" sizes="192x192" href="/icons/icons_0/android-chrome-192x192.png"><link rel="icon" type="image/png" sizes="16x16" href="/icons/icons_0/favicon-16x16.png"><link rel="manifest" href="/icons/icons_0/site.webmanifest"><link rel="mask-icon" href="/icons/icons_0/safari-pinned-tab.svg" color="#5bbad5"><link rel="shortcut icon" href="/icons/icons_0/favicon.ico"><meta name="msapplication-TileColor" content="#2d89ef"><meta name="msapplication-TileImage" content="/icons/icons_0/mstile-144x144.png"><meta name="msapplication-config" content="/icons/icons_0/browserconfig.xml"><meta name="theme-color" content="#ffffff">
+    
+    
+    <!--Powered by nopCommerce - https://www.nopCommerce.com-->
+    
+    
+</head>
+<body>
+    <input name="__RequestVerificationToken" type="hidden" value="CfDJ8GXmt2RREWVMp-5wXeM7inYGyya0H2GB6y8P33ApozJ38nCwJYoxODkyK_JT-j65QUgoFVkHICS1NcFOllq5JJ_6rLvEZUKHTlfIMralOJCTFSHFfOcW98m0IABoKAkh-xZGa04HsUtXMeUVVtn7Mag" />
+    
+
+<div class="ajax-loading-block-window" style="display: none">
+</div>
+<div id="dialog-notifications-success" role="status" aria-live="polite" aria-atomic="true" title="Notification" style="display:none;">
+</div>
+<div id="dialog-notifications-error" role="alert" aria-live="assertive" aria-atomic="true" title="Error" style="display:none;">
+</div>
+<div id="dialog-notifications-warning" role="alert" aria-live="assertive" aria-atomic="true" title="Warning" style="display:none;">
+</div>
+<div id="bar-notification" class="bar-notification-container" role="status" aria-live="polite" aria-atomic="true" data-close="Close">
+</div>
+
+<div class="master-wrapper-page">
+<header class="header">
+    <a class="skip" href="#main">Skip navigation</a>
+    
+    <div class="header-upper">
+        <div class="header-selectors-wrapper">
+            
+            
+            
+
+    <div class="language-selector">
+            <ul class="language-list">
+                    <li>
+                        <a href="http://localhost:59580/en/changelanguage/1?returnUrl=%2Fen%2Flogin%3FreturnUrl%3D%2Fcustomer%2Flottery" title="English">
+                            <img title='English' alt='English'  class=selected
+                                 src="/images/flags/us.png "/>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="http://localhost:59580/en/changelanguage/2?returnUrl=%2Fen%2Flogin%3FreturnUrl%3D%2Fcustomer%2Flottery" title="&#x641;&#x627;&#x631;&#x633;&#x6CC;">
+                            <img title='&#x641;&#x627;&#x631;&#x633;&#x6CC;' alt='&#x641;&#x627;&#x631;&#x633;&#x6CC;' 
+                                 src="/images/flags/ir.png "/>
+                        </a>
+                    </li>
+            </ul>
+    </div>
+
+            
+        </div>
+        <div class="header-links-wrapper">
+            
+<div class="header-links">
+    <ul>
+        
+                <li><a href="/en/register?returnUrl=%2Fcustomer%2Flottery" class="ico-register">Register</a></li>
+            <li><a href="/en/login?returnUrl=%2Fcustomer%2Flottery" class="ico-login">Log in</a></li>
+            <li>
+                <a href="/en/wishlist" class="ico-wishlist">
+                    <span class="wishlist-label">Wishlist</span>
+                    <span class="wishlist-qty">(0)</span>
+                </a>
+            </li>
+            <li id="topcartlink">
+                <a href="/en/cart" class="ico-cart">
+                    <span class="cart-label">Shopping cart</span>
+                    <span class="cart-qty">(0)</span>
+                </a>
+            </li>
+        
+    </ul>
+        
+</div>
+
+            
+
+<div id="flyout-cart" class="flyout-cart">
+    <div class="mini-shopping-cart">
+        <div class="count">
+You have no items in your shopping cart.        </div>
+    </div>
+</div>
+
+        </div>
+    </div>
+    
+    <div class="header-lower">
+        <div class="header-logo">
+            <a href="/en">
+    <img alt="My Store" src="http://localhost:59580/Themes/DefaultClean/Content/images/logo.png">
+</a>
+        </div>
+        <div role="search" class="search-box store-search-box">
+            
+
+<form method="get" id="small-search-box-form" action="/en/search">
+        <input type="text" class="search-box-text" id="small-searchterms" autocomplete="off" name="q" placeholder="Search store" aria-label="Search store" />
+        <button type="submit" class="button-1 search-box-button">Search</button>
+        
+            
+
+
+
+
+<style>
+    .ai-search-wrapper {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+        vertical-align: middle;
+    }
+    .ai-search-container {
+        display: inline-flex;
+        align-items: center;
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        z-index: 10;
+        gap: 8px;
+    }
+    html[dir="rtl"] .ai-search-container {
+        right: auto;
+        left: 10px;
+    }
+    .ai-search-wrapper input.search-box-text {
+        padding-right: 65px !important;
+    }
+    html[dir="rtl"] .ai-search-wrapper input.search-box-text {
+        padding-right: 15px !important;
+        padding-left: 65px !important;
+    }
+    .btn-ai-action {
+        background: none;
+        border: none;
+        color: #a0a0a0;
+        cursor: pointer;
+        font-size: 16px;
+        transition: color 0.2s, transform 0.2s;
+        padding: 4px;
+        outline: none !important;
+    }
+    .btn-ai-action:hover {
+        color: #4ab2f1;
+        transform: scale(1.15);
+    }
+    
+    /* Voice visual overlay */
+    .ai-voice-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(9, 26, 40, 0.85);
+        z-index: 99999;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        color: #ffffff;
+    }
+    .ai-voice-pulse {
+        width: 80px;
+        height: 80px;
+        background: #7c5dfa;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 32px;
+        box-shadow: 0 0 0 0 rgba(124, 93, 250, 0.7);
+        animation: ai-pulse 1.5s infinite;
+        margin-bottom: 20px;
+        cursor: pointer;
+    }
+    @keyframes ai-pulse {
+        0% {
+            transform: scale(0.95);
+            box-shadow: 0 0 0 0 rgba(124, 93, 250, 0.7);
+        }
+        70% {
+            transform: scale(1);
+            box-shadow: 0 0 0 20px rgba(124, 93, 250, 0);
+        }
+        100% {
+            transform: scale(0.95);
+            box-shadow: 0 0 0 0 rgba(124, 93, 250, 0);
+        }
+    }
+
+    /* Visual search result popup dropdown */
+    .ai-visual-dropdown {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: #ffffff;
+        border: 1px solid rgba(124, 93, 250, 0.2);
+        box-shadow: 0 10px 25px rgba(9, 26, 40, 0.15);
+        border-radius: 8px;
+        z-index: 9999;
+        padding: 12px;
+        margin-top: 5px;
+    }
+    .ai-visual-dropdown.dark-mode {
+        background: #091a28;
+        border-color: rgba(255, 87, 185, 0.2);
+        color: #e0e0e0;
+    }
+    .ai-visual-header {
+        font-size: 14px;
+        font-weight: bold;
+        margin-bottom: 8px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .ai-visual-close {
+        cursor: pointer;
+        color: #ff57b9;
+    }
+    .ai-visual-items {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        gap: 12px;
+        max-height: 300px;
+        overflow-y: auto;
+    }
+    .ai-visual-item {
+        border: 1px solid #f0f0f0;
+        border-radius: 6px;
+        padding: 8px;
+        text-align: center;
+        transition: transform 0.2s;
+        text-decoration: none !important;
+        color: inherit !important;
+    }
+    .ai-visual-item:hover {
+        transform: translateY(-3px);
+        border-color: #7c5dfa;
+    }
+    .ai-visual-item img {
+        max-width: 100%;
+        height: 80px;
+        object-fit: contain;
+        margin-bottom: 6px;
+    }
+    .ai-visual-name {
+        font-size: 11px;
+        font-weight: 500;
+        height: 32px;
+        overflow: hidden;
+        margin-bottom: 4px;
+    }
+    .ai-visual-price {
+        font-size: 12px;
+        color: #7c5dfa;
+        font-weight: bold;
+    }
+</style>
+
+<div class="ai-voice-overlay" id="aiVoiceOverlay">
+    <div class="ai-voice-pulse" id="aiVoiceStopBtn">
+        <i class="fas fa-microphone"></i>
+    </div>
+    <div class="h4" id="aiVoiceStatus">Listening...</div>
+    <small class="text-muted mt-2">Click icon to finish speaking</small>
+</div>
+
+<input type="file" id="aiVisualFileInput" accept="image/*" style="display: none;" />
+
+
+</form>
+        </div>
+    </div>
+    
+</header>
+    <div class="header-menu">
+        
+
+
+
+
+
+<nav class="menu-container menu-dropdown">
+    <div id="menu-1" class="menu__toggle" role="button">Categories</div>
+    <div role="menu" class="menu" aria-labelledby="menu-1">
+
+<div class="menu__item menu-dropdown" role="menuitem">
+        <div class="menu__item-toggle" aria-haspopup="menu" tabindex="-1">
+            
+
+<a href=/en/computers aria-expanded=false aria-haspopup=menu role="button" class="menu__link" tabindex="0">Computers</a>
+
+        </div>
+        <div class="menu__list-view" role="menu" aria-label="Computers">
+
+<div class="menu__item " role="menuitem">
+
+
+<a href=/en/desktops  role="button" class="menu__link" tabindex="0">Desktops</a>
+</div>
+
+<div class="menu__item " role="menuitem">
+
+
+<a href=/en/notebooks  role="button" class="menu__link" tabindex="0">Notebooks</a>
+</div>
+
+<div class="menu__item " role="menuitem">
+
+
+<a href=/en/software  role="button" class="menu__link" tabindex="0">Software</a>
+</div>
+        </div>
+</div>
+
+<div class="menu__item menu-dropdown" role="menuitem">
+        <div class="menu__item-toggle" aria-haspopup="menu" tabindex="-1">
+            
+
+<a href=/en/electronics aria-expanded=false aria-haspopup=menu role="button" class="menu__link" tabindex="0">Electronics</a>
+
+        </div>
+        <div class="menu__list-view" role="menu" aria-label="Electronics">
+
+<div class="menu__item " role="menuitem">
+
+
+<a href=/en/camera-photo  role="button" class="menu__link" tabindex="0">Camera &amp; photo</a>
+</div>
+
+<div class="menu__item " role="menuitem">
+
+
+<a href=/en/cell-phones  role="button" class="menu__link" tabindex="0">Cell phones</a>
+</div>
+
+<div class="menu__item " role="menuitem">
+
+
+<a href=/en/others  role="button" class="menu__link" tabindex="0">Others</a>
+</div>
+        </div>
+</div>
+
+<div class="menu__item menu-dropdown" role="menuitem">
+        <div class="menu__item-toggle" aria-haspopup="menu" tabindex="-1">
+            
+
+<a href=/en/apparel aria-expanded=false aria-haspopup=menu role="button" class="menu__link" tabindex="0">Apparel</a>
+
+        </div>
+        <div class="menu__list-view" role="menu" aria-label="Apparel">
+
+<div class="menu__item " role="menuitem">
+
+
+<a href=/en/shoes  role="button" class="menu__link" tabindex="0">Shoes</a>
+</div>
+
+<div class="menu__item " role="menuitem">
+
+
+<a href=/en/clothing  role="button" class="menu__link" tabindex="0">Clothing</a>
+</div>
+
+<div class="menu__item " role="menuitem">
+
+
+<a href=/en/accessories  role="button" class="menu__link" tabindex="0">Accessories</a>
+</div>
+        </div>
+</div>
+                <div class="menu__item" role="menuitem">
+                    
+
+<a href=/en/digital-downloads  role="button" class="menu__link" tabindex="0">Digital downloads</a>
+
+                </div>
+                <div class="menu__item" role="menuitem">
+                    
+
+<a href=/en/books  role="button" class="menu__link" tabindex="0">Books</a>
+
+                </div>
+                <div class="menu__item" role="menuitem">
+                    
+
+<a href=/en/jewelry  role="button" class="menu__link" tabindex="0">Jewelry</a>
+
+                </div>
+                <div class="menu__item" role="menuitem">
+                    
+
+<a href=/en/gift-cards  role="button" class="menu__link" tabindex="0">Gift Cards</a>
+
+                </div>
+    </div>
+</nav>
+
+    </div>
+    <main class="master-wrapper-content" id="main">
+        
+
+        <div class="master-column-wrapper">
+            
+
+
+<section class="center-1">
+    
+    
+<div class="page login-page">
+    <div class="page-title">
+        <h1>Welcome, Please Sign In!</h1>
+    </div>
+    
+
+
+    <div class="page-body">
+        
+        <div class="customer-blocks">
+                <div class="new-wrapper register-block">
+                    <h2 class="title">
+                        New Customer
+                    </h2>
+                    <div class="text">
+                        By creating an account on our website, you will be able to shop faster, be up to date on an order's status, and keep track of the orders you have previously made.
+                    </div>
+                    <div class="buttons">
+                        <button type="button" class="button-1 register-button" onclick="location.href='http://localhost:59580/en/register?returnUrl=%2Fcustomer%2Flottery'">Register</button>
+                    </div>
+                </div>
+            <div class="returning-wrapper fieldset">
+                <form method="post" autocomplete="off" action="/en/login?returnurl=%2Fcustomer%2Flottery">
+                    
+                    <h2 class="title">
+                        Returning Customer
+                    </h2>
+                    <div class="form-fields">
+                            <div class="inputs">
+                                <label for="Email">Email:</label>
+                                <input class="email" autofocus="autofocus" type="email" data-val="true" data-val-regex="Wrong email" data-val-regex-pattern="^(([^&lt;&gt;()\[\]\\.,;:\s@&quot;]&#x2B;(\.[^&lt;&gt;()\[\]\\.,;:\s@&quot;]&#x2B;)*)|(&quot;.&#x2B;&quot;))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]&#x2B;\.)&#x2B;[a-zA-Z]{2,}))$" data-val-required="Please enter your email" id="Email" name="Email" value="" />
+                                <span class="field-validation-valid" data-valmsg-for="Email" data-valmsg-replace="true"></span>
+                            </div>
+                        <div class="inputs">
+                            <label for="Password">Password:</label>
+                            <div class="login-password">
+                                <input class="password" type="password" id="Password" name="Password" />
+                                <span class="password-eye"></span>
+                            </div>
+                            <span class="field-validation-valid" data-valmsg-for="Password" data-valmsg-replace="true"></span>
+                        </div>
+                        <div class="inputs reversed">
+                            <input type="checkbox" data-val="true" data-val-required="The Remember me? field is required." id="RememberMe" name="RememberMe" value="true" />
+                            <label for="RememberMe">Remember me?</label>
+                            <span class="forgot-password">
+                                <a href="/en/passwordrecovery">Forgot password?</a>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="buttons">
+                        <button type="submit" class="button-1 login-button">Log in</button>
+                    </div>
+                <input name="__RequestVerificationToken" type="hidden" value="CfDJ8GXmt2RREWVMp-5wXeM7inYGyya0H2GB6y8P33ApozJ38nCwJYoxODkyK_JT-j65QUgoFVkHICS1NcFOllq5JJ_6rLvEZUKHTlfIMralOJCTFSHFfOcW98m0IABoKAkh-xZGa04HsUtXMeUVVtn7Mag" /><input name="RememberMe" type="hidden" value="false" /></form>
+            </div>
+        </div>
+        <div class="external-authentication">
+            
+        </div>
+            <div class="topic-block">
+            <div class="topic-block-title">
+                <h2>About login / registration</h2>
+            </div>
+        <div class="topic-block-body">
+            <p>Put your login / registration information here. You can edit this in the admin site.</p>
+        </div>
+    </div>
+
+        
+    </div>
+</div>
+
+
+    
+</section>
+
+        </div>
+        
+    </main>
+    
+
+
+<footer class="footer">
+    <section class="footer-upper">
+        
+<nav class="footer-navigation">
+        <div class="footer-menu" role="none">
+            <h2 id="footer-menu-3" class="footer-menu__title footer-menu__toggle" aria-haspopup="menu" aria-expanded="false">
+                Information
+            </h2>
+
+            <div class="footer-menu__list" role="menu" aria-labelledby="footer-menu-3">
+
+<div class="footer-menu__item" role="menuitem">
+        <a href="/en/sitemap" class="footer-menu__link">Sitemap</a>
+</div>
+
+<div class="footer-menu__item" role="menuitem">
+        <a href="/en/shipping-returns" class="footer-menu__link">Shipping &amp; returns</a>
+</div>
+
+<div class="footer-menu__item" role="menuitem">
+        <a href="/en/privacy-notice" class="footer-menu__link">Privacy notice</a>
+</div>
+
+<div class="footer-menu__item" role="menuitem">
+        <a href="/en/conditions-of-use" class="footer-menu__link">Conditions of Use</a>
+</div>
+
+<div class="footer-menu__item" role="menuitem">
+        <a href="/en/about-us" class="footer-menu__link">About us</a>
+</div>
+
+<div class="footer-menu__item" role="menuitem">
+        <a href="/en/contactus" class="footer-menu__link">Contact us</a>
+</div>
+            </div>
+        </div>
+        <div class="footer-menu" role="none">
+            <h2 id="footer-menu-4" class="footer-menu__title footer-menu__toggle" aria-haspopup="menu" aria-expanded="false">
+                Customer service
+            </h2>
+
+            <div class="footer-menu__list" role="menu" aria-labelledby="footer-menu-4">
+
+<div class="footer-menu__item" role="menuitem">
+        <a href="/en/search" class="footer-menu__link">Search</a>
+</div>
+
+<div class="footer-menu__item" role="menuitem">
+        <a href="/en/news" class="footer-menu__link">News</a>
+</div>
+
+<div class="footer-menu__item" role="menuitem">
+        <a href="/en/blog" class="footer-menu__link">Blog</a>
+</div>
+
+<div class="footer-menu__item" role="menuitem">
+        <a href="/en/recentlyviewedproducts" class="footer-menu__link">Recently viewed products</a>
+</div>
+
+<div class="footer-menu__item" role="menuitem">
+        <a href="/en/compareproducts" class="footer-menu__link">Compare products list</a>
+</div>
+
+<div class="footer-menu__item" role="menuitem">
+        <a href="/en/newproducts" class="footer-menu__link">New products</a>
+</div>
+            </div>
+        </div>
+        <div class="footer-menu" role="none">
+            <h2 id="footer-menu-5" class="footer-menu__title footer-menu__toggle" aria-haspopup="menu" aria-expanded="false">
+                My account
+            </h2>
+
+            <div class="footer-menu__list" role="menu" aria-labelledby="footer-menu-5">
+
+<div class="footer-menu__item" role="menuitem">
+        <a href="/en/customer/info" class="footer-menu__link">My account</a>
+</div>
+
+<div class="footer-menu__item" role="menuitem">
+        <a href="/en/order/history" class="footer-menu__link">Orders</a>
+</div>
+
+<div class="footer-menu__item" role="menuitem">
+        <a href="/en/customer/addresses" class="footer-menu__link">Addresses</a>
+</div>
+
+<div class="footer-menu__item" role="menuitem">
+        <a href="/en/cart" class="footer-menu__link">Shopping cart</a>
+</div>
+
+<div class="footer-menu__item" role="menuitem">
+        <a href="/en/wishlist" class="footer-menu__link">Wishlist</a>
+</div>
+
+<div class="footer-menu__item" role="menuitem">
+        <a href="/en/vendor/apply" class="footer-menu__link">Apply for vendor account</a>
+</div>
+            </div>
+        </div>
+</nav>
+
+
+
+
+        <div class="footer-block follow-us">
+            <div class="social">
+                <h2 class="title">
+                    Follow us
+                </h2>
+                <ul class="networks">
+		<li class="facebook"><a href="https://www.facebook.com/nopCommerce" target="_blank" rel="noopener noreferrer">Facebook</a></li>
+		<li class="twitter"><a href="https://twitter.com/nopCommerce" target="_blank" rel="noopener noreferrer">Twitter</a></li>
+        <li class="rss"><a href="/news/rss/1">RSS</a></li>
+		<li class="youtube"><a href="https://www.youtube.com/user/nopCommerce" target="_blank" rel="noopener noreferrer">YouTube</a></li>
+		<li class="instagram"><a href="https://www.instagram.com/nopcommerce_official" target="_blank" rel="noopener noreferrer">Instagram</a></li>
+</ul>
+            </div>
+            <div class="newsletter" role="form">
+    <h2 class="title">
+        Newsletter
+    </h2>
+    <div class="newsletter-subscribe" id="newsletter-subscribe-block">
+        <div class="newsletter-email">
+            <input id="newsletter-email" class="newsletter-subscribe-text" placeholder="Enter your email here..." aria-label="Sign up for our newsletter" type="email" name="NewsLetterEmail" value="" />
+
+            <button type="button" id="newsletter-subscribe-button" class="button-1 newsletter-subscribe-button">Subscribe</button>
+
+        </div>
+        <div class="newsletter-validation">
+            <span id="subscribe-loading-progress" style="display: none;" class="please-wait">Wait...</span>
+            <span class="field-validation-valid" data-valmsg-for="NewsLetterEmail" data-valmsg-replace="true"></span>
+        </div>
+    </div>
+    <div class="newsletter-result" id="newsletter-result-block"></div>
+    
+</div>
+        </div>
+    </section>
+    <section class="footer-lower">
+        <div class="footer-info">
+            <span class="footer-disclaimer">Copyright &copy; 2026 My Store. All rights reserved.</span>
+        </div>
+            <div class="footer-powered-by">
+                Powered by <a href="https://www.nopcommerce.com/" target="_blank" rel=nofollow>nopCommerce</a>
+            </div>
+        
+    </section>
+    <li><a href="/amazing-discounts">Amazing Discounts</a></li>
+
+</footer>
+
+
+</div>
+
+
+
+<style>
+    .ai-chat-bubble {
+        position: fixed;
+        bottom: 25px;
+        right: 25px;
+        height: 50px;
+        background: linear-gradient(135deg, #7c5dfa 0%, #ff57b9 100%);
+        border-radius: 25px;
+        box-shadow: 0 5px 20px rgba(124, 93, 250, 0.4);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #ffffff;
+        cursor: pointer;
+        z-index: 99999;
+        transition: transform 0.2s, box-shadow 0.2s, background-color 0.2s;
+        padding: 0 20px;
+        font-family: inherit;
+        font-weight: 600;
+        font-size: 14px;
+        box-sizing: border-box;
+        text-decoration: none;
+        user-select: none;
+    }
+    .ai-chat-bubble:hover {
+        transform: translateY(-2px) scale(1.02);
+        box-shadow: 0 8px 25px rgba(124, 93, 250, 0.5);
+    }
+    .ai-chat-bubble-text {
+        margin-left: 8px;
+        white-space: nowrap;
+    }
+    .ai-chat-bubble-svg {
+        width: 24px;
+        height: 24px;
+        flex-shrink: 0;
+    }
+    
+    /* RTL layout alignments */
+    .ai-chat-bubble.rtl {
+        right: auto;
+        left: 25px;
+    }
+    .ai-chat-bubble.rtl .ai-chat-bubble-text {
+        margin-left: 0;
+        margin-right: 8px;
+    }
+    
+    .ai-chat-window {
+        display: none;
+        position: fixed;
+        bottom: 95px;
+        right: 25px;
+        width: 380px;
+        height: 500px;
+        background: #ffffff;
+        border-radius: 12px;
+        box-shadow: 0 10px 30px rgba(9, 26, 40, 0.2);
+        z-index: 99999;
+        flex-direction: column;
+        overflow: hidden;
+        border: 1px solid rgba(124, 93, 250, 0.15);
+        font-family: inherit;
+    }
+    .ai-chat-window.rtl {
+        right: auto;
+        left: 25px;
+        direction: rtl;
+    }
+    .ai-chat-window.dark-mode {
+        background: #091a28;
+        border-color: rgba(255, 87, 185, 0.2);
+        color: #e0e0e0;
+    }
+    .ai-chat-header {
+        background: linear-gradient(135deg, #7c5dfa 0%, #ff57b9 100%);
+        color: #ffffff;
+        padding: 15px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-weight: bold;
+    }
+    .ai-chat-close {
+        cursor: pointer;
+        font-size: 20px;
+        opacity: 0.8;
+        line-height: 1;
+    }
+    .ai-chat-close:hover {
+        opacity: 1;
+    }
+    
+    .ai-chat-messages {
+        flex: 1;
+        padding: 15px;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+    .ai-message {
+        max-width: 80%;
+        padding: 10px 14px;
+        border-radius: 15px;
+        font-size: 13px;
+        line-height: 1.4;
+    }
+    .ai-message.assistant {
+        background: #f1f3f9;
+        align-self: flex-start;
+        border-bottom-left-radius: 2px;
+        color: #333333;
+    }
+    .ai-chat-window.dark-mode .ai-message.assistant {
+        background: #15293c;
+        color: #e0e0e0;
+    }
+    .ai-message.user {
+        background: #7c5dfa;
+        color: #ffffff;
+        align-self: flex-end;
+        border-bottom-right-radius: 2px;
+    }
+    
+    /* RTL Speech bubble corners */
+    .ai-chat-window.rtl .ai-message.assistant {
+        border-bottom-left-radius: 15px;
+        border-bottom-right-radius: 2px;
+    }
+    .ai-chat-window.rtl .ai-message.user {
+        border-bottom-right-radius: 15px;
+        border-bottom-left-radius: 2px;
+    }
+    
+    .ai-chat-footer {
+        padding: 12px;
+        border-top: 1px solid #f0f0f0;
+        display: flex;
+        gap: 8px;
+        align-items: center;
+    }
+    .ai-chat-window.dark-mode .ai-chat-footer {
+        border-top-color: #122232;
+    }
+    .ai-chat-input {
+        flex: 1;
+        border: 1px solid #e0e0e0;
+        border-radius: 20px;
+        padding: 8px 16px;
+        outline: none;
+        font-size: 13px;
+    }
+    .ai-chat-window.dark-mode .ai-chat-input {
+        background: #122232;
+        border-color: #1a324a;
+        color: #e0e0e0;
+    }
+    .ai-chat-send {
+        background: #7c5dfa;
+        color: #ffffff;
+        border: none;
+        border-radius: 50%;
+        width: 36px;
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: background 0.2s;
+        flex-shrink: 0;
+    }
+    .ai-chat-send:hover {
+        background: #ff57b9;
+    }
+    .ai-chat-send-svg {
+        width: 16px;
+        height: 16px;
+    }
+    
+    /* RTL Flip send icon */
+    .ai-chat-window.rtl .ai-chat-send-svg {
+        transform: scaleX(-1);
+    }
+
+    /* CSS Loader spinner */
+    .ai-spinner {
+        display: inline-block;
+        width: 12px;
+        height: 12px;
+        border: 2px solid rgba(124, 93, 250, 0.2);
+        border-radius: 50%;
+        border-top-color: #7c5dfa;
+        animation: ai-spin 0.8s linear infinite;
+        vertical-align: middle;
+        margin-right: 5px;
+    }
+    .ai-chat-window.rtl .ai-spinner {
+        margin-right: 0;
+        margin-left: 5px;
+    }
+    @keyframes ai-spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .ai-chat-bubble {
+            width: 50px;
+            height: 50px;
+            padding: 0;
+            border-radius: 50%;
+        }
+        .ai-chat-bubble-text {
+            display: none;
+        }
+        .ai-chat-window {
+            width: calc(100% - 50px);
+            left: 25px;
+            right: 25px;
+            bottom: 90px;
+        }
+    }
+
+    /* Handoff form styling */
+    .ai-handoff-overlay {
+        display: none;
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(9, 26, 40, 0.9);
+        z-index: 10;
+        flex-direction: column;
+        padding: 20px;
+        justify-content: center;
+        color: #ffffff;
+    }
+    .ai-handoff-form {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+    .ai-handoff-form input,
+    .ai-handoff-form textarea {
+        background: #122232;
+        border: 1px solid #1a324a;
+        border-radius: 6px;
+        padding: 8px;
+        color: #ffffff;
+        font-size: 13px;
+        outline: none;
+    }
+    .ai-handoff-submit {
+        background: #ff57b9;
+        color: #ffffff;
+        border: none;
+        padding: 10px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: bold;
+    }
+    .ai-handoff-submit:hover {
+        background: #7c5dfa;
+    }
+</style>
+
+<div class="ai-chat-bubble " id="aiChatBubble">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ai-chat-bubble-svg">
+        <path d="M12 8V4m0 0a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3ZM5 8h14a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2Z" />
+        <circle cx="8.5" cy="14" r="1" fill="currentColor" />
+        <circle cx="15.5" cy="14" r="1" fill="currentColor" />
+        <path d="M10 17h4" />
+    </svg>
+    <span class="ai-chat-bubble-text">AI Chatbot</span>
+</div>
+
+<div class="ai-chat-window " id="aiChatWindow">
+    <div class="ai-chat-header">
+        <span>AI Support Assistant</span>
+        <span class="ai-chat-close" id="aiChatClose">&times;</span>
+    </div>
+    
+    <div class="ai-chat-messages" id="aiChatMessages">
+        <div class="ai-message assistant">
+            Hello! I am your AI assistant. How can I help you today?
+        </div>
+    </div>
+    
+    <div class="ai-chat-footer">
+        <input type="text" class="ai-chat-input" id="aiChatInput" placeholder="Ask a question..." />
+        <button type="button" class="ai-chat-send" id="aiChatSend" title="Send">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ai-chat-send-svg">
+                <line x1="22" y1="2" x2="11" y2="13" />
+                <polygon points="22 2 15 22 11 13 2 9 22 2" />
+            </svg>
+        </button>
+    </div>
+
+    <!-- Handoff Contact Us Overlay -->
+    <div class="ai-handoff-overlay" id="aiHandoffOverlay">
+        <h5 class="text-center mb-3">Support Request Handoff</h5>
+        <p class="small text-center text-muted mb-3">I will route your request to our support team. Please enter your name, email, and description below:</p>
+        <div class="ai-handoff-form">
+            <input type="text" id="aiHandoffName" placeholder="Your Name" required />
+            <input type="email" id="aiHandoffEmail" placeholder="Your Email" required />
+            <textarea id="aiHandoffMessage" rows="3" placeholder="Description of your request..." required></textarea>
+            <button type="button" class="ai-handoff-submit" id="aiHandoffSubmit">Submit Handoff Request</button>
+            <button type="button" class="btn btn-sm btn-link text-white mt-1" id="aiHandoffCancel">Cancel</button>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+    <script type="text/javascript" src="/js/svf1umed8_rvslv_e-ziza.scripts.js?v=Xl35QDl4I-9LH0gn3fDALSNpFQA"></script>
+    <script>
+    $(function () {
+        const password = $("#Password");
+
+        $(".password-eye").on("click", function () {
+            // toggle the type attribute
+            const type = password.attr("type") === "password" ? "text" : "password";
+            password.attr("type", type);
+
+            // toggle the icon
+            $(this).toggleClass("password-eye-open");
+        });
+    });
+</script>
+
+<script>
+            $(function() {
+                $('.header-upper').on({
+                    focus: function(){
+                        $('#flyout-cart').addClass('active');
+                    },
+                    focusout: function() {
+                        setTimeout(function() {
+                            if (!$('#topcartlink, #flyout-cart').find(':focus').length) {
+                                $('#flyout-cart').removeClass('active');
+                            }
+                        }, 0)
+                    },
+                    mouseenter: function() {
+                        $('#flyout-cart').addClass('active');
+                    },
+                    mouseleave: function() {
+                        $('#flyout-cart').removeClass('active');
+                    }
+                }, '#topcartlink, #flyout-cart');
+
+                var localized_data = {
+                    AjaxCartFailure: "Failed to add the product. Please refresh the page and try one more time."
+                };
+
+                AjaxCart.init(false, '.header-links .cart-qty', '.header-links .wishlist-qty', '#flyout-cart', localized_data);
+            });
+        </script>
+
+<script>
+            $("#small-search-box-form").on("submit", function (event) {
+
+                event.preventDefault();
+
+
+                    if ($("#small-searchterms").val() == "") {
+                        alert('Please enter some search keyword');
+                        $("#small-searchterms").focus();
+                        return;
+                    }
+                    
+                var form = document.getElementById('small-search-box-form');
+                var formData = new FormData(form);
+
+
+                window.location.href = `/en/search?${new URLSearchParams(formData).toString()}`;
+            });
+        </script>
+
+<script>
+                $(function() {
+                    var cache = new Map();
+                    var showLinkToResultSearch;
+                    var searchText;
+
+                    $('#small-searchterms').autocomplete({
+                        delay: 500,
+                        minLength: 3,
+                        source: function (request, response) {
+                            var term = request.term && request.term.trim().toLowerCase();
+                            var categoryElement = $('#SearchCategoryId');
+                            var categoryId = categoryElement.length == 0 ? 0 : categoryElement.val()
+
+                            var query = { term, categoryId };
+                            var cacheKey = JSON.stringify(query);
+
+                            if (cache.has(cacheKey)) {
+                                response(cache.get(cacheKey));
+                                return;
+                            }
+
+                            $.getJSON('/catalog/searchtermautocomplete', query, function (data, status, xhr) {
+                                cache.set(cacheKey, data);
+                                response(data);
+                            });
+                        },
+                        appendTo: '.search-box',
+                        select: function(event, ui) {
+                            $("#small-searchterms").val(ui.item.label);
+                            setLocation(ui.item.producturl);
+                            return false;
+                        },
+                        //append link to the end of list
+                        open: function(event, ui) {
+                            //display link to search page
+                            if (showLinkToResultSearch) {
+                                searchText = document.getElementById("small-searchterms").value;
+                                $(".ui-autocomplete").append("<li class=\"ui-menu-item\" role=\"presentation\"><a href=\"/search?q=" + searchText + "\">View all results...</a></li>");
+                            }
+                        }
+                    })
+                    .focus(function () {
+                        $(this).autocomplete('search', $(this).val());
+                    })
+                    .data("ui-autocomplete")._renderItem = function(ul, item) {
+                        var t = item.label;
+                        showLinkToResultSearch = item.showlinktoresultsearch;
+                        //html encode
+                        t = htmlEncode(t);
+                        imageWidth = '20';
+                        return $("<li></li>")
+                            .data("item.autocomplete", item)
+                                .append("<a><span>" + t + "</span></a>")
+                            .appendTo(ul);
+                    };
+                });
+            </script>
+
+<script>
+    function initAiSearch() {
+        var searchInput = document.getElementById("small-searchterms");
+        if (!searchInput) return;
+        if (document.getElementById("aiVoiceSearchBtn")) return; // prevent double injection
+
+        // Create AI wrapper and place searchInput inside it
+        var wrapper = document.createElement("div");
+        wrapper.className = "ai-search-wrapper";
+        searchInput.parentNode.insertBefore(wrapper, searchInput);
+        wrapper.appendChild(searchInput);
+
+        // Create AI buttons container
+        var aiContainer = document.createElement("div");
+        aiContainer.className = "ai-search-container";
+        aiContainer.innerHTML = `
+            <button type="button" class="btn-ai-action" id="aiVoiceSearchBtn" title="Voice Search"><i class="fas fa-microphone"></i></button>
+            <button type="button" class="btn-ai-action" id="aiVisualSearchBtn" title="Visual Search"><i class="fas fa-camera"></i></button>
+        `;
+        wrapper.appendChild(aiContainer);
+
+        // Create Visual Search Results Dropdown
+        var resultsDropdown = document.createElement("div");
+        resultsDropdown.className = "ai-visual-dropdown";
+        resultsDropdown.id = "aiVisualDropdown";
+        if (document.documentElement.getAttribute("data-theme") === "dark") {
+            resultsDropdown.classList.add("dark-mode");
+        }
+        resultsDropdown.innerHTML = `
+            <div class="ai-visual-header">
+                <span>AI Search Results</span>
+                <span class="ai-visual-close" id="aiVisualClose">&times;</span>
+            </div>
+            <div class="ai-visual-items" id="aiVisualItems"></div>
+        `;
+        wrapper.appendChild(resultsDropdown);
+
+        // Voice Search logic (Web Speech API + Server STT Upload)
+        var mediaRecorder;
+        var audioChunks = [];
+        var voiceBtn = document.getElementById("aiVoiceSearchBtn");
+        var voiceOverlay = document.getElementById("aiVoiceOverlay");
+        var voiceStopBtn = document.getElementById("aiVoiceStopBtn");
+        var voiceStatus = document.getElementById("aiVoiceStatus");
+
+        var SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+        voiceBtn.addEventListener("click", function() {
+            if (SpeechRecognition) {
+                // Try Web Speech API (Client-side native local voice search)
+                try {
+                    var recognition = new SpeechRecognition();
+                    recognition.lang = document.documentElement.lang || "fa-IR";
+                    recognition.interimResults = false;
+                    recognition.maxAlternatives = 1;
+
+                    voiceOverlay.style.display = "flex";
+                    voiceStatus.innerText = "Listening...";
+
+                    recognition.onresult = function(event) {
+                        voiceOverlay.style.display = "none";
+                        var speechResult = event.results[0][0].transcript;
+                        if (speechResult) {
+                            searchInput.value = speechResult;
+                            searchInput.closest("form").submit();
+                        }
+                    };
+
+                    recognition.onerror = function(event) {
+                        console.warn("Web Speech API error, falling back to MediaRecorder upload:", event.error);
+                        recognition.stop();
+                        startMediaRecorderUpload();
+                    };
+
+                    recognition.onend = function() {
+                        voiceOverlay.style.display = "none";
+                    };
+
+                    voiceStopBtn.onclick = function() {
+                        recognition.stop();
+                        voiceOverlay.style.display = "none";
+                    };
+
+                    recognition.start();
+                    return;
+                } catch (e) {
+                    console.warn("SpeechRecognition init failed, falling back to MediaRecorder upload.");
+                }
+            }
+
+            startMediaRecorderUpload();
+        });
+
+        async function startMediaRecorderUpload() {
+            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                alert("Microphone access is blocked or unsupported.");
+                return;
+            }
+
+            try {
+                var stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                audioChunks = [];
+                mediaRecorder = new MediaRecorder(stream);
+                
+                mediaRecorder.ondataavailable = function(e) {
+                    audioChunks.push(e.data);
+                };
+
+                mediaRecorder.onstop = async function() {
+                    voiceStatus.innerText = "Transcribing...";
+                    var audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+                    
+                    var formData = new FormData();
+                    formData.append("file", audioBlob, "voice-search.webm");
+
+                    try {
+                        var response = await fetch("/AiSearch/VoiceSearch", {
+                            method: "POST",
+                            body: formData
+                        });
+                        var result = await response.json();
+                        if (result.success) {
+                            if (result.query) {
+                                searchInput.value = result.query;
+                                searchInput.closest("form").submit();
+                            } else {
+                                alert("No speech was identified.");
+                            }
+                        } else {
+                            alert(result.message || "Transcription failed.");
+                        }
+                    } catch(e) {
+                        alert("Network error during voice search.");
+                    } finally {
+                        voiceOverlay.style.display = "none";
+                        stream.getTracks().forEach(track => track.stop());
+                    }
+                };
+
+                voiceStopBtn.onclick = function() {
+                    if (mediaRecorder && mediaRecorder.state === "recording") {
+                        mediaRecorder.stop();
+                    }
+                };
+
+                voiceOverlay.style.display = "flex";
+                voiceStatus.innerText = "Listening...";
+                mediaRecorder.start();
+            } catch(e) {
+                alert("Microphone access is blocked or unsupported.");
+            }
+        }
+
+        // Visual Search logic
+        var visualBtn = document.getElementById("aiVisualSearchBtn");
+        var fileInput = document.getElementById("aiVisualFileInput");
+        var dropdown = document.getElementById("aiVisualDropdown");
+        var dropdownClose = document.getElementById("aiVisualClose");
+        var dropdownItems = document.getElementById("aiVisualItems");
+
+        visualBtn.addEventListener("click", function() {
+            fileInput.click();
+        });
+
+        fileInput.addEventListener("change", async function() {
+            if (fileInput.files.length === 0) return;
+            
+            var file = fileInput.files[0];
+            var formData = new FormData();
+            formData.append("file", file);
+
+            dropdownItems.innerHTML = '<div class="text-center w-100 py-3"><i class="fas fa-spinner fa-spin fa-2x text-primary"></i><br/><small class="text-muted mt-2 d-block">Analyzing Image...</small></div>';
+            dropdown.style.display = "block";
+
+            try {
+                var response = await fetch("/AiSearch/VisualSearch", {
+                    method: "POST",
+                    body: formData
+                });
+                var result = await response.json();
+                if (result.success && result.products && result.products.length > 0) {
+                    dropdownItems.innerHTML = "";
+                    result.products.forEach(function(product) {
+                        var itemEl = document.createElement("a");
+                        itemEl.className = "ai-visual-item";
+                        itemEl.href = product.url;
+                        itemEl.innerHTML = `
+                            <img src="${product.pictureUrl}" alt="${product.name}"/>
+                            <div class="ai-visual-name">${product.name}</div>
+                            <div class="ai-visual-price">${product.price}</div>
+                        `;
+                        dropdownItems.appendChild(itemEl);
+                    });
+                } else {
+                    dropdownItems.innerHTML = '<div class="text-center w-100 py-3 text-muted">No similar products found.</div>';
+                }
+            } catch(e) {
+                dropdownItems.innerHTML = '<div class="text-center w-100 py-3 text-danger">Search error.</div>';
+            }
+        });
+
+        dropdownClose.addEventListener("click", function() {
+            dropdown.style.display = "none";
+        });
+    }
+
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", initAiSearch);
+    } else {
+        initAiSearch();
+    }
+</script>
+
+<script>
+    mainMenu.init('.menu-container .menu__toggle, .menu-container .menu__item-toggle', 'menu-dropdown--active');
+</script>
+
+<script>
+    mainMenu.init('.footer-navigation .footer-menu__toggle', 'footer-menu--active');
+</script>
+
+<script>        
+        async function getCaptchaToken(action, reCaptchaPublicKey, isReCaptchaV3) {
+            var recaptchaToken = '';
+            if (isReCaptchaV3) {
+                grecaptcha.ready(() => {
+                    grecaptcha.execute(reCaptchaPublicKey, { action: action }).then((token) => {
+                        recaptchaToken = token;
+                    });
+                });
+
+                while (recaptchaToken == '') {
+                    await new Promise(t => setTimeout(t, 100));
+                }
+            } else {
+                recaptchaToken = $('#newsletter-subscribe-block .captcha-box textarea[name="g-recaptcha-response"').val();
+            }
+            
+            return recaptchaToken;
+        }       
+
+        async function newsletter_subscribe(subscribe) {
+            var subscribeProgress = $("#subscribe-loading-progress");
+            subscribeProgress.show();
+            var captchaTok = '';
+            if (false == true) {
+                captchaTok = await getCaptchaToken('SubscribeNewsletter', '', false);
+            }
+            var postData = {
+                subscribe: subscribe,
+                email: $("#newsletter-email").val(),                
+                'g-recaptcha-response': captchaTok
+            };
+            addAntiForgeryToken(postData);
+            $.ajax({
+                cache: false,
+                type: "POST",
+                url: "/subscribenewsletter",
+                data: postData,
+                success: function (data, textStatus, jqXHR) {
+                    $("#newsletter-result-block").html(data.Result);
+                    if (data.Success) {
+                        $('#newsletter-subscribe-block').hide();
+                        $('#newsletter-result-block').show();
+                    } else {
+                        $('#newsletter-result-block').fadeIn("slow").delay(2000).fadeOut("slow");
+                    }
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    alert('Failed to subscribe.');
+                },
+                complete: function (jqXHR, textStatus) {
+                    subscribeProgress.hide();
+                }
+            });
+        }
+
+        $(function() {
+            $('#newsletter-subscribe-button').on('click', function () {
+newsletter_subscribe('true');            });
+            $("#newsletter-email").on("keydown", function (event) {
+                if (event.keyCode == 13) {
+                    $("#newsletter-subscribe-button").trigger("click");
+                    return false;
+                }
+            });
+        });
+    </script>
+
+<script>
+    $(function() {
+        $('.block .title').on('click', function () {
+            var e = window, a = 'inner';
+            if (!('innerWidth' in window)) {
+                a = 'client';
+                e = document.documentElement || document.body;
+            }
+            var result = { width: e[a + 'Width'], height: e[a + 'Height'] };
+            if (result.width < 1001) {
+                $(this).siblings('.listbox').slideToggle('slow');
+            }
+        });
+    });
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var isPersian = false;
+        var bubble = document.getElementById("aiChatBubble");
+        var win = document.getElementById("aiChatWindow");
+        var close = document.getElementById("aiChatClose");
+        var messages = document.getElementById("aiChatMessages");
+        var chatInput = document.getElementById("aiChatInput");
+        var sendBtn = document.getElementById("aiChatSend");
+
+        // Handoff form items
+        var handoffOverlay = document.getElementById("aiHandoffOverlay");
+        var handoffSubmit = document.getElementById("aiHandoffSubmit");
+        var handoffCancel = document.getElementById("aiHandoffCancel");
+
+        var chatHistory = []; // stores { role: "user"/"assistant", content: "..." }
+
+        // Match site theme
+        if (document.documentElement.getAttribute("data-theme") === "dark") {
+            win.classList.add("dark-mode");
+        }
+
+        bubble.addEventListener("click", function() {
+            var isVisible = win.style.display === "flex";
+            win.style.display = isVisible ? "none" : "flex";
+            if (!isVisible) {
+                chatInput.focus();
+                messages.scrollTop = messages.scrollHeight;
+            }
+        });
+
+        close.addEventListener("click", function() {
+            win.style.display = "none";
+        });
+
+        async function sendMessage() {
+            var text = chatInput.value.trim();
+            if (!text) return;
+
+            chatInput.value = "";
+
+            // Render User Message
+            renderMessage(text, "user");
+            chatHistory.push({ role: "user", content: text });
+
+            // Add placeholder assistant loader
+            var loader = document.createElement("div");
+            loader.className = "ai-message assistant loader-placeholder";
+            loader.innerHTML = '<span class="ai-spinner"></span> ' + (isPersian ? 'در حال پاسخ...' : 'Writing...');
+            messages.appendChild(loader);
+            messages.scrollTop = messages.scrollHeight;
+
+            try {
+                var response = await fetch("/AiChat/SendMessage", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(chatHistory)
+                });
+                var result = await response.json();
+                messages.removeChild(loader);
+
+                if (result.success) {
+                    renderMessage(result.reply, "assistant");
+                    chatHistory.push({ role: "assistant", content: result.reply });
+
+                    if (result.triggerHandoff) {
+                        setTimeout(function() {
+                            document.getElementById("aiHandoffMessage").value = text; // prefill description
+                            handoffOverlay.style.display = "flex";
+                        }, 500);
+                    }
+                } else {
+                    renderMessage("Error: Could not retrieve response.", "assistant");
+                }
+            } catch(e) {
+                messages.removeChild(loader);
+                renderMessage("Network error.", "assistant");
+            }
+        }
+
+        function renderMessage(text, role) {
+            var msgEl = document.createElement("div");
+            msgEl.className = "ai-message " + role;
+            msgEl.innerText = text;
+            messages.appendChild(msgEl);
+            messages.scrollTop = messages.scrollHeight;
+        }
+
+        sendBtn.addEventListener("click", sendMessage);
+        chatInput.addEventListener("keydown", function(e) {
+            if (e.key === "Enter") {
+                sendMessage();
+            }
+        });
+
+        // Handoff submissions
+        handoffSubmit.addEventListener("click", async function() {
+            var name = document.getElementById("aiHandoffName").value.trim();
+            var email = document.getElementById("aiHandoffEmail").value.trim();
+            var desc = document.getElementById("aiHandoffMessage").value.trim();
+
+            if (!name || !email || !desc) {
+                alert("Please fill in all fields.");
+                return;
+            }
+
+            handoffSubmit.disabled = true;
+            handoffSubmit.innerText = "Submitting...";
+
+            try {
+                var response = await fetch(`/AiChat/Handoff?name=${encodeURIComponent(name)}&email=${encodeURIComponent(email)}&message=${encodeURIComponent(desc)}`, {
+                    method: "POST"
+                });
+                var result = await response.json();
+                if (result.success) {
+                    alert("Your request has been submitted. Our support team will contact you via email.");
+                    handoffOverlay.style.display = "none";
+                    renderMessage("Your request has been submitted. Our support team will contact you via email.", "assistant");
+                } else {
+                    alert(result.message || "Failed to submit handoff request.");
+                }
+            } catch(e) {
+                alert("Network error.");
+            } finally {
+                handoffSubmit.disabled = false;
+                handoffSubmit.innerText = "Submit Handoff Request";
+            }
+        });
+
+        handoffCancel.addEventListener("click", function() {
+            handoffOverlay.style.display = "none";
+        });
+    });
+</script>
+
+
+    
+    
+</body>
+</html>
+

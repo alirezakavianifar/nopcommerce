@@ -1,29 +1,42 @@
 @model Nop.Plugin.Misc.GroupPurchase.Models.CustomerWalletModel
+@inject Nop.Services.Localization.ILocalizationService localizationService
 @{
     Layout = "_ColumnsTwo";
+
+    var title = await localizationService.GetResourceAsync("Plugins.Misc.GroupPurchase.Customer.WalletTitle");
+    if (string.IsNullOrEmpty(title) || title.ToLower().StartsWith("plugins.")) { title = "کیف پول من"; }
+
+    var balances = await localizationService.GetResourceAsync("Plugins.Misc.GroupPurchase.Customer.WalletBalances");
+    if (string.IsNullOrEmpty(balances) || balances.ToLower().StartsWith("plugins.")) { balances = "موجودی‌های کیف پول"; }
+
+    var regularLabel = await localizationService.GetResourceAsync("Plugins.Misc.GroupPurchase.Customer.RegularBalance");
+    if (string.IsNullOrEmpty(regularLabel) || regularLabel.ToLower().StartsWith("plugins.")) { regularLabel = "موجودی عادی:"; }
+
+    var groupRewardLabel = await localizationService.GetResourceAsync("Plugins.Misc.GroupPurchase.Customer.GroupRewardBalance");
+    if (string.IsNullOrEmpty(groupRewardLabel) || groupRewardLabel.ToLower().StartsWith("plugins.")) { groupRewardLabel = "موجودی پاداش خرید گروهی:"; }
 }
 
-@section accountNavigation
+@section left
 {
     @await Component.InvokeAsync("CustomerNavigation", new { selectedTabId = 0 })
 }
 
 <div class="page account-page">
     <div class="page-title">
-        <h1>My Wallet</h1>
+        <h1>@title</h1>
     </div>
     <div class="page-body">
         <div class="fieldset">
             <div class="title">
-                <strong>Wallet Balances</strong>
+                <strong>@balances</strong>
             </div>
             <div class="form-fields">
                 <div class="inputs">
-                    <label>Regular Balance:</label>
+                    <label>@regularLabel</label>
                     <span class="value">@Model.RegularBalance.ToString("C")</span>
                 </div>
                 <div class="inputs">
-                    <label>Group Purchase Reward Balance:</label>
+                    <label>@groupRewardLabel</label>
                     <span class="value">@Model.GroupRewardBalance.ToString("C")</span>
                 </div>
             </div>

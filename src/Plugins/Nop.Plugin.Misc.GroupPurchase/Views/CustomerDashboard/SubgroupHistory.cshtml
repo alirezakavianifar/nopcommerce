@@ -1,16 +1,35 @@
 @model Nop.Plugin.Misc.GroupPurchase.Models.CustomerSubgroupHistoryListModel
+@inject Nop.Services.Localization.ILocalizationService localizationService
 @{
     Layout = "_ColumnsTwo";
+
+    var title = await localizationService.GetResourceAsync("Plugins.Misc.GroupPurchase.Customer.SubgroupHistoryTitle");
+    if (string.IsNullOrEmpty(title) || title.ToLower().StartsWith("plugins.")) { title = "تاریخچه زیرمجموعه‌های من"; }
+
+    var codeHeader = await localizationService.GetResourceAsync("Plugins.Misc.GroupPurchase.Customer.GroupCode");
+    if (string.IsNullOrEmpty(codeHeader) || codeHeader.ToLower().StartsWith("plugins.")) { codeHeader = "کد گروه"; }
+
+    var statusHeader = await localizationService.GetResourceAsync("Plugins.Misc.GroupPurchase.Customer.Status");
+    if (string.IsNullOrEmpty(statusHeader) || statusHeader.ToLower().StartsWith("plugins.")) { statusHeader = "وضعیت"; }
+
+    var joinedHeader = await localizationService.GetResourceAsync("Plugins.Misc.GroupPurchase.Customer.JoinedOn");
+    if (string.IsNullOrEmpty(joinedHeader) || joinedHeader.ToLower().StartsWith("plugins.")) { joinedHeader = "تاریخ عضویت"; }
+
+    var leaderEmailHeader = await localizationService.GetResourceAsync("Plugins.Misc.GroupPurchase.Customer.LeaderEmail");
+    if (string.IsNullOrEmpty(leaderEmailHeader) || leaderEmailHeader.ToLower().StartsWith("plugins.")) { leaderEmailHeader = "ایمیل لیدر"; }
+
+    var noDataMsg = await localizationService.GetResourceAsync("Plugins.Misc.GroupPurchase.Customer.NoSubgroups");
+    if (string.IsNullOrEmpty(noDataMsg) || noDataMsg.ToLower().StartsWith("plugins.")) { noDataMsg = "شما هنوز در هیچ گروه خریدی عضو نشده‌اید."; }
 }
 
-@section accountNavigation
+@section left
 {
     @await Component.InvokeAsync("CustomerNavigation", new { selectedTabId = 0 })
 }
 
 <div class="page account-page">
     <div class="page-title">
-        <h1>My Subgroup History</h1>
+        <h1>@title</h1>
     </div>
     <div class="page-body">
         @if (Model.Data.Any())
@@ -25,10 +44,10 @@
                     </colgroup>
                     <thead>
                         <tr>
-                            <th>Group Code</th>
-                            <th>Status</th>
-                            <th>Joined On</th>
-                            <th>Leader Email</th>
+                            <th>@codeHeader</th>
+                            <th>@statusHeader</th>
+                            <th>@joinedHeader</th>
+                            <th>@leaderEmailHeader</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -48,7 +67,7 @@
         else
         {
             <div class="no-data">
-                You have not joined any group purchases yet.
+                @noDataMsg
             </div>
         }
     </div>

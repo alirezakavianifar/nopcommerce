@@ -39,6 +39,9 @@ public class AmazingDiscountController : BasePluginController
         _urlRecordService = urlRecordService;
     }
 
+    [HttpGet]
+    [Route("amazing-discounts")]
+    [Route("{lang:maxlength(2)}/amazing-discounts")]
     public virtual async Task<IActionResult> List()
     {
         var activeAmazingProducts = await _amazingDiscountService.GetActiveAmazingDiscountProductsAsync();

@@ -5,11 +5,10 @@ using Nop.Core.Infrastructure;
 using Nop.Data;
 using Nop.Data.Migrations;
 using Nop.Services.Localization;
-using Nop.Web.Framework.Extensions;
 
 namespace Nop.Plugin.MultiFactorAuth.SMS.Migrations;
 
-[NopMigration("2026/07/21 00:00:00", "SMS MultiFactorAuth localization update for EN and FA", MigrationProcessType.Update)]
+[NopMigration("2026/07/21 01:00:00", "SMS MultiFactorAuth localization update for EN and FA", MigrationProcessType.Update)]
 public class LocalizationMigration : MigrationBase
 {
     public override void Down()
@@ -25,8 +24,6 @@ public class LocalizationMigration : MigrationBase
         var languageService = EngineContext.Current.Resolve<ILanguageService>();
 
         var languages = languageService.GetAllLanguages(true);
-        var enLang = languages.FirstOrDefault(l => l.LanguageCulture.StartsWith("en", System.StringComparison.OrdinalIgnoreCase));
-        var faLang = languages.FirstOrDefault(l => l.LanguageCulture.StartsWith("fa", System.StringComparison.OrdinalIgnoreCase));
 
         var enResources = new Dictionary<string, string>
         {
@@ -108,10 +105,20 @@ public class LocalizationMigration : MigrationBase
             ["Plugins.MultiFactorAuth.SMS.Description"] = "امکان ورود دو مرحله‌ای بر پایه پیامک با ارسال کد OTP از طریق درگاه پیکربندی‌شده."
         };
 
-        if (enLang != null)
-            localizationService.AddOrUpdateLocaleResource(enResources, enLang.Id);
+        // Add to default (no language ID)
+        localizationService.AddOrUpdateLocaleResource(faResources);
 
-        if (faLang != null)
-            localizationService.AddOrUpdateLocaleResource(faResources, faLang.Id);
+        // Add to all registered languages
+        foreach (var lang in languages)
+        {
+            if (lang.LanguageCulture.StartsWith("fa", System.StringComparison.OrdinalIgnoreCase))
+            {
+                localizationService.AddOrUpdateLocaleResource(faResources, lang.Id);
+            }
+            else
+            {
+                localizationService.AddOrUpdateLocaleResource(enResources, lang.Id);
+            }
+        }
     }
 }

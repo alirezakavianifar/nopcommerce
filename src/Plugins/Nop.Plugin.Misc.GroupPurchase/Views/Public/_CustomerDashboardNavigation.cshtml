@@ -1,18 +1,31 @@
 @using Nop.Web.Framework.UI
 @using Microsoft.AspNetCore.Mvc.Routing
+@inject Nop.Services.Localization.ILocalizationService localizationService
 @{
     var showWallet = true; 
+
+    var leaderTab = await localizationService.GetResourceAsync("Plugins.Misc.GroupPurchase.Customer.LeaderGroupsTab");
+    if (string.IsNullOrEmpty(leaderTab) || leaderTab.ToLower().StartsWith("plugins.")) { leaderTab = "گروه‌های لیدری من"; }
+
+    var subgroupTab = await localizationService.GetResourceAsync("Plugins.Misc.GroupPurchase.Customer.SubgroupHistoryTab");
+    if (string.IsNullOrEmpty(subgroupTab) || subgroupTab.ToLower().StartsWith("plugins.")) { subgroupTab = "تاریخچه زیرمجموعه‌های من"; }
+
+    var walletTab = await localizationService.GetResourceAsync("Plugins.Misc.GroupPurchase.Customer.WalletTab");
+    if (string.IsNullOrEmpty(walletTab) || walletTab.ToLower().StartsWith("plugins.")) { walletTab = "کیف پول من"; }
+
+    var lotteryTab = await localizationService.GetResourceAsync("Plugins.Misc.GroupPurchase.Customer.LotteryTab");
+    if (string.IsNullOrEmpty(lotteryTab) || lotteryTab.ToLower().StartsWith("plugins.")) { lotteryTab = "امتیازات قرعه‌کشی من"; }
 }
 
 <li class="@if (Url.ActionContext.RouteData.Values["action"]?.ToString() == "LeaderGroups") { <text>active</text> }">
-    <a href="@Url.Action("LeaderGroups", "CustomerDashboard")" class="inactive">My Leader Groups</a>
+    <a href="@Url.Action("LeaderGroups", "CustomerDashboard")" class="inactive">@leaderTab</a>
 </li>
 <li class="@if (Url.ActionContext.RouteData.Values["action"]?.ToString() == "SubgroupHistory") { <text>active</text> }">
-    <a href="@Url.Action("SubgroupHistory", "CustomerDashboard")" class="inactive">My Subgroup History</a>
+    <a href="@Url.Action("SubgroupHistory", "CustomerDashboard")" class="inactive">@subgroupTab</a>
 </li>
 <li class="@if (Url.ActionContext.RouteData.Values["action"]?.ToString() == "Wallet") { <text>active</text> }">
-    <a href="@Url.Action("Wallet", "CustomerDashboard")" class="inactive">My Wallet</a>
+    <a href="@Url.Action("Wallet", "CustomerDashboard")" class="inactive">@walletTab</a>
 </li>
 <li class="@if (Url.ActionContext.RouteData.Values["action"]?.ToString() == "Lottery") { <text>active</text> }">
-    <a href="@Url.Action("Lottery", "CustomerDashboard")" class="inactive">My Lottery Points</a>
+    <a href="@Url.Action("Lottery", "CustomerDashboard")" class="inactive">@lotteryTab</a>
 </li>

@@ -10,6 +10,7 @@ using Nop.Web.Framework.Mvc.Filters;
 namespace Nop.Plugin.Misc.GroupPurchase.Controllers;
 
 [AutoValidateAntiforgeryToken]
+[CheckLanguageSeoCode(true)]
 public class CustomerDashboardController : BasePluginController
 {
     private readonly IWalletService _walletService;
@@ -84,7 +85,7 @@ public class CustomerDashboardController : BasePluginController
                 Status = g.Status.ToString(),
                 CreatedOnUtc = g.CreatedOnUtc,
                 DeliveryCity = g.DeliveryCity,
-                MembersCount = 1 // TODO: fetch actual member count if needed, or 0 if omitted for simplicity
+                MembersCount = 1
             });
         }
 

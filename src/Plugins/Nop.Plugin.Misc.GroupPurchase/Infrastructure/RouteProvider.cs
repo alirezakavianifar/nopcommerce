@@ -1,13 +1,14 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Nop.Web.Framework.Mvc.Routing;
+using Nop.Web.Infrastructure;
 
 namespace Nop.Plugin.Misc.GroupPurchase.Infrastructure;
 
 /// <summary>
 /// Represents plugin route provider
 /// </summary>
-public class RouteProvider : IRouteProvider
+public class RouteProvider : BaseRouteProvider, IRouteProvider
 {
     /// <summary>
     /// Register routes
@@ -15,6 +16,8 @@ public class RouteProvider : IRouteProvider
     /// <param name="endpointRouteBuilder">Route builder</param>
     public void RegisterRoutes(IEndpointRouteBuilder endpointRouteBuilder)
     {
+        var langPattern = $"{{{NopRoutingDefaults.RouteValue.Language}:maxlength(2):{NopRoutingDefaults.LanguageParameterTransformer}=}}";
+
         // Admin routes
         endpointRouteBuilder.MapControllerRoute(name: "Plugin.Misc.GroupPurchase.Admin.List",
             pattern: "Admin/GroupPurchase/List",
@@ -32,15 +35,57 @@ public class RouteProvider : IRouteProvider
             pattern: "Admin/CustomerWallet/List",
             defaults: new { controller = "CustomerWalletAdmin", action = "List", area = "Admin" });
 
-        // Public routes
-        endpointRouteBuilder.MapControllerRoute(name: "Plugin.Misc.GroupPurchase.Convert",
-            pattern: "GroupPurchase/Convert",
-            defaults: new { controller = "GroupPurchase", action = "ConvertToGroupPurchase" });
+        // Localized customer/ routes with nopCommerce LanguageParameterTransformer
+        endpointRouteBuilder.MapControllerRoute(name: "Plugin.Misc.GroupPurchase.Wallet.Customer.Lang",
+            pattern: $"{langPattern}/customer/wallet",
+            defaults: new { controller = "CustomerDashboard", action = "Wallet" });
 
-        endpointRouteBuilder.MapControllerRoute(name: "Plugin.Misc.GroupPurchase.Join",
-            pattern: "GroupPurchase/Join",
-            defaults: new { controller = "GroupPurchase", action = "JoinGroupPurchase" });
+        endpointRouteBuilder.MapControllerRoute(name: "Plugin.Misc.GroupPurchase.Lottery.Customer.Lang",
+            pattern: $"{langPattern}/customer/lottery",
+            defaults: new { controller = "CustomerDashboard", action = "Lottery" });
 
+        endpointRouteBuilder.MapControllerRoute(name: "Plugin.Misc.GroupPurchase.LeaderGroups.Customer.Lang",
+            pattern: $"{langPattern}/customer/leader-groups",
+            defaults: new { controller = "CustomerDashboard", action = "LeaderGroups" });
+
+        endpointRouteBuilder.MapControllerRoute(name: "Plugin.Misc.GroupPurchase.SubgroupHistory.Customer.Lang",
+            pattern: $"{langPattern}/customer/subgroup-history",
+            defaults: new { controller = "CustomerDashboard", action = "SubgroupHistory" });
+
+        // Localized group-purchase/ routes
+        endpointRouteBuilder.MapControllerRoute(name: "Plugin.Misc.GroupPurchase.LeaderGroups.GP.Lang",
+            pattern: $"{langPattern}/group-purchase/leader-groups",
+            defaults: new { controller = "CustomerDashboard", action = "LeaderGroups" });
+
+        endpointRouteBuilder.MapControllerRoute(name: "Plugin.Misc.GroupPurchase.LeaderGroups.GP",
+            pattern: "group-purchase/leader-groups",
+            defaults: new { controller = "CustomerDashboard", action = "LeaderGroups" });
+
+        endpointRouteBuilder.MapControllerRoute(name: "Plugin.Misc.GroupPurchase.Wallet.GP.Lang",
+            pattern: $"{langPattern}/group-purchase/wallet",
+            defaults: new { controller = "CustomerDashboard", action = "Wallet" });
+
+        endpointRouteBuilder.MapControllerRoute(name: "Plugin.Misc.GroupPurchase.Wallet.GP",
+            pattern: "group-purchase/wallet",
+            defaults: new { controller = "CustomerDashboard", action = "Wallet" });
+
+        endpointRouteBuilder.MapControllerRoute(name: "Plugin.Misc.GroupPurchase.Lottery.GP.Lang",
+            pattern: $"{langPattern}/group-purchase/lottery",
+            defaults: new { controller = "CustomerDashboard", action = "Lottery" });
+
+        endpointRouteBuilder.MapControllerRoute(name: "Plugin.Misc.GroupPurchase.Lottery.GP",
+            pattern: "group-purchase/lottery",
+            defaults: new { controller = "CustomerDashboard", action = "Lottery" });
+
+        endpointRouteBuilder.MapControllerRoute(name: "Plugin.Misc.GroupPurchase.SubgroupHistory.GP.Lang",
+            pattern: $"{langPattern}/group-purchase/subgroup-history",
+            defaults: new { controller = "CustomerDashboard", action = "SubgroupHistory" });
+
+        endpointRouteBuilder.MapControllerRoute(name: "Plugin.Misc.GroupPurchase.SubgroupHistory.GP",
+            pattern: "group-purchase/subgroup-history",
+            defaults: new { controller = "CustomerDashboard", action = "SubgroupHistory" });
+
+        // Unlocalized customer/ routes
         endpointRouteBuilder.MapControllerRoute(name: "Plugin.Misc.GroupPurchase.Wallet",
             pattern: "customer/wallet",
             defaults: new { controller = "CustomerDashboard", action = "Wallet" });
@@ -61,5 +106,5 @@ public class RouteProvider : IRouteProvider
     /// <summary>
     /// Gets a priority of route provider
     /// </summary>
-    public int Priority => 0;
+    public int Priority => 1000;
 }
