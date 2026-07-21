@@ -174,6 +174,29 @@
 \end{figure}
 
 \newpage
+\section{بخش چهارم: راهنمای گام به گام ماژول‌های هوشمند (B و C)}
+
+\subsection{گام ۱۲: ماژول B (جستجوی هوشمند - صوتی و تصویری)}
+این ماژول قابلیت جستجوی صوتی و تصویری مبتنی بر هوش مصنوعی را در نوار جستجوی عمومی فروشگاه ارائه می‌دهد.
+
+\begin{figure}[H]
+    \centering
+    \setlatin{\includegraphics[width=0.85\textwidth]{module_b_smart_search.png}}
+    \caption{گام ۱۲: ماژول جستجوی هوشمند (جستجوی صوتی و تصویری هوش مصنوعی)}
+    \label{fig:module_b_smart_search}
+\end{figure}
+
+\subsection{گام ۱۳: ماژول C (تشخیص محصولات تکراری با هوش مصنوعی)}
+این ماژول محصولات ثبت شده توسط فروشندگان را به صورت خودکار تحلیل کرده و از ثبت کالای تکراری در انبارداری جلوگیری می‌نماید.
+
+\begin{figure}[H]
+    \centering
+    \setlatin{\includegraphics[width=0.85\textwidth]{module_c_duplicate_detection.png}}
+    \caption{گام ۱۳: ماژول تشخیص محصولات تکراری با هوش مصنوعی در پنل ارشد}
+    \label{fig:module_c_duplicate_detection}
+\end{figure}
+
+\newpage
 \section{جدول مرجع آدرس‌های سیستم (فروشگاه و مدیریت)}
 
 \begin{table}[H]
@@ -195,6 +218,8 @@
 گام ۹ & تاریخچه زیرمجموعه‌ها & \lr{/customer/subgroup-history} & --- \\
 گام ۱۰ & کیف پول و موجودی & \lr{/customer/wallet} & \lr{/Admin/CustomerWallet/List} \\
 گام ۱۱ & امتیازات و قرعه‌کشی & \lr{/customer/lottery} & --- \\
+گام ۱۲ & ماژول جستجوی هوشمند & \lr{/AiSearch/VisualSearch} & --- \\
+گام ۱۳ & ماژول تشخیص تکراری & --- & \lr{/Admin/AiDuplicateProduct/List} \\
 \bottomrule
 \end{tabular}
 \end{table}
