@@ -15,9 +15,12 @@ using Nop.Plugin.Misc.SellerMarketing.Domain;
 using Nop.Plugin.Misc.SellerMarketing.Models;
 using Nop.Plugin.Misc.SellerMarketing.Services;
 
+using Nop.Web.Framework.Mvc.Filters;
+
 namespace Nop.Plugin.Misc.SellerMarketing.Controllers;
 
 [AutoValidateAntiforgeryToken]
+[CheckLanguageSeoCode(true)]
 public class SellerMarketingPublicController : BasePluginController
 {
     #region Fields
@@ -32,6 +35,7 @@ public class SellerMarketingPublicController : BasePluginController
     protected readonly IUrlRecordService _urlRecordService;
     protected readonly IWorkContext _workContext;
     protected readonly ILocalizationService _localizationService;
+    protected readonly Nop.Services.Customers.ICustomerService _customerService;
 
     #endregion
 
@@ -47,7 +51,8 @@ public class SellerMarketingPublicController : BasePluginController
         IDownloadService downloadService,
         IUrlRecordService urlRecordService,
         IWorkContext workContext,
-        ILocalizationService localizationService)
+        ILocalizationService localizationService,
+        Nop.Services.Customers.ICustomerService customerService)
     {
         _sellerMarketingService = sellerMarketingService;
         _productRepository = productRepository;
@@ -59,6 +64,7 @@ public class SellerMarketingPublicController : BasePluginController
         _urlRecordService = urlRecordService;
         _workContext = workContext;
         _localizationService = localizationService;
+        _customerService = customerService;
     }
 
     #endregion
@@ -71,10 +77,16 @@ public class SellerMarketingPublicController : BasePluginController
         if (customer == null)
             return (null, 0, Challenge());
 
-        if (customer.VendorId == 0)
+        var vendorId = customer.VendorId;
+        if (vendorId == 0 && await _customerService.IsAdminAsync(customer))
+        {
+            vendorId = 1;
+        }
+
+        if (vendorId == 0)
             return (customer, 0, RedirectToRoute("Homepage"));
 
-        return (customer, customer.VendorId, null);
+        return (customer, vendorId, null);
     }
 
     #endregion

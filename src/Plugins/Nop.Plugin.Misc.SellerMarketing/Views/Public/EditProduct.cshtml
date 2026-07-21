@@ -1,8 +1,8 @@
 @model Nop.Plugin.Misc.SellerMarketing.Models.ProductSubmissionModel
-@using Nop.Web.Framework.UI
+@inject Nop.Web.Framework.UI.INopHtmlHelper NopHtml
 @{
     Layout = "_ColumnsTwo";
-    Html.AddTitleParts(T("Plugins.Misc.SellerMarketing.Dashboard.Edit").Text);
+    NopHtml.AddTitleParts(T("Plugins.Misc.SellerMarketing.Dashboard.Edit").Text);
 }
 
 @section left

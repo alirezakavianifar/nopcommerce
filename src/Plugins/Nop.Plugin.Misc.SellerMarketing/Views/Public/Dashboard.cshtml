@@ -1,9 +1,9 @@
 @model Nop.Plugin.Misc.SellerMarketing.Models.SellerDashboardModel
-@using Nop.Web.Framework.UI
+@inject Nop.Web.Framework.UI.INopHtmlHelper NopHtml
 @{
     Layout = "_ColumnsTwo";
     // Title
-    Html.AddTitleParts(T("Plugins.Misc.SellerMarketing.Dashboard.Title").Text);
+    NopHtml.AddTitleParts(T("Plugins.Misc.SellerMarketing.Dashboard.Title").Text);
 }
 
 @section left
