@@ -26,6 +26,9 @@ while ($restartCount -lt $maxRestarts) {
         Start-Sleep -Seconds 3
     }
     
+    # Forcibly stop any locked Nop.Web processes before running build & app
+    Get-Process -Name "Nop.Web" -ErrorAction SilentlyContinue | Where-Object { $_.Id -ne $PID } | Stop-Process -Force -ErrorAction SilentlyContinue
+
     dotnet run --project $Project
     $exitCode = $LASTEXITCODE
     $restartCount++

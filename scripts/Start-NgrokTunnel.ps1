@@ -51,7 +51,46 @@ function Write-Step([string]$Icon, [string]$Message, [string]$Color = "White") {
     Write-Host "  [$Icon] $Message" -ForegroundColor $Color
 }
 
+function Stop-NopWebProcesses {
+    Write-Step "Lock Check" "Checking for locked Nop.Web / dotnet process instances..." "Yellow"
+    
+    # 1. Kill any process named 'Nop.Web' or 'Nop.Web.exe'
+    $nopProcs = Get-Process -Name "Nop.Web" -ErrorAction SilentlyContinue
+    foreach ($proc in $nopProcs) {
+        if ($proc.Id -ne $PID) {
+            try {
+                Write-Step "Killing" "Forcibly stopping locked Nop.Web process (PID: $($proc.Id))..." "Cyan"
+                Stop-Process -Id $proc.Id -Force -ErrorAction Stop
+                Write-Step "OK" "Stopped Nop.Web process (PID: $($proc.Id))." "Green"
+            } catch {
+                Write-Step "WARN" "Failed to stop Nop.Web process with PID $($proc.Id): $_" "Yellow"
+            }
+        }
+    }
+
+    # 2. Kill dotnet process running Nop.Web.dll or nopCommerce
+    try {
+        $dotnetProcs = Get-CimInstance Win32_Process -Filter "Name = 'dotnet.exe' OR Name = 'Nop.Web.exe'" -ErrorAction SilentlyContinue
+        foreach ($p in $dotnetProcs) {
+            if ($p.ProcessId -ne $PID -and $p.CommandLine -and ($p.CommandLine -like "*Nop.Web*" -or $p.CommandLine -like "*nopCommerce*")) {
+                try {
+                    Write-Step "Killing" "Forcibly stopping locked host process '$($p.Name)' (PID: $($p.ProcessId))..." "Cyan"
+                    Stop-Process -Id $p.ProcessId -Force -ErrorAction Stop
+                    Write-Step "OK" "Stopped process PID $($p.ProcessId)." "Green"
+                } catch {
+                    # Process might have already terminated
+                }
+            }
+        }
+    } catch {
+        # Fallback if WMI/CIM is restricted
+    }
+
+    Start-Sleep -Seconds 1
+}
+
 function Stop-ProcessOnPort([int]$Port) {
+    Stop-NopWebProcesses
     Write-Step "Port Check" "Checking if port $Port is in use..." "Yellow"
     $pids = @()
     try {
