@@ -1,99 +1,32 @@
-using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
-using Nop.Core;
-using Nop.Plugin.MultiFactorAuth.SMS.Components;
-using Nop.Services.Authentication.MultiFactor;
-using Nop.Services.Cms;
-using Nop.Services.Configuration;
+using System.Linq;
+using FluentMigrator;
+using Nop.Core.Infrastructure;
+using Nop.Data;
+using Nop.Data.Migrations;
 using Nop.Services.Localization;
-using Nop.Services.Plugins;
-using Nop.Web.Framework.Infrastructure;
-using Nop.Web.Framework.Mvc.Routing;
+using Nop.Web.Framework.Extensions;
 
-namespace Nop.Plugin.MultiFactorAuth.SMS;
+namespace Nop.Plugin.MultiFactorAuth.SMS.Migrations;
 
-/// <summary>
-/// Represents method for the multi-factor authentication with SMS OTP and IP/Device Binding widget
-/// </summary>
-public class SMSMethod : BasePlugin, IMultiFactorAuthenticationMethod, IWidgetPlugin
+[NopMigration("2026/07/21 00:00:00", "SMS MultiFactorAuth localization update for EN and FA", MigrationProcessType.Update)]
+public class LocalizationMigration : MigrationBase
 {
-    #region Fields
-
-    protected readonly ILanguageService _languageService;
-    protected readonly ILocalizationService _localizationService;
-    protected readonly INopUrlHelper _nopUrlHelper;
-    protected readonly ISettingService _settingService;
-    protected readonly IStoreContext _storeContext;
-
-    #endregion
-
-    #region Ctor
-
-    public SMSMethod(ILanguageService languageService,
-        ILocalizationService localizationService,
-        INopUrlHelper nopUrlHelper,
-        ISettingService settingService,
-        IStoreContext storeContext)
+    public override void Down()
     {
-        _languageService = languageService;
-        _localizationService = localizationService;
-        _nopUrlHelper = nopUrlHelper;
-        _settingService = settingService;
-        _storeContext = storeContext;
     }
 
-    #endregion
-
-    #region Methods
-
-    /// <summary>
-    /// Gets a configuration page URL
-    /// </summary>
-    public override string GetConfigurationPageUrl()
+    public override void Up()
     {
-        return _nopUrlHelper.RouteUrl(SMSDefaults.ConfigurationRouteName);
-    }
+        if (!DataSettingsManager.IsDatabaseInstalled())
+            return;
 
-    /// <summary>
-    /// Gets a type of a view component for displaying plugin in public store (Enrollment/Settings)
-    /// </summary>
-    public Type GetPublicViewComponent()
-    {
-        return typeof(SMSAuthenticationViewComponent);
-    }
+        var localizationService = EngineContext.Current.Resolve<ILocalizationService>();
+        var languageService = EngineContext.Current.Resolve<ILanguageService>();
 
-    /// <summary>
-    /// Gets a type of a view component for displaying verification page (Login challenge)
-    /// </summary>
-    public Type GetVerificationViewComponent()
-    {
-        return typeof(SMSVerificationViewComponent);
-    }
-
-    /// <summary>
-    /// Install the plugin
-    /// </summary>
-    public override async Task InstallAsync()
-    {
-        // Default settings
-        await _settingService.SaveSettingAsync(new SMSSettings
-        {
-            Provider = "Generic",
-            CodeLength = 6,
-            CodeLifetimeMinutes = 3,
-            Force2FAForAdmins = false,
-            Force2FAForVendors = false,
-            EnableIpAllowlist = false,
-            EnableDeviceBinding = false,
-            ForceDeviceBindingForAdmins = false,
-            ForceDeviceBindingForVendors = false
-        });
-
-        // Locales/Resources
-        var languages = await _languageService.GetAllLanguagesAsync();
-        var enLang = languages.FirstOrDefault(l => l.LanguageCulture.StartsWith("en", StringComparison.OrdinalIgnoreCase));
-        var faLang = languages.FirstOrDefault(l => l.LanguageCulture.StartsWith("fa", StringComparison.OrdinalIgnoreCase));
+        var languages = languageService.GetAllLanguages(true);
+        var enLang = languages.FirstOrDefault(l => l.LanguageCulture.StartsWith("en", System.StringComparison.OrdinalIgnoreCase));
+        var faLang = languages.FirstOrDefault(l => l.LanguageCulture.StartsWith("fa", System.StringComparison.OrdinalIgnoreCase));
 
         var enResources = new Dictionary<string, string>
         {
@@ -175,64 +108,10 @@ public class SMSMethod : BasePlugin, IMultiFactorAuthenticationMethod, IWidgetPl
             ["Plugins.MultiFactorAuth.SMS.Description"] = "امکان ورود دو مرحله‌ای بر پایه پیامک با ارسال کد OTP از طریق درگاه پیکربندی‌شده."
         };
 
-        await _localizationService.AddOrUpdateLocaleResourceAsync(enResources, enLang?.Id);
-        await _localizationService.AddOrUpdateLocaleResourceAsync(faResources, faLang?.Id);
+        if (enLang != null)
+            localizationService.AddOrUpdateLocaleResource(enResources, enLang.Id);
 
-        await base.InstallAsync();
+        if (faLang != null)
+            localizationService.AddOrUpdateLocaleResource(faResources, faLang.Id);
     }
-
-    /// <summary>
-    /// Uninstall the plugin
-    /// </summary>
-    public override async Task UninstallAsync()
-    {
-        await _settingService.DeleteSettingAsync<SMSSettings>();
-        await _localizationService.DeleteLocaleResourcesAsync("Plugins.MultiFactorAuth.SMS");
-        await base.UninstallAsync();
-    }
-
-    /// <summary>
-    /// Gets a description that will be displayed on customer info page
-    /// </summary>
-    public async Task<string> GetDescriptionAsync()
-    {
-        return await _localizationService.GetResourceAsync("Plugins.MultiFactorAuth.SMS.Description");
-    }
-
-    #endregion
-
-    #region IWidgetPlugin Members
-
-    /// <summary>
-    /// Gets a value indicating whether to hide this plugin on the widget list page in the admin area
-    /// </summary>
-    public bool HideInWidgetList => true;
-
-    /// <summary>
-    /// Gets widget zones where this widget should be rendered
-    /// </summary>
-    public Task<IList<string>> GetWidgetZonesAsync()
-    {
-        return Task.FromResult<IList<string>>(new List<string> { AdminWidgetZones.CustomerDetailsBlock });
-    }
-
-    /// <summary>
-    /// Gets a type of a view component for displaying widget
-    /// </summary>
-    public Type GetWidgetViewComponent(string widgetZone)
-    {
-        if (string.Equals(widgetZone, AdminWidgetZones.CustomerDetailsBlock, StringComparison.InvariantCultureIgnoreCase))
-        {
-            return typeof(SMSCustomerSecurityRestrictionsViewComponent);
-        }
-        return null;
-    }
-
-    #endregion
-
-    #region Properties
-
-    public MultiFactorAuthenticationType Type => MultiFactorAuthenticationType.SMSVerification;
-
-    #endregion
 }
