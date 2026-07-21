@@ -21,6 +21,7 @@ namespace Nop.Tests.Nop.Web.Tests.Events;
 public class AiDuplicateCheckTests
 {
     private Mock<IAvalAiClient> _mockAvalAiClient;
+    private Mock<IAiProviderFactory> _mockProviderFactory;
     private Mock<ISettingService> _mockSettingService;
     private Mock<IRepository<Product>> _mockProductRepository;
     private Mock<IRepository<ProductEmbeddingCache>> _mockEmbeddingCacheRepository;
@@ -33,6 +34,8 @@ public class AiDuplicateCheckTests
     public void SetUp()
     {
         _mockAvalAiClient = new Mock<IAvalAiClient>();
+        _mockProviderFactory = new Mock<IAiProviderFactory>();
+        _mockProviderFactory.Setup(f => f.GetClient(It.IsAny<AiSettings>())).Returns(_mockAvalAiClient.Object);
         _mockSettingService = new Mock<ISettingService>();
         _mockProductRepository = new Mock<IRepository<Product>>();
         _mockEmbeddingCacheRepository = new Mock<IRepository<ProductEmbeddingCache>>();
@@ -83,11 +86,11 @@ public class AiDuplicateCheckTests
             .ReturnsAsync(product);
 
         var expectedVector = new float[] { 0.1f, 0.2f, 0.3f };
-        _mockAvalAiClient.Setup(c => c.GetEmbeddingAsync(It.IsAny<string>(), _settings.ApiKey, _settings.EmbeddingModel, _settings.BaseUrl))
+        _mockAvalAiClient.Setup(c => c.GetEmbeddingAsync(It.IsAny<string>(), It.IsAny<AiSettings>()))
             .ReturnsAsync(expectedVector);
 
         var service = new AiService(
-            _mockAvalAiClient.Object,
+            _mockProviderFactory.Object,
             _mockSettingService.Object,
             _mockProductRepository.Object,
             _mockEmbeddingCacheRepository.Object,
@@ -100,7 +103,7 @@ public class AiDuplicateCheckTests
 
         // Assert
         result.IsDuplicate.Should().BeFalse();
-        _mockAvalAiClient.Verify(c => c.GetEmbeddingAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once);
+        _mockAvalAiClient.Verify(c => c.GetEmbeddingAsync(It.IsAny<string>(), It.IsAny<AiSettings>()), Times.Once);
         _mockEmbeddingCacheRepository.Verify(r => r.InsertAsync(It.IsAny<ProductEmbeddingCache>(), It.IsAny<bool>()), Times.Once);
     }
 
@@ -128,7 +131,7 @@ public class AiDuplicateCheckTests
         _cacheDatabase.Add(cacheEntry);
 
         var service = new AiService(
-            _mockAvalAiClient.Object,
+            _mockProviderFactory.Object,
             _mockSettingService.Object,
             _mockProductRepository.Object,
             _mockEmbeddingCacheRepository.Object,
@@ -141,7 +144,7 @@ public class AiDuplicateCheckTests
 
         // Assert
         result.IsDuplicate.Should().BeFalse();
-        _mockAvalAiClient.Verify(c => c.GetEmbeddingAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Never);
+        _mockAvalAiClient.Verify(c => c.GetEmbeddingAsync(It.IsAny<string>(), It.IsAny<AiSettings>()), Times.Never);
         _mockEmbeddingCacheRepository.Verify(r => r.InsertAsync(It.IsAny<ProductEmbeddingCache>(), It.IsAny<bool>()), Times.Never);
         _mockEmbeddingCacheRepository.Verify(r => r.UpdateAsync(It.IsAny<ProductEmbeddingCache>(), It.IsAny<bool>()), Times.Never);
     }
@@ -170,11 +173,11 @@ public class AiDuplicateCheckTests
         _cacheDatabase.Add(cacheEntry);
 
         var newVector = new float[] { 0.4f, 0.5f, 0.6f };
-        _mockAvalAiClient.Setup(c => c.GetEmbeddingAsync(It.IsAny<string>(), _settings.ApiKey, _settings.EmbeddingModel, _settings.BaseUrl))
+        _mockAvalAiClient.Setup(c => c.GetEmbeddingAsync(It.IsAny<string>(), It.IsAny<AiSettings>()))
             .ReturnsAsync(newVector);
 
         var service = new AiService(
-            _mockAvalAiClient.Object,
+            _mockProviderFactory.Object,
             _mockSettingService.Object,
             _mockProductRepository.Object,
             _mockEmbeddingCacheRepository.Object,
@@ -187,7 +190,7 @@ public class AiDuplicateCheckTests
 
         // Assert
         result.IsDuplicate.Should().BeFalse();
-        _mockAvalAiClient.Verify(c => c.GetEmbeddingAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once);
+        _mockAvalAiClient.Verify(c => c.GetEmbeddingAsync(It.IsAny<string>(), It.IsAny<AiSettings>()), Times.Once);
         _mockEmbeddingCacheRepository.Verify(r => r.UpdateAsync(It.IsAny<ProductEmbeddingCache>(), It.IsAny<bool>()), Times.Once);
         _mockEmbeddingCacheRepository.Verify(r => r.InsertAsync(It.IsAny<ProductEmbeddingCache>(), It.IsAny<bool>()), Times.Never);
     }
@@ -211,7 +214,7 @@ public class AiDuplicateCheckTests
         _cacheDatabase.Add(cacheEntry);
 
         var service = new AiService(
-            _mockAvalAiClient.Object,
+            _mockProviderFactory.Object,
             _mockSettingService.Object,
             _mockProductRepository.Object,
             _mockEmbeddingCacheRepository.Object,
@@ -224,7 +227,7 @@ public class AiDuplicateCheckTests
 
         // Assert
         result.IsDuplicate.Should().BeFalse();
-        _mockAvalAiClient.Verify(c => c.GetEmbeddingAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Never);
+        _mockAvalAiClient.Verify(c => c.GetEmbeddingAsync(It.IsAny<string>(), It.IsAny<AiSettings>()), Times.Never);
         _mockEmbeddingCacheRepository.Verify(r => r.InsertAsync(It.IsAny<ProductEmbeddingCache>(), It.IsAny<bool>()), Times.Never);
     }
 }

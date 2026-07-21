@@ -7,9 +7,11 @@ using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Nop.Services.Logging;
 
+using Nop.Plugin.Misc.ArtificialIntelligence.Domain;
+
 namespace Nop.Plugin.Misc.ArtificialIntelligence.Services;
 
-public class AvalAiClient : IAvalAiClient
+public class AvalAiClient : IAvalAiClient, IAiClient
 {
     private readonly IHttpClientFactory _httpClientFactory;
     private readonly ILogger _logger;
@@ -332,4 +334,28 @@ public class AvalAiClient : IAvalAiClient
             return DefaultModels;
         }
     }
+
+    #region IAiClient Implementation
+
+    public Task<float[]> GetEmbeddingAsync(string text, AiSettings settings)
+    {
+        return GetEmbeddingAsync(text, settings.ApiKey, settings.EmbeddingModel, settings.BaseUrl);
+    }
+
+    public Task<string> SpeechToTextAsync(byte[] audioData, string filename, AiSettings settings)
+    {
+        return SpeechToTextAsync(audioData, filename, settings.ApiKey, settings.BaseUrl);
+    }
+
+    public Task<string> AnalyzeImageAsync(byte[] imageData, string prompt, AiSettings settings)
+    {
+        return AnalyzeImageAsync(imageData, prompt, settings.ApiKey, settings.VisionModel, settings.BaseUrl);
+    }
+
+    public Task<string> GetChatResponseAsync(IList<object> messages, AiSettings settings)
+    {
+        return GetChatResponseAsync(messages, settings.ApiKey, settings.ChatbotModel, settings.BaseUrl);
+    }
+
+    #endregion
 }

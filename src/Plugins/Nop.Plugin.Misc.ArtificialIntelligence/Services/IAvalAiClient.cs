@@ -13,7 +13,7 @@ public class AvalAiModelInfo
     public string Mode { get; set; }
 }
 
-public interface IAvalAiClient
+public interface IAvalAiClient : IAiClient
 {
     Task<float[]> GetEmbeddingAsync(string text, string apiKey, string model, string baseUrl);
     Task<string> GetChatResponseAsync(IList<object> messages, string apiKey, string model, string baseUrl);

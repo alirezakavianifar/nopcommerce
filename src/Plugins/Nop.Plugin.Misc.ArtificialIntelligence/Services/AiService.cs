@@ -10,7 +10,7 @@ namespace Nop.Plugin.Misc.ArtificialIntelligence.Services;
 
 public class AiService : IAiService
 {
-    private readonly IAvalAiClient _avalAiClient;
+    private readonly IAiProviderFactory _aiProviderFactory;
     private readonly ISettingService _settingService;
     private readonly IRepository<Product> _productRepository;
     private readonly IRepository<ProductEmbeddingCache> _embeddingCacheRepository;
@@ -18,14 +18,14 @@ public class AiService : IAiService
     private readonly ILogger _logger;
 
     public AiService(
-        IAvalAiClient avalAiClient,
+        IAiProviderFactory aiProviderFactory,
         ISettingService settingService,
         IRepository<Product> productRepository,
         IRepository<ProductEmbeddingCache> embeddingCacheRepository,
         IProductService productService,
         ILogger logger)
     {
-        _avalAiClient = avalAiClient;
+        _aiProviderFactory = aiProviderFactory;
         _settingService = settingService;
         _productRepository = productRepository;
         _embeddingCacheRepository = embeddingCacheRepository;
@@ -41,24 +41,25 @@ public class AiService : IAiService
     public async Task<float[]> GetEmbeddingAsync(string text)
     {
         var settings = await GetSettingsAsync();
-        if (settings.SandboxMode)
+        if (settings.SandboxMode || settings.ProviderType == AiProviderType.Sandbox)
         {
             return GetSandboxEmbedding(text);
         }
 
-        if (string.IsNullOrEmpty(settings.ApiKey))
+        if (settings.ProviderType == AiProviderType.CloudAvalAi && string.IsNullOrEmpty(settings.ApiKey))
         {
             await _logger.WarningAsync("AvalAI API Key is missing. Falling back to sandbox embeddings.");
             return GetSandboxEmbedding(text);
         }
 
-        return await _avalAiClient.GetEmbeddingAsync(text, settings.ApiKey, settings.EmbeddingModel, settings.BaseUrl);
+        var client = _aiProviderFactory.GetClient(settings);
+        return await client.GetEmbeddingAsync(text, settings);
     }
 
     public async Task<string> SpeechToTextAsync(byte[] audioData, string filename)
     {
         var settings = await GetSettingsAsync();
-        if (settings.SandboxMode)
+        if (settings.SandboxMode || settings.ProviderType == AiProviderType.Sandbox)
         {
             // Simulated transcription based on input length or common Persian store searches
             var keywords = new[] { "کفش ورزشی", "گوشی موبایل", "تیشرت مردانه", "لوازم آشپزخانه", "کتاب آموزش آشپزی" };
@@ -66,51 +67,54 @@ public class AiService : IAiService
             return keywords[rnd.Next(keywords.Length)];
         }
 
-        if (string.IsNullOrEmpty(settings.ApiKey))
+        if (settings.ProviderType == AiProviderType.CloudAvalAi && string.IsNullOrEmpty(settings.ApiKey))
         {
             await _logger.WarningAsync("AvalAI API Key is missing. SpeechToText skipped.");
             return "کفش ورزشی (شبیه‌سازی‌شده)";
         }
 
-        return await _avalAiClient.SpeechToTextAsync(audioData, filename, settings.ApiKey, settings.BaseUrl);
+        var client = _aiProviderFactory.GetClient(settings);
+        return await client.SpeechToTextAsync(audioData, filename, settings);
     }
 
     public async Task<string> ChatResponseAsync(IList<object> history)
     {
         var settings = await GetSettingsAsync();
-        if (settings.SandboxMode)
+        if (settings.SandboxMode || settings.ProviderType == AiProviderType.Sandbox)
         {
             // Simulated Persian/English response
             return "سلام! من پشتیبان هوشمند شما هستم. چطور می‌توانم در مورد محصولات یا روند خرید به شما کمک کنم؟ اگر سوال شما برطرف نشد، در هر زمان بنویسید 'ارجاع به پشتیبان' تا به پشتیبانی فیزیکی متصل شوید.";
         }
 
-        if (string.IsNullOrEmpty(settings.ApiKey))
+        if (settings.ProviderType == AiProviderType.CloudAvalAi && string.IsNullOrEmpty(settings.ApiKey))
         {
             return "در حال حاضر ارتباط با سرور هوش مصنوعی برقرار نیست (کلید تنظیم نشده است).";
         }
 
-        return await _avalAiClient.GetChatResponseAsync(history, settings.ApiKey, settings.ChatbotModel, settings.BaseUrl);
+        var client = _aiProviderFactory.GetClient(settings);
+        return await client.GetChatResponseAsync(history, settings);
     }
 
     public async Task<IList<int>> VisualSearchAsync(byte[] imageData)
     {
         var settings = await GetSettingsAsync();
-        if (settings.SandboxMode)
+        if (settings.SandboxMode || settings.ProviderType == AiProviderType.Sandbox)
         {
             // Return top 3 products from repository as mockup results
             var allProducts = await _productRepository.GetAllAsync(query => query.Take(3));
             return allProducts.Select(p => p.Id).ToList();
         }
 
-        if (string.IsNullOrEmpty(settings.ApiKey))
+        if (settings.ProviderType == AiProviderType.CloudAvalAi && string.IsNullOrEmpty(settings.ApiKey))
         {
             var allProducts = await _productRepository.GetAllAsync(query => query.Take(2));
             return allProducts.Select(p => p.Id).ToList();
         }
 
+        var client = _aiProviderFactory.GetClient(settings);
         // Call vision model to get tags, then search database by keywords
         var prompt = "What is the product in this image? Provide exactly 3 search keywords separated by commas in Persian language. Do not output anything else.";
-        var keywordsCsv = await _avalAiClient.AnalyzeImageAsync(imageData, prompt, settings.ApiKey, settings.VisionModel, settings.BaseUrl);
+        var keywordsCsv = await client.AnalyzeImageAsync(imageData, prompt, settings);
         
         if (string.IsNullOrEmpty(keywordsCsv))
             return new List<int>();

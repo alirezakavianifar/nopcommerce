@@ -10,7 +10,10 @@ public class NopStartup : INopStartup
 {
     public void ConfigureServices(IServiceCollection services, IConfiguration configuration)
     {
-        services.AddScoped<IAvalAiClient, AvalAiClient>();
+        services.AddScoped<AvalAiClient>();
+        services.AddScoped<IAvalAiClient>(sp => sp.GetRequiredService<AvalAiClient>());
+        services.AddScoped<LocalAiClient>();
+        services.AddScoped<IAiProviderFactory, AiProviderFactory>();
         services.AddScoped<IAiService, AiService>();
     }
 

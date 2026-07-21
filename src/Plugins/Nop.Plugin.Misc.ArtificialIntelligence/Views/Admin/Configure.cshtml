@@ -30,6 +30,21 @@
                     <div class="card-body">
                         <div class="form-group row">
                             <div class="col-md-3">
+                                <label asp-for="ProviderTypeId" class="col-form-label">@(isPersian ? "ارائه‌دهنده هوش مصنوعی" : "AI Provider Infrastructure")</label>
+                            </div>
+                            <div class="col-md-9">
+                                <select asp-for="ProviderTypeId" class="form-control" id="ProviderTypeSelect">
+                                    <option value="0">@(isPersian ? "ابر AvalAI (سرویس ابری)" : "Cloud AvalAI API (Cloud Service)")</option>
+                                    <option value="1">@(isPersian ? "زیرساخت محلی / درون‌سازمانی (Local Self-Hosted)" : "Local Self-Hosted Infrastructure (Whisper / Ollama / LocalAI)")</option>
+                                    <option value="2">@(isPersian ? "حالت تست / شبیه‌ساز (Sandbox Mock)" : "Sandbox Mock Mode (Simulated Responses)")</option>
+                                </select>
+                                <span asp-validation-for="ProviderTypeId" class="text-danger"></span>
+                                <small class="form-text text-muted">@(isPersian ? "انتخاب کنید که پردازش‌های هوش مصنوعی (ماژول B و دیگر امکانات) از طریق سرویس ابری انجام شوند یا زیرساخت سرور محلی." : "Select whether AI operations (Module B & other features) are processed via cloud APIs or your local server infrastructure.")</small>
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <div class="col-md-3">
                                 <label asp-for="SandboxMode" class="col-form-label">@T("Plugins.Misc.ArtificialIntelligence.SandboxMode")</label>
                             </div>
                             <div class="col-md-9">
@@ -41,23 +56,25 @@
                             </div>
                         </div>
 
-                        <div class="form-group row">
-                            <div class="col-md-3">
-                                <label asp-for="ApiKey" class="col-form-label">@T("Plugins.Misc.ArtificialIntelligence.ApiKey")</label>
+                        <div id="cloud-provider-section">
+                            <div class="form-group row">
+                                <div class="col-md-3">
+                                    <label asp-for="ApiKey" class="col-form-label">@T("Plugins.Misc.ArtificialIntelligence.ApiKey")</label>
+                                </div>
+                                <div class="col-md-9">
+                                    <input asp-for="ApiKey" class="form-control" placeholder="@(isPersian ? "کلید API پلتفرم AvalAI (توکن Bearer) را وارد کنید" : "Enter AvalAI API Key (Bearer Token)")" />
+                                    <span asp-validation-for="ApiKey" class="text-danger"></span>
+                                </div>
                             </div>
-                            <div class="col-md-9">
-                                <input asp-for="ApiKey" class="form-control" placeholder="@(isPersian ? "کلید API پلتفرم AvalAI (توکن Bearer) را وارد کنید" : "Enter AvalAI API Key (Bearer Token)")" />
-                                <span asp-validation-for="ApiKey" class="text-danger"></span>
-                            </div>
-                        </div>
 
-                        <div class="form-group row">
-                            <div class="col-md-3">
-                                <label asp-for="BaseUrl" class="col-form-label">@T("Plugins.Misc.ArtificialIntelligence.BaseUrl")</label>
-                            </div>
-                            <div class="col-md-9">
-                                <input asp-for="BaseUrl" class="form-control" />
-                                <span asp-validation-for="BaseUrl" class="text-danger"></span>
+                            <div class="form-group row">
+                                <div class="col-md-3">
+                                    <label asp-for="BaseUrl" class="col-form-label">@T("Plugins.Misc.ArtificialIntelligence.BaseUrl")</label>
+                                </div>
+                                <div class="col-md-9">
+                                    <input asp-for="BaseUrl" class="form-control" />
+                                    <span asp-validation-for="BaseUrl" class="text-danger"></span>
+                                </div>
                             </div>
                         </div>
 
@@ -85,6 +102,118 @@
                                 </div>
                             </div>
                         }
+                    </div>
+                </div>
+
+                <div class="card card-default" id="local-provider-card">
+                    <div class="card-header">
+                        <h3 class="card-title"><i class="fas fa-server"></i> @(isPersian ? "تنظیمات زیرساخت محلی / درون‌سازمانی (Local Self-Hosted)" : "Local Infrastructure Configuration")</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-group row">
+                            <div class="col-md-3">
+                                <label asp-for="LocalSttEndpoint" class="col-form-label">@(isPersian ? "اندپوینت تبدیل گفتار به متن محلی (STT - Whisper)" : "Local STT Endpoint (Whisper)")</label>
+                            </div>
+                            <div class="col-md-9">
+                                <input asp-for="LocalSttEndpoint" class="form-control" placeholder="http://localhost:8000/v1/audio/transcriptions" />
+                                <span asp-validation-for="LocalSttEndpoint" class="text-danger"></span>
+                                <small class="form-text text-muted">@(isPersian ? "آدرس سرویس محلی Faster-Whisper یا Whisper.cpp یا LocalAI برای ماژول B (جستجوی صوتی)" : "Endpoint for self-hosted Faster-Whisper, Whisper.cpp, or LocalAI for Module B Voice Search")</small>
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <div class="col-md-3">
+                                <label asp-for="LocalSttModel" class="col-form-label">@(isPersian ? "نام مدل STT محلی" : "Local STT Model")</label>
+                            </div>
+                            <div class="col-md-9">
+                                <input asp-for="LocalSttModel" class="form-control" placeholder="whisper-1" />
+                                <span asp-validation-for="LocalSttModel" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <div class="col-md-3">
+                                <label asp-for="LocalEmbeddingEndpoint" class="col-form-label">@(isPersian ? "اندپوینت Embedding محلی" : "Local Embedding Endpoint")</label>
+                            </div>
+                            <div class="col-md-9">
+                                <input asp-for="LocalEmbeddingEndpoint" class="form-control" placeholder="http://localhost:11434/api/embeddings" />
+                                <span asp-validation-for="LocalEmbeddingEndpoint" class="text-danger"></span>
+                                <small class="form-text text-muted">@(isPersian ? "آدرس سرویس محلی Ollama یا Text Embeddings Inference (TEI)" : "Endpoint for local Ollama, TEI, or ONNX embeddings")</small>
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <div class="col-md-3">
+                                <label asp-for="LocalEmbeddingModel" class="col-form-label">@(isPersian ? "نام مدل Embedding محلی" : "Local Embedding Model")</label>
+                            </div>
+                            <div class="col-md-9">
+                                <input asp-for="LocalEmbeddingModel" class="form-control" placeholder="bge-m3" />
+                                <span asp-validation-for="LocalEmbeddingModel" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <div class="col-md-3">
+                                <label asp-for="LocalVisionEndpoint" class="col-form-label">@(isPersian ? "اندپوینت بینایی ماشین محلی (Vision)" : "Local Vision Endpoint")</label>
+                            </div>
+                            <div class="col-md-9">
+                                <input asp-for="LocalVisionEndpoint" class="form-control" placeholder="http://localhost:11434/v1/chat/completions" />
+                                <span asp-validation-for="LocalVisionEndpoint" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <div class="col-md-3">
+                                <label asp-for="LocalVisionModel" class="col-form-label">@(isPersian ? "نام مدل Vision محلی" : "Local Vision Model")</label>
+                            </div>
+                            <div class="col-md-9">
+                                <input asp-for="LocalVisionModel" class="form-control" placeholder="qwen2-vl" />
+                                <span asp-validation-for="LocalVisionModel" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <div class="col-md-3">
+                                <label asp-for="LocalChatEndpoint" class="col-form-label">@(isPersian ? "اندپوینت چت‌بات محلی (Chat)" : "Local Chat Endpoint")</label>
+                            </div>
+                            <div class="col-md-9">
+                                <input asp-for="LocalChatEndpoint" class="form-control" placeholder="http://localhost:11434/v1/chat/completions" />
+                                <span asp-validation-for="LocalChatEndpoint" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <div class="col-md-3">
+                                <label asp-for="LocalChatModel" class="col-form-label">@(isPersian ? "نام مدل Chat محلی" : "Local Chat Model")</label>
+                            </div>
+                            <div class="col-md-9">
+                                <input asp-for="LocalChatModel" class="form-control" placeholder="llama3" />
+                                <span asp-validation-for="LocalChatModel" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <div class="col-md-3">
+                                <label asp-for="LocalApiKey" class="col-form-label">@(isPersian ? "کلید API / توکن احراز هویت محلی (اختیاری)" : "Local API Key / Bearer Token (Optional)")</label>
+                            </div>
+                            <div class="col-md-9">
+                                <input asp-for="LocalApiKey" class="form-control" placeholder="Optional Authorization Bearer token" />
+                                <span asp-validation-for="LocalApiKey" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <div class="col-md-3">
+                                <label asp-for="EnableClientWebSpeechFallback" class="col-form-label">@(isPersian ? "پشتیبانی از Web Speech API مرروگر (جستجوی صوتی مستقیم وب)" : "Enable Web Speech API Browser Fallback")</label>
+                            </div>
+                            <div class="col-md-9">
+                                <div class="custom-control custom-switch">
+                                    <input asp-for="EnableClientWebSpeechFallback" type="checkbox" class="custom-control-input" id="WebSpeechSwitch">
+                                    <label class="custom-control-label" for="WebSpeechSwitch">@(isPersian ? "استفاده از سیستم تبدیل گفتار به متن داخلی مرورگر کاربر پیش از ارسال فایل صوتی به سرور" : "Use client browser native STT before uploading audio stream to server")</label>
+                                </div>
+                                <span asp-validation-for="EnableClientWebSpeechFallback" class="text-danger"></span>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -228,6 +357,24 @@
         $('#EmbeddingModelSelect').change(function () {
             updateModelInfo('EmbeddingModelSelect', 'embedding-model-info', true);
         });
+
+        // Provider selection toggle
+        function toggleProviderSections() {
+            var val = $('#ProviderTypeSelect').val();
+            if (val === "1") {
+                $('#local-provider-card').show();
+                $('#cloud-provider-section').hide();
+            } else if (val === "0") {
+                $('#local-provider-card').show(); // Keep both available for editing or toggle visibility
+                $('#cloud-provider-section').show();
+            } else {
+                $('#local-provider-card').hide();
+                $('#cloud-provider-section').hide();
+            }
+        }
+
+        $('#ProviderTypeSelect').change(toggleProviderSections);
+        toggleProviderSections();
 
         // Initial update
         updateModelInfo('ChatbotModelSelect', 'chatbot-model-info', false);

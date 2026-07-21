@@ -217,7 +217,7 @@
         `;
         wrapper.appendChild(resultsDropdown);
 
-        // Voice Search logic
+        // Voice Search logic (Web Speech API + Server STT Upload)
         var mediaRecorder;
         var audioChunks = [];
         var voiceBtn = document.getElementById("aiVoiceSearchBtn");
@@ -225,7 +225,55 @@
         var voiceStopBtn = document.getElementById("aiVoiceStopBtn");
         var voiceStatus = document.getElementById("aiVoiceStatus");
 
-        voiceBtn.addEventListener("click", async function() {
+        var SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+        voiceBtn.addEventListener("click", function() {
+            if (SpeechRecognition) {
+                // Try Web Speech API (Client-side native local voice search)
+                try {
+                    var recognition = new SpeechRecognition();
+                    recognition.lang = document.documentElement.lang || "fa-IR";
+                    recognition.interimResults = false;
+                    recognition.maxAlternatives = 1;
+
+                    voiceOverlay.style.display = "flex";
+                    voiceStatus.innerText = "@Html.Raw(listeningText)";
+
+                    recognition.onresult = function(event) {
+                        voiceOverlay.style.display = "none";
+                        var speechResult = event.results[0][0].transcript;
+                        if (speechResult) {
+                            searchInput.value = speechResult;
+                            searchInput.closest("form").submit();
+                        }
+                    };
+
+                    recognition.onerror = function(event) {
+                        console.warn("Web Speech API error, falling back to MediaRecorder upload:", event.error);
+                        recognition.stop();
+                        startMediaRecorderUpload();
+                    };
+
+                    recognition.onend = function() {
+                        voiceOverlay.style.display = "none";
+                    };
+
+                    voiceStopBtn.onclick = function() {
+                        recognition.stop();
+                        voiceOverlay.style.display = "none";
+                    };
+
+                    recognition.start();
+                    return;
+                } catch (e) {
+                    console.warn("SpeechRecognition init failed, falling back to MediaRecorder upload.");
+                }
+            }
+
+            startMediaRecorderUpload();
+        });
+
+        async function startMediaRecorderUpload() {
             if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
                 alert("@Html.Raw(JavaScriptEncoder.Default.Encode(micError))");
                 return;
@@ -256,7 +304,6 @@
                         if (result.success) {
                             if (result.query) {
                                 searchInput.value = result.query;
-                                // Auto submit form if matches found
                                 searchInput.closest("form").submit();
                             } else {
                                 alert("No speech was identified.");
@@ -272,19 +319,19 @@
                     }
                 };
 
+                voiceStopBtn.onclick = function() {
+                    if (mediaRecorder && mediaRecorder.state === "recording") {
+                        mediaRecorder.stop();
+                    }
+                };
+
                 voiceOverlay.style.display = "flex";
                 voiceStatus.innerText = "@Html.Raw(listeningText)";
                 mediaRecorder.start();
             } catch(e) {
                 alert("@Html.Raw(JavaScriptEncoder.Default.Encode(micError))");
             }
-        });
-
-        voiceStopBtn.addEventListener("click", function() {
-            if (mediaRecorder && mediaRecorder.state === "recording") {
-                mediaRecorder.stop();
-            }
-        });
+        }
 
         // Visual Search logic
         var visualBtn = document.getElementById("aiVisualSearchBtn");
