@@ -31,8 +31,10 @@
 param(
     [int]$Port = 59580,
     [string]$AuthToken = "",
+    [string]$Domain = "ground-buggy-karaoke.ngrok-free.dev",
     [string]$SubDomain = "",
-    [switch]$StartApp = $false
+    [switch]$StartApp = $false,
+    [switch]$ForceClearPorts = $false
 )
 
 # ---------------------------------------------
@@ -63,6 +65,7 @@ function Stop-NopWebProcesses {
                 Stop-Process -Id $proc.Id -Force -ErrorAction Stop
                 Write-Step "OK" "Stopped Nop.Web process (PID: $($proc.Id))." "Green"
             } catch {
+                try { taskkill /F /PID $proc.Id /T | Out-Null } catch {}
                 Write-Step "WARN" "Failed to stop Nop.Web process with PID $($proc.Id): $_" "Yellow"
             }
         }
@@ -78,7 +81,7 @@ function Stop-NopWebProcesses {
                     Stop-Process -Id $p.ProcessId -Force -ErrorAction Stop
                     Write-Step "OK" "Stopped process PID $($p.ProcessId)." "Green"
                 } catch {
-                    # Process might have already terminated
+                    try { taskkill /F /PID $p.ProcessId /T | Out-Null } catch {}
                 }
             }
         }
@@ -86,47 +89,94 @@ function Stop-NopWebProcesses {
         # Fallback if WMI/CIM is restricted
     }
 
+    # 3. Forcibly clear both HTTP (59580) and HTTPS (59579) ports
+    Stop-ProcessOnPort -TargetPort 59580
+    Stop-ProcessOnPort -TargetPort 59579
+
     Start-Sleep -Seconds 1
 }
 
-function Stop-ProcessOnPort([int]$Port) {
-    Stop-NopWebProcesses
-    Write-Step "Port Check" "Checking if port $Port is in use..." "Yellow"
+function Stop-ExistingNgrokProcesses {
+    $ngrokProcs = Get-Process -Name "ngrok" -ErrorAction SilentlyContinue
+    if ($ngrokProcs) {
+        foreach ($proc in $ngrokProcs) {
+            if ($proc.Id -ne $PID) {
+                try {
+                    Write-Step "Killing" "Forcibly stopping existing ngrok process (PID: $($proc.Id))..." "Cyan"
+                    Stop-Process -Id $proc.Id -Force -ErrorAction Stop
+                    Write-Step "OK" "Stopped ngrok process (PID: $($proc.Id))." "Green"
+                } catch {
+                    try { taskkill /F /PID $proc.Id /T | Out-Null } catch {}
+                }
+            }
+        }
+        Start-Sleep -Seconds 1
+    }
+}
+
+function Stop-ProcessOnPort([int]$TargetPort) {
+    Write-Step "Port Check" "Checking if port $TargetPort is in use..." "Yellow"
     $pids = @()
     try {
-        $connections = Get-NetTCPConnection -LocalPort $Port -ErrorAction SilentlyContinue
+        $connections = Get-NetTCPConnection -LocalPort $TargetPort -ErrorAction SilentlyContinue
         if ($connections) {
-            $pids = $connections.OwningProcess | Select-Object -Unique
+            $pids += $connections.OwningProcess | Select-Object -Unique
         }
     } catch {
         # Fallback to netstat if Get-NetTCPConnection is not available or fails
+    }
+
+    try {
         $netstat = netstat -ano
         foreach ($line in $netstat) {
-            if ($line -match ":$Port\s+\S+\s+\S+\s+(\d+)\s*$") {
+            if ($line -match ":$TargetPort\s+.*\s+(\d+)\s*$") {
                 $pids += [int]$Matches[1]
             }
         }
-        $pids = $pids | Select-Object -Unique
-    }
+    } catch { }
     
     # Filter out PID 0 (System Idle Process) and the current PowerShell process PID
-    $pids = $pids | Where-Object { $_ -gt 0 -and $_ -ne $PID }
+    $pids = $pids | Select-Object -Unique | Where-Object { $_ -gt 0 -and $_ -ne $PID }
 
     if ($pids) {
         foreach ($procId in $pids) {
             try {
                 $proc = Get-Process -Id $procId -ErrorAction Stop
-                Write-Step "Killing" "Forcibly stopping process '$($proc.Name)' (PID: $procId) occupying port $Port..." "Cyan"
+                Write-Step "Killing" "Forcibly stopping process '$($proc.Name)' (PID: $procId) occupying port $TargetPort..." "Cyan"
                 Stop-Process -Id $procId -Force -ErrorAction Stop
                 Write-Step "OK" "Stopped process '$($proc.Name)' (PID: $procId)." "Green"
             } catch {
-                Write-Step "WARN" "Failed to stop process with PID ${procId}: $_" "Yellow"
+                try {
+                    taskkill /F /PID $procId /T | Out-Null
+                    Write-Step "OK" "Forcibly killed PID $procId via taskkill." "Green"
+                } catch {
+                    Write-Step "WARN" "Failed to stop process with PID ${procId}: $_" "Yellow"
+                }
             }
         }
         # Give the operating system a moment to release the port
         Start-Sleep -Seconds 1
     } else {
-        Write-Step "OK" "Port $Port is free." "Green"
+        Write-Step "OK" "Port $TargetPort is free." "Green"
+    }
+}
+
+function Clear-RequiredPorts([int]$AppPort, [bool]$ClearAppPort = $false) {
+    Write-Step "Force Clear" "Clearing open ports needed by ngrok and nopCommerce by force..." "Yellow"
+    
+    # Stop existing ngrok processes
+    Stop-ExistingNgrokProcesses
+    
+    # Forcibly clear port 4040 (ngrok Web Inspector API)
+    Stop-ProcessOnPort -TargetPort 4040
+    
+    # If requested or starting app, clear the application ports
+    if ($ClearAppPort) {
+        Stop-NopWebProcesses
+        Stop-ProcessOnPort -TargetPort $AppPort
+        if ($AppPort -gt 1) {
+            Stop-ProcessOnPort -TargetPort ($AppPort - 1)
+        }
     }
 }
 
@@ -135,9 +185,13 @@ function Write-Divider {
 }
 
 # ---------------------------------------------
-#  Step 1 - Display banner
+#  Step 1 - Display banner & optionally force clear ports
 # ---------------------------------------------
 Write-Banner
+
+if ($ForceClearPorts) {
+    Clear-RequiredPorts -AppPort $Port -ClearAppPort $true
+}
 
 # ---------------------------------------------
 #  Step 2 - Check if the local app is reachable
@@ -146,11 +200,11 @@ Write-Step "Checking" "Checking local app on port $Port..." "Yellow"
 
 $appRunning = $false
 try {
-    $null = Invoke-WebRequest -Uri "http://localhost:$Port" -TimeoutSec 5 -UseBasicParsing -ErrorAction Stop
+    $null = Invoke-WebRequest -Uri "http://127.0.0.1:$Port" -TimeoutSec 5 -UseBasicParsing -ErrorAction Stop
     Write-Step "OK" "nopCommerce is running on port $Port." "Green"
     $appRunning = $true
 } catch {
-    Write-Step "WARN" "Could not reach http://localhost:$Port  - is the app running?" "Yellow"
+    Write-Step "WARN" "Could not reach http://127.0.0.1:$Port  - is the app running?" "Yellow"
 }
 
 $appProc = $null
@@ -165,7 +219,8 @@ if (-not $appRunning) {
     }
 
     if ($shouldStart) {
-        Stop-ProcessOnPort $Port
+        Stop-NopWebProcesses
+        Stop-ProcessOnPort -TargetPort $Port
         Write-Step "Launch" "Starting the app process..." "Cyan"
         $repoRoot = (Resolve-Path "$PSScriptRoot\..").Path
         $runScript = Join-Path $repoRoot "run.ps1"
@@ -176,13 +231,13 @@ if (-not $appRunning) {
             # Wait for the app to start up and become reachable
             Write-Host "  Waiting for the app to initialize on port $Port..." -ForegroundColor Yellow
             $started = $false
-            $maxAppWait = 30
+            $maxAppWait = 90
             $appElapsed = 0
             while ($appElapsed -lt $maxAppWait) {
-                Start-Sleep -Seconds 2
-                $appElapsed += 2
+                Start-Sleep -Seconds 3
+                $appElapsed += 3
                 try {
-                    $null = Invoke-WebRequest -Uri "http://localhost:$Port" -TimeoutSec 2 -UseBasicParsing -ErrorAction Stop
+                    $null = Invoke-WebRequest -Uri "http://127.0.0.1:$Port" -TimeoutSec 2 -UseBasicParsing -ErrorAction Stop
                     $started = $true
                     break
                 } catch {
@@ -287,14 +342,23 @@ if ($AuthToken -ne "") {
 # ---------------------------------------------
 #  Step 5 - Build ngrok command and start tunnel
 # ---------------------------------------------
-Stop-ProcessOnPort 4040
-Write-Step "Launch" "Starting ngrok tunnel -> http://localhost:$Port" "Cyan"
+Stop-ExistingNgrokProcesses
+Stop-ProcessOnPort -TargetPort 4040
+Write-Step "Launch" "Starting ngrok tunnel -> http://127.0.0.1:$Port" "Cyan"
 Write-Host ""
 
-$ngrokArgs = @("http", $Port, "--log=stdout")
+$ngrokArgs = @("http", "http://127.0.0.1:$Port", "--log=stdout")
 
+$targetDomain = $Domain
 if ($SubDomain -ne "") {
-    $ngrokArgs += "--subdomain=$SubDomain"
+    $targetDomain = $SubDomain
+}
+
+if ($targetDomain -ne "") {
+    if (-not ($targetDomain -like "http*")) {
+        $targetDomain = "https://$targetDomain"
+    }
+    $ngrokArgs += "--url=$targetDomain"
 }
 
 # Start ngrok as a background process so we can query its API
@@ -349,7 +413,7 @@ Write-Host "  Tunnel is LIVE!" -ForegroundColor Green
 Write-Host ""
 Write-Host "  +---------------------------------------------------------+" -ForegroundColor Green
 Write-Host "  |  Public URL:   $publicUrl" -ForegroundColor White
-Write-Host "  |  Local URL:    http://localhost:$Port" -ForegroundColor White
+Write-Host "  |  Local URL:    http://127.0.0.1:$Port" -ForegroundColor White
 Write-Host "  |  Inspector:    http://localhost:4040" -ForegroundColor White
 Write-Host "  |  Admin Email:  admin@yourStore.com" -ForegroundColor White
 Write-Host "  |  Admin Pass:   admin" -ForegroundColor White

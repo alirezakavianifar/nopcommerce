@@ -1,11 +1,10 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Nop.Web.Framework.Mvc.Routing;
-using Nop.Web.Infrastructure;
 
 namespace Nop.Plugin.Misc.AmazingDiscounts.Infrastructure;
 
-public class RouteProvider : BaseRouteProvider, IRouteProvider
+public class RouteProvider : IRouteProvider
 {
     public void RegisterRoutes(IEndpointRouteBuilder endpointRouteBuilder)
     {

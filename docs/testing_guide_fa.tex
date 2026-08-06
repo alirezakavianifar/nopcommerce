@@ -13,8 +13,8 @@
 
 \title{\textbf{راهنمای جامع کاربری و تصویری گام به گام nopCommerce}\\
 \large(صفحه تخفیف‌های شگفت‌انگیز، سیستم تبلیغات فروشندگان، خرید گروهی و کیف پول)}
-\author{مستندات توسعه و کاربری سیستم nopCommerce فارسی}
-\date{\today}
+\author{}
+\date{}
 
 \begin{document}
 
@@ -26,7 +26,9 @@
 این راهنما جهت استفاده کاربران نهایی (مشتریان)، فروشندگان (تامین‌کنندگان) و مدیران فروشگاه nopCommerce به زبان فارسی تنظیم شده است. تمامی مراحل به همراه تصویر مربوط به آن گام به گام ارائه گردیده است.
 
 \begin{center}
-\textbf{آدرس آنلاین فروشگاه:} \url{https://ground-buggy-karaoke.ngrok-free.dev}
+\textbf{آدرس آنلاین فروشگاه:} \url{https://ground-buggy-karaoke.ngrok-free.dev} \\
+\textbf{آدرس پنل مدیریت فروشگاه:} \url{https://ground-buggy-karaoke.ngrok-free.dev/Admin} \\
+\textbf{نام کاربری مدیر ارشد:} \lr{admin@yourStore.com} \quad | \quad \textbf{کلمه عبور:} \lr{admin}
 \end{center}
 
 \begin{figure}[H]
@@ -55,7 +57,7 @@
 
 صفحه تخفیف‌های شگفت‌انگیز تمامی کالاهای دارای تخفیف فعال را در یک ویترین یکپارچه نمایش می‌دهد.
 
-\subsection{گام ۱: نحوه تعریف تخفیف شگفت‌انگیز توسط مدیر (Admin)}
+\subsection{گام ۱: نحوه تعریف تخفیف شگفت‌انگیز توسط مدیر \lr{(Admin)}}
 وارد پنل مدیریت شوید و به مسیر \textbf{ترفیعات > تخفیف‌ها} (\lr{Promotions > Discounts}) بروید. تخفیف جدید با نوع \lr{Assigned to products} ایجاد کنید و درصد تخفیف را وارد نمایید.
 
 \begin{figure}[H]
@@ -81,7 +83,10 @@
 این سیستم به فروشندگان اجازه می‌دهد درخواست برجسته‌سازی و تبلیغ محصولات خود را ثبت کنند.
 
 \subsection{گام ۳: ورود به داشبورد تبلیغات فروشنده (Seller Dashboard)}
-فروشنده پس از ورود، به داشبورد تبلیغات خود به آدرس \lr{/seller/dashboard} مراجعه می‌کند.
+فروشنده پس از ورود، به داشبورد تبلیغات خود مراجعه می‌کند:
+\begin{center}
+    \url{https://ground-buggy-karaoke.ngrok-free.dev/seller/dashboard}
+\end{center}
 
 \begin{figure}[H]
     \centering
@@ -91,7 +96,10 @@
 \end{figure}
 
 \subsection{گام ۴: ثبت درخواست محصول تبلیغاتی جدید}
-فروشنده با کلیک روی دکمه افزودن محصول تبلیغاتی (\lr{/seller/product/add})، فرم ثبت تبلیغ را تکمیل می‌کند.
+فروشنده با کلیک روی دکمه افزودن محصول تبلیغاتی، فرم ثبت تبلیغ را تکمیل می‌کند:
+\begin{center}
+    \url{https://ground-buggy-karaoke.ngrok-free.dev/seller/product/add}
+\end{center}
 
 \begin{figure}[H]
     \centering
@@ -100,8 +108,11 @@
     \label{fig:step4_seller_product_add}
 \end{figure}
 
-\subsection{گام ۵: بررسی و تایید درخواست توسط مدیر (Admin Approval)}
-مدیر فروشگاه به مسیر \lr{/Admin/SellerMarketing/List} مراجعه کرده و درخواست‌های تبلیغاتی را بررسی و تایید می‌کند.
+\subsection{گام ۵: بررسی و تایید درخواست توسط مدیر \lr{(Admin Approval)}}
+مدیر فروشگاه درخواست‌های تبلیغاتی را بررسی و تایید می‌کند:
+\begin{center}
+    \url{https://ground-buggy-karaoke.ngrok-free.dev/Admin/SellerMarketing/List}
+\end{center}
 
 \begin{figure}[H]
     \centering
@@ -114,7 +125,10 @@
 \section{بخش سوم: راهنمای گام به گام سیستم خرید گروهی و کیف پول}
 
 \subsection{گام ۶: فعال‌سازی خرید گروهی محصولات توسط مدیر}
-مدیر به مسیر \lr{/Admin/GroupPurchase/List} برمی‌گردد و محصولات را برای خرید گروهی فعال می‌کند.
+مدیر به مسیر خرید گروهی مراجعه کرده و محصولات را برای خرید گروهی فعال می‌کند:
+\begin{center}
+    \url{https://ground-buggy-karaoke.ngrok-free.dev/Admin/GroupPurchase/List}
+\end{center}
 
 \begin{figure}[H]
     \centering
@@ -124,7 +138,10 @@
 \end{figure}
 
 \subsection{گام ۷: تنظیم قوانین پاداش خرید گروهی توسط مدیر}
-مدیر در مسیر \lr{/Admin/RewardRule/List} میزان پاداش واریزی به کیف پول لیدرهای گروه را تعیین می‌کند.
+مدیر میزان پاداش واریزی به کیف پول لیدرهای گروه را تعیین می‌کند:
+\begin{center}
+    \url{https://ground-buggy-karaoke.ngrok-free.dev/Admin/RewardRule/List}
+\end{center}
 
 \begin{figure}[H]
     \centering
@@ -134,7 +151,10 @@
 \end{figure}
 
 \subsection{گام ۸: مدیریت گروه‌های لیدری توسط لیدر}
-لیدر می‌تواند وضعیت گروه‌های ایجاد شده خود را در آدرس \lr{/customer/leader-groups} پیگیری نماید.
+لیدر می‌تواند وضعیت گروه‌های ایجاد شده خود را پیگیری نماید:
+\begin{center}
+    \url{https://ground-buggy-karaoke.ngrok-free.dev/customer/leader-groups}
+\end{center}
 
 \begin{figure}[H]
     \centering
@@ -144,7 +164,10 @@
 \end{figure}
 
 \subsection{گام ۹: مشاهده تاریخچه زیرمجموعه‌ها توسط اعضا}
-اعضای گروه‌ها می‌توانند تاریخچه عضویت خود در گروه‌ها را در آدرس \lr{/customer/subgroup-history} مشاهده کنند.
+اعضای گروه‌ها می‌توانند تاریخچه عضویت خود در گروه‌ها را مشاهده کنند:
+\begin{center}
+    \url{https://ground-buggy-karaoke.ngrok-free.dev/customer/subgroup-history}
+\end{center}
 
 \begin{figure}[H]
     \centering
@@ -154,7 +177,10 @@
 \end{figure}
 
 \subsection{گام ۱۰: مدیریت کیف پول و موجودی پاداش‌ها}
-کاربران موجودی عادی و پاداش خرید گروهی خود را در آدرس \lr{/customer/wallet} مشاهده می‌نمایند.
+کاربران موجودی عادی و پاداش خرید گروهی خود را مشاهده می‌نمایند:
+\begin{center}
+    \url{https://ground-buggy-karaoke.ngrok-free.dev/customer/wallet}
+\end{center}
 
 \begin{figure}[H]
     \centering
@@ -164,7 +190,10 @@
 \end{figure}
 
 \subsection{گام ۱۱: مشاهده امتیازات و شرکت در قرعه‌کشی}
-کاربران امتیازات قرعه‌کشی کسب‌شده خود را در آدرس \lr{/customer/lottery} مشاهده و مدیریت می‌کنند.
+کاربران امتیازات قرعه‌کشی کسب‌شده خود را مشاهده و مدیریت می‌کنند:
+\begin{center}
+    \url{https://ground-buggy-karaoke.ngrok-free.dev/customer/lottery}
+\end{center}
 
 \begin{figure}[H]
     \centering
@@ -174,7 +203,7 @@
 \end{figure}
 
 \newpage
-\section{بخش چهارم: راهنمای گام به گام ماژول‌های هوشمند (B و C)}
+\section{بخش چهارم: راهنمای گام به گام ماژول‌های هوشمند \lr{(B)} و \lr{(C)}}
 
 \subsection{گام ۱۲: ماژول B (جستجوی هوشمند - صوتی و تصویری)}
 این ماژول قابلیت جستجوی صوتی و تصویری مبتنی بر هوش مصنوعی را در نوار جستجوی عمومی فروشگاه ارائه می‌دهد.
@@ -197,31 +226,158 @@
 \end{figure}
 
 \newpage
+\section{بخش پنجم: راهنمای گام به گام احراز هویت دو مرحله‌ای اس‌ام‌اسی و محدودیت‌های امنیتی}
+
+\subsection{گام ۱۴: ماژول احراز هویت دو مرحله‌ای پیامکی \lr{(SMS 2FA)}}
+این ماژول امکان فعال‌سازی ورود امن دو مرحله‌ای بر پایه ارسال کد پیامکی \lr{(OTP)} را برای مشتریان و مدیران سیستم فراهم می‌سازد. تنظیمات درگاه پیامک در مسیر زیر مدیریت می‌شود:
+\begin{center}
+    \url{https://ground-buggy-karaoke.ngrok-free.dev/Plugins/SMS/Configure}
+\end{center}
+
+\noindent \textbf{توجه برای تست سیستم:} از آنجا که درگاه پیامک در حال حاضر در حالت شبیه‌ساز \lr{(Mock)} پیکربندی شده است، برای رد شدن از این مرحله و احراز هویت موفق، می‌توانید کد یکبار مصرف پیش‌فرض \lr{12345} را در فیلد کد تأیید وارد کنید.
+
+\begin{figure}[H]
+    \centering
+    \setlatin{\includegraphics[width=0.85\textwidth]{step14_sms_mfa.png}}
+    \caption{گام ۱۴: احراز هویت دو مرحله‌ای پیامکی و تایید ورود}
+    \label{fig:step14_sms_mfa}
+\end{figure}
+
+\subsection{گام ۱۵: محدودیت‌های امنیتی IP و شناسه دستگاه \lr{(Device Token)}}
+جهت محافظت پیشرفته از پنل ارشد، مدیر می‌تواند لیست سفید آدرس‌های IP مجاز و هش توکن سخت‌افزاری دستگاه‌های مجاز را تعریف کند. دسترسی‌های غیرمجاز با پاسخ \lr{HTTP 403 Forbidden} مسدود می‌گردند.
+
+\begin{figure}[H]
+    \centering
+    \setlatin{\includegraphics[width=0.85\textwidth]{step15_security_restrictions.png}}
+    \caption{گام ۱۵: تنظیمات لیست سفید IP و امضای دستگاه مجاز}
+    \label{fig:step15_security_restrictions}
+\end{figure}
+
+\newpage
+\section{بخش ششم: راهنمای گام به گام روش‌های ارسال مشروط}
+
+\subsection{گام ۱۶: مدیریت و پیکربندی روش‌های ارسال مشروط (Conditional Shipping)}
+این ماژول اولویت‌بندی ارسال سفارش‌ها را بر اساس سه شرط متوالی بررسی می‌کند: \textbf{۱. پوشش شهری}، \textbf{۲. پشتیبانی محصول} و \textbf{۳. انبار}. روش‌های اکسپرس، باربری، کارگو و پیک در مسیر زیر قابل مدیریت می‌باشند:
+\begin{center}
+    \url{https://ground-buggy-karaoke.ngrok-free.dev/Admin/ConditionalShipping/Configure}
+\end{center}
+
+\begin{figure}[H]
+    \centering
+    \setlatin{\includegraphics[width=0.85\textwidth]{step16_conditional_shipping.png}}
+    \caption{گام ۱۶: مدیریت روش‌های ارسال مشروط و اولویت‌بندی ارسال}
+    \label{fig:step16_conditional_shipping}
+\end{figure}
+
+\newpage
+\section{بخش هفتم: راهنمای گام به گام ماژول اعلانات کاربران}
+
+\subsection{گام ۱۷: ماژول اعلانات سیستم و مدیریت پیام‌های عمومی \lr{(User Notifications)}}
+مدیر سیستم می‌تواند اعلانات عمومی، بنری یا پاپ‌آپ جدید را در مسیر زیر ایجاد نماید. اعلانات فعال هم‌زمان روی سایت و از طریق API همراه به اپلیکیشن موبایل منتقل می‌شوند:
+\begin{center}
+    \url{https://ground-buggy-karaoke.ngrok-free.dev/Admin/UserNotifications/List}
+\end{center}
+
+\begin{figure}[H]
+    \centering
+    \setlatin{\includegraphics[width=0.85\textwidth]{step17_user_notifications.png}}
+    \caption{گام ۱۷: ماژول اعلانات عمومی و پیام‌های سیستم}
+    \label{fig:step17_user_notifications}
+\end{figure}
+
+\newpage
+\section{بخش هشتم: راهنمای گام به گام سیستم درخواست استعلام قیمت (RFQ)}
+
+\subsection{گام ۱۸: ثبت درخواست استعلام قیمت توسط مشتری \lr{(RFQ Customer)}}
+خریداران عمده می‌توانند در صفحه محصولات سفارشی یا صنعتی، فرم استعلام قیمت و حجم درخواستی را در مسیر زیر تکمیل و ارسال نمایند:
+\begin{center}
+    \url{https://ground-buggy-karaoke.ngrok-free.dev/rfq/submit}
+\end{center}
+
+\begin{figure}[H]
+    \centering
+    \setlatin{\includegraphics[width=0.85\textwidth]{step18_rfq_customer.png}}
+    \caption{گام ۱۸: فرم ثبت استعلام قیمت و پیشنهاد خریدار}
+    \label{fig:step18_rfq_customer}
+\end{figure}
+
+\subsection{گام ۱۹: مدیریت و پاسخ به استعلام‌های قیمت \lr{(RFQ Admin)}}
+فروشندگان و مدیران فروشگاه درخواست‌های استعلام قیمت واصله را در مسیر زیر بررسی نموده و قیمت پیشنهادی نهایی یا پیش‌فاکتور را صادر می‌نمایند:
+\begin{center}
+    \url{https://ground-buggy-karaoke.ngrok-free.dev/Admin/Rfq/List}
+\end{center}
+
+\begin{figure}[H]
+    \centering
+    \setlatin{\includegraphics[width=0.85\textwidth]{step19_rfq_admin.png}}
+    \caption{گام ۱۹: داشبورد مدیریت و صدور پیش‌فاکتور استعلام قیمت}
+    \label{fig:step19_rfq_admin}
+\end{figure}
+
+\newpage
+\section{بخش نهم: راهنمای گام به گام سرویس‌های API همراه \lr{(Mobile REST API)}}
+
+\subsection{گام ۲۰: احراز هویت و فراخوانی سرویس‌های RESTful اپلیکیشن موبایل}
+تمامی قابلیت‌های خرید گروهی، کیف پول و اعلانات از طریق سرویس‌های زیر با فرمت خالص \lr{JSON} در دسترس اپلیکیشن همراه است. درخواست‌های غیرمجاز به صورت استاندارد پاسخ \lr{HTTP 401 Unauthorized} دریافت می‌کنند:
+\begin{center}
+    \url{https://ground-buggy-karaoke.ngrok-free.dev/api/group-purchase/}
+\end{center}
+
+\begin{figure}[H]
+    \centering
+    \setlatin{\includegraphics[width=0.85\textwidth]{step20_mobile_api.png}}
+    \caption{گام ۲۰: مستندات و تست سرویس‌های RESTful API همراه}
+    \label{fig:step20_mobile_api}
+\end{figure}
+
+\newpage
+\section{بخش دهم: راهنمای گام به گام ماژول چت‌بات هوش مصنوعی (ماژول D)}
+
+\subsection{گام ۲۱: پشتیبان و چت‌بات هوشمند (ماژول D) و ارجاع به اپراتور انسانی}
+این ماژول پاسخ‌گویی خودکار به سوالات خریداران، استعلام وضعیت سفارش و راهنمایی خرید را بر عهده دارد. در صورت نیاز کاربر با تایپ عبارت «ارجاع به پشتیبان»، گفتگو به اپراتور انسانی متصل می‌گردد.
+
+\begin{figure}[H]
+    \centering
+    \setlatin{\includegraphics[width=0.85\textwidth]{step21_ai_chatbot.png}}
+    \caption{گام ۲۱: چت‌بات هوش مصنوعی و پشتیبانی آنلاین خریداران}
+    \label{fig:step21_ai_chatbot}
+\end{figure}
+
+\newpage
 \section{جدول مرجع آدرس‌های سیستم (فروشگاه و مدیریت)}
 
 \begin{table}[H]
 \centering
-\caption{جدول کامل مسیرهای دسترسی به همراه شماره گام}
+\caption{جدول کامل مسیرهای دسترسی به همراه شماره گام (گام ۱ تا گام ۲۱)}
 \vspace{0.3cm}
-\begin{tabular}{p{2cm} p{4.5cm} p{5.5cm} p{4.5cm}}
+\begin{tabular}{p{1.5cm} p{3.5cm} p{6cm} p{6cm}}
 \toprule
 \textbf{شماره گام} & \textbf{نام بخش / قابلیت} & \textbf{آدرس بخش فروشگاه} & \textbf{آدرس بخش مدیریت} \\
 \midrule
-گام ۱ & مدیریت تخفیف‌ها & --- & \lr{/Admin/Discount/List} \\
-گام ۲ & صفحه تخفیف‌های شگفت‌انگیز & \lr{/amazing-discounts} & --- \\
-گام ۳ & داشبورد تبلیغات فروشنده & \lr{/seller/dashboard} & --- \\
-گام ۴ & ثبت محصول تبلیغاتی & \lr{/seller/product/add} & --- \\
-گام ۵ & مدیریت تبلیغات فروشندگان & --- & \lr{/Admin/SellerMarketing/List} \\
-گام ۶ & مدیریت خرید گروهی & --- & \lr{/Admin/GroupPurchase/List} \\
-گام ۷ & مدیریت قوانین پاداش & --- & \lr{/Admin/RewardRule/List} \\
-گام ۸ & گروه‌های لیدری مشتری & \lr{/customer/leader-groups} & --- \\
-گام ۹ & تاریخچه زیرمجموعه‌ها & \lr{/customer/subgroup-history} & --- \\
-گام ۱۰ & کیف پول و موجودی & \lr{/customer/wallet} & \lr{/Admin/CustomerWallet/List} \\
-گام ۱۱ & امتیازات و قرعه‌کشی & \lr{/customer/lottery} & --- \\
-گام ۱۲ & ماژول جستجوی هوشمند & \lr{/AiSearch/VisualSearch} & --- \\
-گام ۱۳ & ماژول تشخیص تکراری & --- & \lr{/Admin/AiDuplicateProduct/List} \\
+گام ۱ & مدیریت تخفیف‌ها & --- & \url{https://ground-buggy-karaoke.ngrok-free.dev/Admin/Discount/List} \\
+گام ۲ & صفحه تخفیف‌های شگفت‌انگیز & \url{https://ground-buggy-karaoke.ngrok-free.dev/amazing-discounts} & --- \\
+گام ۳ & داشبورد تبلیغات فروشنده & \url{https://ground-buggy-karaoke.ngrok-free.dev/seller/dashboard} & --- \\
+گام ۴ & ثبت محصول تبلیغاتی & \url{https://ground-buggy-karaoke.ngrok-free.dev/seller/product/add} & --- \\
+گام ۵ & مدیریت تبلیغات فروشندگان & --- & \url{https://ground-buggy-karaoke.ngrok-free.dev/Admin/SellerMarketing/List} \\
+گام ۶ & مدیریت خرید گروهی & --- & \url{https://ground-buggy-karaoke.ngrok-free.dev/Admin/GroupPurchase/List} \\
+گام ۷ & مدیریت قوانین پاداش & --- & \url{https://ground-buggy-karaoke.ngrok-free.dev/Admin/RewardRule/List} \\
+گام ۸ & گروه‌های لیدری مشتری & \url{https://ground-buggy-karaoke.ngrok-free.dev/customer/leader-groups} & --- \\
+گام ۹ & تاریخچه زیرمجموعه‌ها & \url{https://ground-buggy-karaoke.ngrok-free.dev/customer/subgroup-history} & --- \\
+گام ۱۰ & کیف پول و موجودی & \url{https://ground-buggy-karaoke.ngrok-free.dev/customer/wallet} & \url{https://ground-buggy-karaoke.ngrok-free.dev/Admin/CustomerWallet/List} \\
+گام ۱۱ & امتیازات و قرعه‌کشی & \url{https://ground-buggy-karaoke.ngrok-free.dev/customer/lottery} & --- \\
+گام ۱۲ & ماژول جستجوی هوشمند & \url{https://ground-buggy-karaoke.ngrok-free.dev/AiSearch/VisualSearch} & --- \\
+گام ۱۳ & ماژول تشخیص تکراری & --- & \url{https://ground-buggy-karaoke.ngrok-free.dev/Admin/AiDuplicateProduct/List} \\
+گام ۱۴ & ورود دو مرحله‌ای پیامکی & \url{https://ground-buggy-karaoke.ngrok-free.dev/login} & \url{https://ground-buggy-karaoke.ngrok-free.dev/Plugins/SMS/Configure} \\
+گام ۱۵ & محدودیت‌های IP و دستگاه & --- & \url{https://ground-buggy-karaoke.ngrok-free.dev/Plugins/SMS/Configure} \\
+گام ۱۶ & ارسال مشروط محصولات & \url{https://ground-buggy-karaoke.ngrok-free.dev/cart} & \url{https://ground-buggy-karaoke.ngrok-free.dev/Admin/ConditionalShipping/Configure} \\
+گام ۱۷ & اعلانات سیستم و عمومی & \url{https://ground-buggy-karaoke.ngrok-free.dev/api/notifications/active} & \url{https://ground-buggy-karaoke.ngrok-free.dev/Admin/UserNotifications/List} \\
+گام ۱۸ & ثبت استعلام قیمت مشتری & \url{https://ground-buggy-karaoke.ngrok-free.dev/rfq/submit} & --- \\
+گام ۱۹ & مدیریت استعلام‌های قیمت & --- & \url{https://ground-buggy-karaoke.ngrok-free.dev/Admin/Rfq/List} \\
+گام ۲۰ & سرویس‌های API همراه & \url{https://ground-buggy-karaoke.ngrok-free.dev/api/group-purchase/} & --- \\
+گام ۲۱ & چت‌بات هوشمند (ماژول D) & \url{https://ground-buggy-karaoke.ngrok-free.dev/chat} & \url{https://ground-buggy-karaoke.ngrok-free.dev/Admin/ArtificialIntelligence/Configure} \\
 \bottomrule
 \end{tabular}
 \end{table}
 
 \end{document}
+

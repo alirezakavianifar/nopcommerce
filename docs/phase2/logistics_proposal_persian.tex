@@ -1,0 +1,548 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage{geometry}
+\geometry{left=2cm,right=2cm,top=2.5cm,bottom=2.5cm}
+\usepackage{booktabs}
+\usepackage{xcolor}
+\usepackage{tabularx}
+\usepackage{hyperref}
+\usepackage{amssymb}
+\usepackage{longtable}
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,      
+    urlcolor=cyan,
+}
+
+\definecolor{primary}{HTML}{1A365D}
+\definecolor{secondary}{HTML}{2B6CB0}
+
+\usepackage{xepersian}
+\settextfont{Tahoma}
+\setlatintextfont{Arial}
+
+\begin{document}
+
+\begin{center}
+    \vspace*{0.5cm}
+    {\Huge\bfseries طرح پیشنهادی فنی و مالی یکپارچه‌سازی سیستم لجستیک} \\[0.4cm]
+    {\Large\bfseries پیاده‌سازی وب‌سرویس‌های استعلام، تفکیک انبارها، زمان‌بندی و ثبت سفارش (ماژول H)} \\[0.8cm]
+    \textbf{نسخه پیشنهادی ۱.۰} --- \textbf{منطبق بر سند تحلیل و طراحی سیستم لجستیک (۱۴۰۵ / ۲۰۲۶)} \\[1.2cm]
+\end{center}
+
+\tableofcontents
+\newpage
+
+\section{هدف و دامنه (Objective \& Scope)}
+هدف این سند، تعریف و تشریح فرآیند توسعه لایه یکپارچه‌سازی فروشگاه ناپ‌کامرس با سامانه لجستیک اختصاصی است. ماژول ناپ‌کامرس به عنوان یک واسط (\lr{Adapter})، اطلاعات سبد خرید و آدرس خریدار را جمع‌آوری کرده و به سرور لجستیک ارسال می‌کند. سرور لجستیک نیز بر اساس موقعیت انبارها، موجودی، قوانین ارسال، ظرفیت پیک، تقویم و روزهای تعطیل، گزینه‌های معتبر ارسال را به صورت پویا محاسبه و برمی‌گرداند.
+
+\subsection{خروجی مورد انتظار برای کاربر}
+\begin{itemize}
+    \item نمایش روش‌های ارسال مجاز (پیک اختصاصی، پست، تیپاکس، حمل ویژه باربری).
+    \item نمایش تاریخ یا بازه تقریبی تحویل هر روش ارسال.
+    \item نمایش و امکان انتخاب بازه‌های زمانی تحویل (مانند ۲ تیر ساعت ۱۲ تا ۱۶) در صورت لزوم.
+    \item محاسبه زنده هزینه قطعی یا تخمینی ارسال.
+    \item نمایش شفاف چندمرسوله‌ای بودن سفارش و لیست اقلام هر مرسوله به تفکیک انبار.
+    \item نمایش پیام‌های واضح در صورت عدم امکان ارسال یک یا چند کالا به مقصد خریدار.
+\end{itemize}
+
+\subsection{موارد خارج از دامنه نسخه اول (Out of Scope)}
+\begin{itemize}
+    \item مسیربندی بهینه لحظه‌ای رانندگان و اپلیکیشن راننده.
+    \item تسویه حساب‌های مالی با شرکت‌های حمل‌کننده خارجی.
+    \item فرآیند کامل مرجوعی کالا (اگرچه زیرساخت و شناسه‌های لازم پیش‌بینی می‌شود).
+\end{itemize}
+
+\section{اصول معماری و مسئولیت سیستم‌ها}
+اصل بنیادی معماری این سیستم بر پایه ایزوله‌سازی است؛ ناپ‌کامرس صرفاً نقش واسط (\lr{Adapter}) را بازی می‌کند و هیچ‌گونه منطق محاسباتی لجستیک (هزینه‌ها، پوشش شهرها یا ظرفیت بازه‌ها) در آن نگهداری نمی‌شود.
+
+\begin{table}[htbp]
+\centering
+\begin{tabularx}{\textwidth}{l X}
+\toprule
+\textbf{سیستم} & \textbf{مسئولیت‌های اصلی} \\
+\midrule
+\textbf{ناپ‌کامرس (ماژول اتصال)} & خواندن سبد، مشتری و آدرس؛ تبدیل داده به قرارداد وب‌سرویس؛ نمایش گزینه‌ها؛ نگهداری موقت انتخاب کاربر؛ ثبت نهایی سفارش و دریافت وضعیت. \\
+\midrule
+\textbf{سامانه لجستیک} & تشخیص انبار و گروه مرسوله؛ بررسی امکان روش‌های حمل؛ محاسبه تاریخ، بازه زمانی (\lr{Time Slot}) و هزینه؛ رزرو موقت ظرفیت؛ ایجاد مرسوله؛ مدیریت وضعیت تحویل. \\
+\midrule
+\textbf{کاربر (خریدار)} & انتخاب آدرس، روش ارسال و بازه زمانی؛ تایید هزینه؛ ثبت سفارش و پرداخت. \\
+\midrule
+\textbf{مدیر فروشگاه} & مدیریت نگاشت‌ها (\lr{Mappings})، تنظیمات اتصال، مشاهده لاگ خطاها و اجرای مجدد دستی (\lr{Retry}). \\
+\bottomrule
+\end{tabularx}
+\caption{جدول مسئولیت سیستم‌ها}
+\end{table}
+
+\noindent \textbf{قاعده تصمیم‌گیری:} فروشگاه نباید به صورت محلی تصمیم بگیرد که چه مقصدی با چه روشی و با چه هزینه‌ای ارسال شود؛ تمامی تصمیم‌ها باید از پاسخ‌های معتبر سامانه لجستیک استخراج شوند.
+
+\section{واژگان و موجودیت‌های اصلی (Glossary)}
+\begin{table}[htbp]
+\centering
+\begin{tabularx}{\textwidth}{l X}
+\toprule
+\textbf{اصطلاح} & \textbf{تعریف} \\
+\midrule
+\lr{Cart} & سبد خرید جاری کاربر در ناپ‌کامرس. \\
+\lr{Cart Item} & یک ردیف کالا همراه با تعداد و ویژگی‌های انتخاب‌شده. \\
+\lr{Warehouse} & انبار یا نقطه تأمین کالا. \\
+\lr{Shipment Group} & گروهی از اقلام که قابلیت ارسال در یک مرسوله یا مسیر مشترک را دارند. \\
+\lr{Delivery Option} & یک گزینه قابل انتخاب در سطح کل سبد یا یک گروه مرسوله. \\
+\lr{Time Slot} & بازه تاریخ و ساعت قابل رزرو برای تحویل. \\
+\lr{Quote} & نتیجه موقت استعلام ارسال با زمان انقضا. \\
+\lr{Selection} & انتخاب کاربر از بین گزینه‌ها و بازه‌ها. \\
+\lr{Logistics Order} & رکورد نهایی سفارش ثبت شده در سامانه لجستیک. \\
+\lr{External Code} & شناسه پایدار بین دو سیستم برای شهر، استان، انبار و روش ارسال. \\
+\bottomrule
+\end{tabularx}
+\caption{واژگان و مفاهیم اصلی لجستیک}
+\end{table}
+
+\newpage
+\section{جریان کامل سبد خرید تا تحویل (End-to-End Workflow)}
+\begin{enumerate}
+    \item کاربر کالاها را به سبد خرید خود اضافه می‌کند.
+    \item در صفحه سبد یا فرآیند تسویه حساب، آدرس تحویل انتخاب یا ثبت می‌شود.
+    \item ماژول اطلاعات سبد، ویژگی فیزیکی کالاها، شناسه انبار و مقصد را آماده می‌کند.
+    \item ماژول درخواست استعلام قیمت را به سامانه لجستیک ارسال می‌کند.
+    \item لجستیک اقلام را بر اساس انبار مبدا و قواعد عملیاتی گروه‌بندی می‌کند.
+    \item گزینه‌های معتبر شامل روش، تاریخ، بازه و هزینه بازگردانده می‌شوند.
+    \item کاربر یک گزینه و در صورت نیاز بازه زمانی (\lr{Time Slot}) را انتخاب می‌کند.
+    \item قبل از ثبت نهایی یا پرداخت سفارش، وضعیت نقل‌قول (\lr{Quote}) دوباره اعتبارسنجی (\lr{Validate}) می‌شود.
+    \item پس از ثبت موفق سفارش، سفارش لجستیک (\lr{Logistics Order}) و مرسوله‌ها (\lr{Shipments}) ایجاد می‌شوند.
+    \item تغییرات وضعیت ارسال از طریق وب‌هوک (\lr{Webhook}) یا استعلام دوره‌ای (\lr{Polling}) به فروشگاه منتقل می‌شود.
+\end{enumerate}
+
+\paragraph{نمودار متنی جریان کار (Workflow Diagram):}
+\begin{latin}
+\begin{verbatim}
+Customer Cart + Address
+        |
+        v
+nopCommerce Integration Plugin
+        |
+        | POST /delivery-quotes
+        v
+Logistics Engine
+  - Warehouse resolution
+  - Shipment grouping
+  - Method eligibility
+  - Capacity / calendar
+  - Cost estimation
+        |
+        v
+Delivery Options + Time Slots + Estimated Cost
+        |
+        v
+User Selection -> Validate -> Create Logistics Order
+\end{verbatim}
+\end{latin}
+
+\section{نگاشت شناسه‌ها و داده‌های مرجع (Identifier Mapping)}
+برای جلوگیری از تداخل شناسه‌های داخلی دیتابیس ناپ‌کامرس با سرور لجستیک، تمامی ارتباطات بر اساس کدهای خارجی پایدار (\lr{External Codes}) نگاشت می‌شوند.
+
+\begin{table}[htbp]
+\centering
+\begin{tabularx}{\textwidth}{c c c c l}
+\toprule
+\textbf{نوع} & \textbf{شناسه ناپ‌کامرس} & \textbf{کد خارجی پایدار} & \textbf{شناسه لجستیک} & \textbf{مثال} \\
+\midrule
+استان & \lr{StateProvinceId} & \lr{IR-TEH} & 8 & تهران \\
+شهر & \lr{CityId} یا ویژگی آدرس & \lr{IR-TEH-TEHRAN} & 110 & تهران \\
+انبار & \lr{WarehouseId} & \lr{WH-TEH-01} & 7 & انبار مرکزی تهران \\
+روش ارسال & \lr{ShippingMethodId} & \lr{COURIER} & 3 & پیک اختصاصی \\
+\bottomrule
+\end{tabularx}
+\caption{ساختار پیشنهادی نگاشت شناسه‌ها}
+\end{table}
+
+\paragraph{الزامات داده‌های مرجع لجستیک:}
+\begin{itemize}
+    \item وب‌سرویس همگام‌سازی استان‌ها و شهرها باید حاوی \lr{Id}، \lr{ExternalCode}، نام فارسی و وضعیت فعال باشد.
+    \item موجودیت انبار باید به صورت مستقل شامل \lr{warehouseId}، \lr{externalCode} و \lr{address} بازگردد و شناسه‌ها نباید به صورت متنی در فیلدهای آدرس ادغام شوند.
+    \item نگاشت‌ها باید در پنل ادمین ماژول لجستیک ناپ‌کامرس قابل مشاهده و اصلاح باشند.
+    \item در صورت نبود نگاشت، سیستم باید از حدس زدن پرهیز کرده و خطای صریح بازگرداند.
+\end{itemize}
+
+\begin{latin}
+\begin{verbatim}
+// Sample Warehouse Address Structure in Mapping Web Service
+{
+  "warehouseId": 7,
+  "externalCode": "WH-TEH-01",
+  "name": "Tehran Central Warehouse",
+  "address": {
+    "provinceCode": "IR-TEH",
+    "cityCode": "IR-TEH-TEHRAN",
+    "postalCode": "1234567890",
+    "addressLine": "Tehran, Example Street, No 4",
+    "latitude": 35.70,
+    "longitude": 51.40
+  }
+}
+\end{verbatim}
+\end{latin}
+
+\section{قرارداد وب‌سرویس استعلام گزینه‌های ارسال}
+\noindent \textbf{آدرس اندپوینت پیشنهادی:} \lr{POST /api/v1/integration/delivery-quotes}
+
+\subsection{ساختار نمونه درخواست استعلام (Request)}
+\begin{latin}
+\begin{verbatim}
+{
+  "requestId": "c69492d1-63bd-4f08-91db-14a5831ef001",
+  "storeId": "STORE-1",
+  "cartId": "CART-9001",
+  "customer": {
+    "customerId": "852",
+    "mobile": "09121234567"
+  },
+  "destination": {
+    "addressId": "990",
+    "receiverName": "Ali Rezaei",
+    "mobile": "09121234567",
+    "provinceCode": "IR-TEH",
+    "provinceName": "Tehran",
+    "cityCode": "IR-TEH-TEHRAN",
+    "cityName": "Tehran",
+    "postalCode": "1234567890",
+    "addressLine": "Example Street, No 10",
+    "latitude": 35.7001,
+    "longitude": 51.4002
+  },
+  "currency": "IRR",
+  "items": [
+    {
+      "cartItemId": "501",
+      "productId": "145",
+      "sku": "SKU-145",
+      "productName": "Sample Product A",
+      "quantity": 2,
+      "warehouseCode": "WH-TEH-01",
+      "unitWeightGrams": 1500,
+      "dimensionsCm": { "length": 30, "width": 20, "height": 15 },
+      "unitPrice": 25000000,
+      "requiresShipping": true,
+      "isFragile": false
+    }
+  ]
+}
+\end{verbatim}
+\end{latin}
+
+\subsection{ساختار نمونه پاسخ استعلام در سطح سبد (Response)}
+\begin{latin}
+\begin{verbatim}
+{
+  "isSuccess": true,
+  "quoteId": "QT-20260721-10025",
+  "expiresAtUtc": "2026-07-21T13:30:00Z",
+  "currency": "IRR",
+  "options": [
+    {
+      "optionId": "OPT-FAST-1",
+      "title": "Fast Shipping",
+      "totalEstimatedCost": 3200000,
+      "estimatedDeliveryFrom": "2026-07-22",
+      "estimatedDeliveryTo": "2026-07-22",
+      "requiresTimeSlot": true,
+      "timeSlots": [
+        {
+          "slotId": "SLOT-101",
+          "date": "2026-07-22",
+          "from": "12:00",
+          "to": "16:00",
+          "additionalCost": 0,
+          "capacityStatus": "Available"
+        }
+      ]
+    }
+  ],
+  "warnings": []
+}
+\end{verbatim}
+\end{latin}
+
+\paragraph{فیلدهای الزامی پاسخ:} \lr{quoteId} (شناسه نقل‌قول لجستیک)، \lr{expiresAtUtc} (زمان اعتبار قیمت/ظرفیت)، \lr{optionId} (شناسه گزینه ارسال)، \lr{totalEstimatedCost} (هزینه کل)، \lr{shipments} (تفکیک مرسوله‌های انبارها) و \lr{timeSlots} (بازه زمانی در صورت نیاز).
+
+\section{مدل چندانباره و گروه‌های مرسوله}
+یک سبد خرید ممکن است از چند انبار فیزیکی تامین شود. در فرانت‌اند سایت، به جای نمایش چندین انتخاب پیچیده برای هر انبار، خریدار گزینه‌های کلی سبد خرید نظیر «اقتصادی»، «سریع» و «زمان‌بندی‌شده» را مشاهده می‌کند، در حالی که در پشت صحنه جزئیات تفکیک انبارها در مرسوله‌ها نمایش داده می‌شود.
+
+\begin{table}[htbp]
+\centering
+\begin{tabularx}{\textwidth}{l X}
+\toprule
+\textbf{سناریو} & \textbf{رفتار پیشنهادی} \\
+\midrule
+دو کالا از یک انبار & ارسال در یک مرسوله واحد با روش و زمان‌بندی مشترک. \\
+\midrule
+دو کالا از دو انبار نزدیک & در صورت امکان تجمیع کالاها (\lr{Consolidation})، گزینه‌های تک‌مرسوله‌ای و چندمرسوله‌ای پیشنهاد می‌شوند. \\
+\midrule
+کالای حجیم + کالای عادی & تفکیک به دو گروه مرسوله؛ ارسال کالا با حمل ویژه (باربری) و کالای عادی با پست/پیک. \\
+\midrule
+یک کالا غیرقابل ارسال & کل نقل‌قول ناموفق می‌شود یا پیام حذف کالا نمایش داده می‌شود تا از ثبت سفارش ناقص جلوگیری شود. \\
+\bottomrule
+\end{tabularx}
+\caption{رفتارهای فرآیند تفکیک مرسوله‌ها}
+\end{table}
+
+\paragraph{نمونه ساختار تفکیک مرسوله‌ها (Shipment Groups Payload):}
+\begin{latin}
+\begin{verbatim}
+{
+  "shipmentGroups": [
+    {
+      "shipmentGroupId": "SG-1",
+      "warehouseCode": "WH-TEH-01",
+      "cartItemIds": ["501", "503"],
+      "constraints": []
+    },
+    {
+      "shipmentGroupId": "SG-2",
+      "warehouseCode": "WH-ESF-01",
+      "cartItemIds": ["502"],
+      "constraints": ["FRAGILE"]
+    }
+  ]
+}
+\end{verbatim}
+\end{latin}
+
+\section{انتخاب، رزرو و اعتبارسنجی مجدد (Selections \& Validation)}
+پس از انتخاب گزینه و بازه زمانی توسط کاربر، مقادیر در نشست یا دیتابیس ناپ‌کامرس ذخیره می‌شوند. هرگونه تغییر در مقادیر سبد خرید، آدرس یا مشخصات سفارش، انتخاب قبلی را منقضی کرده و استعلام جدیدی صادر می‌کند.
+
+\paragraph{اندپوینت ثبت انتخاب موقت:} \lr{POST /api/v1/integration/delivery-selections}
+
+\paragraph{اندپوینت اعتبارسنجی نهایی پیش از پرداخت سفارش:} \lr{POST /api/v1/integration/delivery-quotes/\{quoteId\}/validate}
+
+\begin{latin}
+\begin{verbatim}
+// Sample Validation Payload
+{
+  "cartId": "CART-9001",
+  "optionId": "OPT-FAST-1",
+  "timeSlotId": "SLOT-101",
+  "cartHash": "sha256:..."
+}
+\end{verbatim}
+\end{latin}
+در صورت پر شدن ظرفیت بازه یا تغییر قیمت در سیستم لجستیک، پاسخ با مقدار \lr{isValid = false} برگشته و از کاربر درخواست می‌شود گزینه‌ها را مجدداً استعلام و انتخاب کند:
+
+\begin{latin}
+\begin{verbatim}
+{
+  "isValid": false,
+  "code": "TIME_SLOT_CAPACITY_EXHAUSTED",
+  "message": "The selected time slot no longer has capacity.",
+  "requiresRequote": true
+}
+\end{verbatim}
+\end{latin}
+
+\section{ایجاد سفارش لجستیکی و پیگیری وضعیت}
+پس از اتمام موفق پرداخت، سفارش نهایی ناپ‌کامرس ثبت شده و درخواست ایجاد سفارش لجستیک با الگوی تکرارناپذیری ارسال می‌گردد:
+
+\noindent \textbf{آدرس اندپوینت:} \lr{POST /api/v1/integration/logistics-orders} \\
+\noindent \textbf{هدر الزامی:} \lr{Idempotency-Key: nop-order-78512}
+
+\begin{latin}
+\begin{verbatim}
+// Request Payload for Logistics Order
+{
+  "storeOrderId": "78512",
+  "storeOrderNumber": "ORD-20260721-78512",
+  "quoteId": "QT-20260721-10025",
+  "optionId": "OPT-FAST-1",
+  "timeSlotId": "SLOT-101",
+  "paymentStatus": "Paid",
+  "shippingAmount": 3200000,
+  "currency": "IRR"
+}
+\end{verbatim}
+\end{latin}
+
+\noindent نمونه پاسخ ثبت موفق سفارش لجستیک:
+\begin{latin}
+\begin{verbatim}
+{
+  "isSuccess": true,
+  "logisticsOrderId": "LG-800025",
+  "shipments": [
+    {
+      "shipmentId": "SHP-1001",
+      "shipmentGroupId": "SG-1",
+      "trackingCode": null,
+      "status": "PendingAllocation"
+    },
+    {
+      "shipmentId": "SHP-1002",
+      "shipmentGroupId": "SG-2",
+      "trackingCode": null,
+      "status": "PendingAllocation"
+    }
+  ]
+}
+\end{verbatim}
+\end{latin}
+
+\begin{table}[htbp]
+\centering
+\begin{tabularx}{\textwidth}{l l X}
+\toprule
+\textbf{شناسه وضعیت} & \textbf{عنوان فارسی} & \textbf{توضیح} \\
+\midrule
+\lr{PendingAllocation} & در انتظار تخصیص & سفارش ثبت شده اما شرکت حمل یا راننده تخصیص نیافته است. \\
+\lr{ReadyForPickup} & آماده برداشت & انبار کالا را بسته‌بندی کرده و آماده تحویل به پیک است. \\
+\lr{PickedUp} & تحویل به حمل‌کننده & مرسوله توسط پیک از انبار تحویل گرفته شده است. \\
+\lr{InTransit} & در مسیر & کالا در مسیر بین شهری یا انبار میانی است. \\
+\lr{OutForDelivery} & در حال توزیع & مرسوله جهت تحویل نهایی به راننده توزیع واگذار شده است. \\
+\lr{Delivered} & تحویل‌شده & سفارش با موفقیت به گیرنده تحویل داده شد. \\
+\lr{DeliveryFailed} & ناموفق & تلاش برای تحویل ناموفق بوده و به انبار مرجوع می‌شود. \\
+\lr{Canceled} & لغوشده & ارسال سفارش لغو گردیده است. \\
+\bottomrule
+\end{tabularx}
+\caption{کدهای وضعیت مرسوله لجستیکی}
+\end{table}
+
+\section{خطاها، امنیت، قابلیت اطمینان و تکرارناپذیری}
+در صورت بروز خطا، سیستم لجستیک اطلاعات دقیق خطا را در قالب پاسخ استاندارد ارسال خواهد کرد. جدول زیر نگاشت کدهای وضعیت \lr{HTTP} و کدهای خطای مربوطه را نشان می‌دهد:
+
+\begin{table}[htbp]
+\centering
+\begin{tabularx}{\textwidth}{c l l X}
+\toprule
+\textbf{HTTP} & \textbf{کاربرد} & \textbf{کد خطا} & \textbf{توضیح} \\
+\midrule
+200 & موفق & \lr{QUOTE\_CREATED} & نقل‌قول با موفقیت ثبت شد. \\
+\midrule
+400 & نامعتبر & \lr{INVALID\_ADDRESS} & ساختار یا مقادیر آدرس ارسالی نامعتبر است. \\
+\midrule
+401/403 & احراز هویت & \lr{INVALID\_API\_KEY} & کلید دسترسی نامعتبر یا منقضی است. \\
+\midrule
+404 & عدم نگاشت & \lr{WAREHOUSE\_MAPPING\_NOT\_FOUND} & نگاشت کد انبار یا شهر یافت نشد. \\
+\midrule
+409 & منقضی شدن & \lr{QUOTE\_EXPIRED} & نقل‌قول منقضی گردیده است. \\
+\midrule
+422 & غیرقابل انجام & \lr{NO\_DELIVERY\_OPTION} & گزینه ارسالی معتبری وجود ندارد. \\
+\midrule
+429 & محدودیت & \lr{RATE\_LIMITED} & تعداد درخواست‌ها بیش از حد مجاز است. \\
+\midrule
+502/503 & اختلال سرویس & \lr{CARRIER\_UNAVAILABLE} & سیستم‌های حمل و نقل لجستیک موقتاً در دسترس نیستند. \\
+\bottomrule
+\end{tabularx}
+\caption{کدهای وضعیت و خطای استاندارد سیستم لجستیک}
+\end{table}
+
+\paragraph{نمونه پاسخ خطای استاندارد (Standard Error Response):}
+\begin{latin}
+\begin{verbatim}
+{
+  "isSuccess": false,
+  "statusCode": 422,
+  "code": "NO_DELIVERY_OPTION",
+  "message": "There is no active delivery option for the destination.",
+  "traceId": "01J...",
+  "details": [
+    {
+      "cartItemId": "502",
+      "reasonCode": "OUT_OF_SERVICE_AREA",
+      "message": "Bulky item is not deliverable to this city."
+    }
+  ]
+}
+\end{verbatim}
+\end{latin}
+
+\paragraph{الزامات فنی و امنیت ارتباطات:}
+\begin{itemize}
+    \item \textbf{خطاهای شبکه و موقت:} ردیابی درخواست‌ها با \lr{requestId} و \lr{traceId} انجام شده و مکانیزم تلاش مجدد (\lr{Retry}) صرفاً برای خطاهای موقت \lr{429}، \lr{502}، \lr{503} و \lr{Timeout} فعال می‌شود.
+    \item \textbf{محدودیت زمانی استعلام (Timeout):} جهت تضمین تجربه کاربری روان، زمان انتظار استعلام گزینه‌ها حداکثر ۳ تا ۵ ثانیه خواهد بود و در صورت قطع شبکه، وضعیت‌های پیش‌فرض لوکال موقتاً فعال می‌شوند.
+    \item \textbf{حفاظت از داده‌ها:} تمامی کلیدهای امنیتی مخفی نگاه داشته شده و اطلاعات حساس مشتریان در لاگ‌ها ماسک خواهند شد.
+\end{itemize}
+
+\section{سناریوهای نمونه کاربری}
+\begin{itemize}
+    \item \textbf{سناریو A (پیک اختصاصی تهران):} سبد شامل اقلام موجود در انبار مرکزی تهران و مقصد خریدار تهران است. وب‌سرویس لجستیک گزینه‌های پیک فوری، پیک زمان‌بندی‌شده و پست را برمی‌گرداند. کاربر بازه ۱۲ تا ۱۶ را انتخاب کرده و ظرفیت برای ۱۰ دقیقه رزرو می‌شود.
+    \item \textbf{سناریو B (خارج از محدوده پیک):} آدرس خریدار به مشهد تغییر می‌کند. لجستیک پیک اختصاصی را حذف و صرفاً گزینه‌های پست و تیپاکس را با تاریخ تقریبی و هزینه‌های مربوطه نمایش می‌دهد.
+    \item \textbf{سناریو C (سبد چندانبار مبدا):} کالای A در انبار تهران و کالای B در انبار کرج است. لجستیک سفارش را به دو مرسوله مستقل تفکیک کرده و هزینه کل ارسال را ۳۲۰,۰۰۰ ریال اعلام می‌کند. سفارش خریدار در قالب دو مرسوله مجزا تحویل خواهد شد.
+    \item \textbf{سناریو D (تغییر تعداد اقلام):} خریدار در آخرین گام تعداد کالا را تغییر می‌دهد. کد هش سبد خرید (\lr{cartHash}) تغییر کرده، رزرو قبلی باطل شده و استعلام جدید فراخوانی می‌شود.
+    \item \textbf{سناریو E (کالای حجیم غیرقابل ارسال):} کالا به علت حجم بالا صرفاً در محدوده تهران قابل تحویل است اما آدرس خریدار شیراز است. وب‌سرویس خطای \lr{422} با کد \lr{OUT\_OF\_SERVICE\_AREA} بازمی‌گرداند و سایت خریدار را برای حذف کالا یا تغییر آدرس راهنمایی می‌کند.
+\end{itemize}
+
+\section{سناریوهای تست و معیارهای پذیرش (UAT)}
+تضمین صحت عملکرد سیستم لجستیک با اجرای سناریوهای تست زیر ارزیابی می‌گردد:
+\begin{itemize}
+    \item \textbf{T01:} تست استعلام تک‌کالایی از یک انبار به مقصد دارای پوشش پیک (نمایش بازه‌های زمانی تحویل).
+    \item \textbf{T02:} تغییر مقصد به شهر فاقد پوشش پیک (مخفی شدن پیک و نمایش پست/تیپاکس).
+    \item \textbf{T03:} استعلام سبد خرید چندانبار مبدا (بررسی صحت تفکیک مرسوله‌ها و جمع کل هزینه‌ها).
+    \item \textbf{T04:} تست بروز خطای \lr{CITY\_MAPPING\_NOT\_FOUND} در صورت عدم نگاشت شهر مقصد در ادمین.
+    \item \textbf{T05:} تست بروز خطای \lr{WAREHOUSE\_MAPPING\_NOT\_FOUND} در صورت عدم نگاشت کد انبار.
+    \item \textbf{T06:} تست منقضی شدن رزرو نقل‌قول و بازگشت پیام \lr{QUOTE\_EXPIRED} در هنگام پرداخت.
+    \item \textbf{T07:} تست پر شدن ظرفیت بازه زمانی و پیشنهاد بازه‌های جایگزین.
+    \item \textbf{T08:} ابطال خودکار استعلام در صورت تغییر تعداد یا نوع کالاهای سبد خرید.
+    \item \textbf{T09:} ارسال چندباره ثبت سفارش و اطمینان از عملکرد \lr{Idempotency-Key} جهت ایجاد تنها یک سفارش لجستیک.
+    \item \textbf{T10:} قطع موقت ارتباط لجستیک و نمایش پیام تلاش مجدد همراه با ثبت شناسه پیگیری خطای \lr{TraceId}.
+    \item \textbf{T11:} ارسال صحیح نام‌ها و کدهای خارجی استان‌ها و شهرها به صورت فارسی و استاندارد.
+    \item \textbf{T12:} تفکیک فیلدهای \lr{warehouseId} و \lr{address} در پاسخ‌های دریافتی لجستیک.
+\end{itemize}
+
+\section{برنامه اصلاح ماژول فعلی و جداول دیتابیس پیشنهادی}
+مراحل اجرای توسعه فنی به شرح زیر برنامه‌ریزی شده است:
+\begin{enumerate}
+    \item ممیزی کدهای افزونه ارسال فعلی و استخراج هدرها، جداول و هوک‌های تسویه حساب.
+    \item اصلاح مدل‌های استان، شهر و انبار در ناپ‌کامرس و تعریف فیلد \lr{ExternalCode}.
+    \item ایجاد جداول پیکربندی و نگاشت‌ها در دیتابیس ناپ‌کامرس.
+    \item پیاده‌سازی کلاینت استعلام لجستیک (\lr{DeliveryQuoteClient}) همراه با منطق‌های \lr{Timeout}، \lr{Retry} و \lr{Logging}.
+    \item ادغام با فرآیند ثبت و تسویه حساب سفارش و فراخوانی خودکار استعلام مجدد در صورت تغییر سبد یا آدرس.
+    \item طراحی بخش نمایش گزینه‌ها و بازه‌های زمانی در فرانت‌سایت و ذخیره‌سازی انتخاب‌ها.
+    \item پیاده‌سازی متد اعتبارسنجی نهایی پیش از ارجاع خریدار به درگاه پرداخت.
+    \item ارسال خودکار و تکرارناپذیر اطلاعات نهایی سفارش پرداخت‌شده به سرور لجستیک.
+    \item ایجاد صفحات مدیریت خطاها، تلاش مجدد دستی سفارشات لجستیک معلق و لاگ‌های خطا.
+    \item اجرای آزمون‌های پذیرش کاربری (\lr{UAT}) در محیط استیج با شبیه‌سازی انواع سبدهای خرید.
+\end{enumerate}
+
+\begin{table}[htbp]
+\centering
+\begin{tabularx}{\textwidth}{l X}
+\toprule
+\textbf{نام جدول ماژول} & \textbf{کاربرد فنی و دیتابیس} \\
+\midrule
+\lr{LogisticsIntegrationSettings} & ذخیره‌سازی آدرس پایه وب‌سرویس، توکن دسترسی، زمان انتظار (\lr{Timeout}) و الگوهای تلاش مجدد. \\
+\midrule
+\lr{LogisticsLocationMapping} & نگاشت شناسه کشور، استان و شهرهای ناپ‌کامرس به کدهای سیستم لجستیک. \\
+\midrule
+\lr{LogisticsWarehouseMapping} & نگاشت شناسه‌های انبار ناپ‌کامرس به کدهای سیستمی انبار در لجستیک. \\
+\midrule
+\lr{LogisticsCartSelection} & ذخیره‌سازی مشخصات نقل‌قول فعال خریدار و بازه زمانی انتخاب‌شده کاربر. \\
+\midrule
+\lr{LogisticsOrderLink} & پیوند شناسه سفارش فروشگاه با شناسه سفارش در سیستم لجستیک و کدهای رهگیری مرسوله‌ها. \\
+\midrule
+\lr{LogisticsIntegrationLog} & لاگ خلاصه تراکنش‌ها، خطاها، پاسخ‌ها و شناسه‌های پیگیری (\lr{TraceId}) بدون نگهداری داده‌های حساس خریداران. \\
+\bottomrule
+\end{tabularx}
+\caption{جداول دیتابیس ماژول لجستیک ناپ‌کامرس}
+\end{table}
+
+\newpage
+\section{برآورد مالی و زمان‌بندی پیاده‌سازی ماژول H}
+هزینه پیاده‌سازی نیازمندی‌های یکپارچه‌سازی لجستیک بر اساس چهار بخش کلیدی فوق به شرح زیر برآورد می‌گردد:
+
+\begin{table}[htbp]
+\centering
+\begin{tabularx}{\textwidth}{c X c r}
+\toprule
+\textbf{ردیف} & \textbf{بخش / قابلیت نیازمندی لجستیک} & \textbf{زمان توسعه پیشنهادی} & \textbf{هزینه پیشنهادی (تومان)} \\
+\midrule
+۱ & طراحی لایه نگاشت داده‌ها و پنل مدیریت نگاشت‌ها & ۳ الی ۵ روز & ۷,۰۰۰,۰۰۰ \\
+۲ & اتصال وب‌سرویس استعلام قیمت، تفکیک انبارها و بازه‌ها & ۱ هفته & ۱۲,۰۰۰,۰۰۰ \\
+۳ & مکانیزم اعتبارسنجی مجدد سبد خرید پیش از پرداخت & ۳ روز & ۵,۰۰۰,۰۰۰ \\
+۴ & ثبت تکرارناپذیر سفارش لجستیک و وب‌هوک‌های وضعیت & ۴ الی ۶ روز & ۸,۰۰۰,۰۰۰ \\
+\midrule
+\multicolumn{2}{r}{\textbf{جمع کل برآورد هزینه توسعه لجستیک (ماژول H)}} & \textbf{۳ الی ۴ هفته} & \textbf{۳۲,۰۰۰,۰۰۰} \\
+\bottomrule
+\end{tabularx}
+\caption{جدول برآورد مالی و زمان‌بندی پیاده‌سازی بخش لجستیک}
+\end{table}
+
+\end{document}

@@ -1,14 +1,13 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Nop.Web.Framework.Mvc.Routing;
-using Nop.Web.Infrastructure;
 
 namespace Nop.Plugin.Misc.GroupPurchase.Infrastructure;
 
 /// <summary>
 /// Represents plugin route provider
 /// </summary>
-public class RouteProvider : BaseRouteProvider, IRouteProvider
+public class RouteProvider : IRouteProvider
 {
     /// <summary>
     /// Register routes
