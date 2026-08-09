@@ -1,0 +1,66 @@
+@model FarazSmsSettingsModel
+@{
+    Layout = "_AdminLayout";
+    ViewBag.PageTitle = T("Plugins.Misc.UserNotifications.FarazSms").Text;
+    NopHtml.SetActiveMenuItemSystemName("Misc.UserNotifications.FarazSms");
+}
+
+<form asp-action="FarazSms" method="post">
+    <div class="content-header clearfix">
+        <h1 class="float-left">@T("Plugins.Misc.UserNotifications.FarazSms")</h1>
+        <div class="float-right">
+            <button type="submit" name="save" class="btn btn-primary">
+                <i class="far fa-save"></i> @T("Admin.Common.Save")
+            </button>
+        </div>
+    </div>
+
+    <section class="content">
+        <div class="container-fluid">
+            <div class="card card-default">
+                <div class="card-body">
+                    <div class="form-group row">
+                        <div class="col-md-3">
+                            <label>وضعیت فعال‌سازی سامانه SMS (FarazSMS)</label>
+                        </div>
+                        <div class="col-md-9">
+                            <nop-editor asp-for="Enabled" />
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-md-3">
+                            <label>آدرس سرویس API (Endpoint URL)</label>
+                        </div>
+                        <div class="col-md-9">
+                            <input asp-for="ApiUrl" class="form-control" placeholder="https://ippanel.com/api/select" required />
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-md-3">
+                            <label>کلید API یا نام‌کاربری FarazSMS / IPPanel</label>
+                        </div>
+                        <div class="col-md-9">
+                            <input asp-for="ApiKey" class="form-control" placeholder="کلید API یا نام کاربری پنل فرازاس‌ام‌اس را وارد کنید" required />
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-md-3">
+                            <label>شماره خط فرستنده پیامک (Sender Line)</label>
+                        </div>
+                        <div class="col-md-9">
+                            <input asp-for="SenderNumber" class="form-control" placeholder="+983000505" required />
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-md-3">
+                            <label>کد پترن پیش‌فرض پیامک (Default Pattern Code)</label>
+                        </div>
+                        <div class="col-md-9">
+                            <input asp-for="DefaultPatternCode" class="form-control" placeholder="کد پترن (اختیاری)" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</form>

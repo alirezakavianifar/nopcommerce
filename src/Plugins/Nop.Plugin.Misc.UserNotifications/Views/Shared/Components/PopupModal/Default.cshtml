@@ -1,0 +1,39 @@
+@model IList<Nop.Plugin.Misc.UserNotifications.Domain.CustomerPendingPopup>
+@if (Model != null && Model.Any())
+{
+    foreach (var popup in Model)
+    {
+        <div id="notif-popup-modal-@popup.Id" class="modal fade show" tabindex="-1" role="dialog" style="display: block; background: rgba(0,0,0,0.5);" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content shadow-lg border-0">
+                    <div class="modal-header bg-primary text-white">
+                        <h5 class="modal-title font-weight-bold">
+                            <i class="fas fa-bullhorn mr-2"></i> @popup.Title
+                        </h5>
+                        <button type="button" class="close text-white" onclick="dismissNotifPopup(@popup.Id)">&times;</button>
+                    </div>
+                    <div class="modal-body p-4">
+                        <p class="lead text-dark">@popup.Message</p>
+                        @if (!string.IsNullOrWhiteSpace(popup.ActionUrl))
+                        {
+                            <div class="text-center mt-3">
+                                <a href="@popup.ActionUrl" class="btn btn-success btn-lg px-4" onclick="dismissNotifPopup(@popup.Id)">@T("Plugins.Misc.UserNotifications.Popup.Claim")</a>
+                            </div>
+                        }
+                    </div>
+                    <div class="modal-footer bg-light">
+                        <button type="button" class="btn btn-secondary" onclick="dismissNotifPopup(@popup.Id)">@T("Plugins.Misc.UserNotifications.Popup.Dismiss")</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    <script>
+        function dismissNotifPopup(id) {
+            var modal = document.getElementById('notif-popup-modal-' + id);
+            if (modal) { modal.style.display = 'none'; }
+            fetch('/customer/notifications/dismiss-popup?id=' + id, { method: 'POST' });
+        }
+    </script>
+}

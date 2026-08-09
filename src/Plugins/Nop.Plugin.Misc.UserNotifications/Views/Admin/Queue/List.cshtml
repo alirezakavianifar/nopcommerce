@@ -1,0 +1,78 @@
+@model IList<Nop.Plugin.Misc.UserNotifications.Domain.NotificationQueueItem>
+@{
+    Layout = "_AdminLayout";
+    ViewBag.PageTitle = "Notification Delivery Queue & Logs";
+    NopHtml.SetActiveMenuItemSystemName("Misc.UserNotifications.Queue");
+}
+
+<div class="content-header clearfix">
+    <h1 class="float-left">Notification Delivery Queue & Execution Logs</h1>
+</div>
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="card card-default">
+            <div class="card-body">
+                <table class="table table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th>#ID</th>
+                            <th>Customer ID</th>
+                            <th>Target Entity</th>
+                            <th>Scheduled Time (UTC)</th>
+                            <th>Status</th>
+                            <th>Channels</th>
+                            <th>Title / Summary</th>
+                            <th>Discount Code</th>
+                            <th>Sent On (UTC)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model != null && Model.Any())
+                        {
+                            foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td>@item.Id</td>
+                                    <td>#@item.CustomerId</td>
+                                    <td>
+                                        @if (item.ProductId.HasValue) { <span class="badge badge-info">Product #@item.ProductId</span> }
+                                        @if (item.OrderId.HasValue) { <span class="badge badge-secondary">Order #@item.OrderId</span> }
+                                    </td>
+                                    <td>@item.ScheduledSendTimeUtc.ToString("g")</td>
+                                    <td>
+                                        @switch (item.Status)
+                                        {
+                                            case Nop.Plugin.Misc.UserNotifications.Domain.NotificationQueueStatus.Pending:
+                                                <span class="badge badge-warning">Pending</span>
+                                                break;
+                                            case Nop.Plugin.Misc.UserNotifications.Domain.NotificationQueueStatus.Sent:
+                                                <span class="badge badge-success">Sent</span>
+                                                break;
+                                            case Nop.Plugin.Misc.UserNotifications.Domain.NotificationQueueStatus.Failed:
+                                                <span class="badge badge-danger">Failed</span>
+                                                break;
+                                            default:
+                                                <span class="badge badge-secondary">@item.Status</span>
+                                                break;
+                                        }
+                                    </td>
+                                    <td>@item.DeliveryChannels</td>
+                                    <td>@item.RenderedTitle</td>
+                                    <td>@(string.IsNullOrWhiteSpace(item.GeneratedDiscountCode) ? "-" : item.GeneratedDiscountCode)</td>
+                                    <td>@(item.SentOnUtc.HasValue ? item.SentOnUtc.Value.ToString("g") : "-")</td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="9" class="text-center">No queued notification logs found.</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>

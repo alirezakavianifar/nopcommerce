@@ -1,0 +1,10 @@
+@model int
+<li class="nav-item">
+    <a href="/customer/notifications" class="nav-link position-relative">
+        <i class="far fa-bell"></i> @T("Plugins.Misc.UserNotifications.Inbox")
+        @if (Model > 0)
+        {
+            <span class="badge badge-pill badge-danger" style="position: relative; top: -8px; left: -2px;">@Model</span>
+        }
+    </a>
+</li>

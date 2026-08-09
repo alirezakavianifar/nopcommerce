@@ -1,0 +1,71 @@
+@model List<WorkflowModel>
+@{
+    Layout = "_AdminLayout";
+    ViewBag.PageTitle = T("Plugins.Misc.UserNotifications.Workflows").Text;
+    NopHtml.SetActiveMenuItemSystemName("Misc.UserNotifications.Workflows");
+}
+
+<div class="content-header clearfix">
+    <h1 class="float-left">
+        @T("Plugins.Misc.UserNotifications.Workflows")
+    </h1>
+    <div class="float-right">
+        <a asp-action="CreateWorkflow" class="btn btn-primary">
+            <i class="fas fa-plus-square"></i> @T("Plugins.Misc.UserNotifications.AddWorkflow")
+        </a>
+    </div>
+</div>
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="card card-default">
+            <div class="card-body">
+                <table class="table table-bordered table-hover">
+                    <thead>
+                        <tr>
+                            <th>@T("Plugins.Misc.UserNotifications.WorkflowName")</th>
+                            <th>@T("Plugins.Misc.UserNotifications.TriggerAction")</th>
+                            <th>@T("Plugins.Misc.UserNotifications.IsActive")</th>
+                            <th>@T("Plugins.Misc.UserNotifications.CreatedOn")</th>
+                            <th>@T("Plugins.Misc.UserNotifications.Actions")</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model != null && Model.Any())
+                        {
+                            foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td><strong>@item.Name</strong></td>
+                                    <td><span class="badge badge-info">@item.TriggerTypeName</span></td>
+                                    <td>
+                                        @if (item.IsActive)
+                                        {
+                                            <span class="badge badge-success">@T("Admin.Common.Active")</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge badge-secondary">@T("Admin.Common.Inactive")</span>
+                                        }
+                                    </td>
+                                    <td>@item.CreatedOnUtc.ToString("g")</td>
+                                    <td>
+                                        <a asp-action="EditWorkflow" asp-route-id="@item.Id" class="btn btn-sm btn-default">
+                                            <i class="fas fa-pencil-alt"></i> @T("Plugins.Misc.UserNotifications.ConfigureSteps")
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="5" class="text-center">@T("Admin.Common.NoData")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>

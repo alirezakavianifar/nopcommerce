@@ -1,36 +1,38 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Nop.Core.Domain.Customers;
+using Nop.Core.Domain.Orders;
+using Nop.Core.Events;
 using Nop.Core.Infrastructure;
+using Nop.Plugin.Misc.UserNotifications.Infrastructure;
 using Nop.Plugin.Misc.UserNotifications.Services;
+using Nop.Plugin.Misc.UserNotifications.Tasks;
+using Nop.Services.Events;
 
 namespace Nop.Plugin.Misc.UserNotifications.Infrastructure;
 
-/// <summary>
-/// Represents object for the configuring services on application startup
-/// </summary>
 public class NopStartup : INopStartup
 {
-    /// <summary>
-    /// Add and configure any of the middleware
-    /// </summary>
-    /// <param name="services">Collection of service descriptors</param>
-    /// <param name="configuration">Configuration of the application</param>
     public void ConfigureServices(IServiceCollection services, IConfiguration configuration)
     {
         services.AddScoped<IUserNotificationService, UserNotificationService>();
+        services.AddScoped<ISmsNotificationService, FarazSmsNotificationService>();
+        services.AddScoped<IUserInboxService, UserInboxService>();
+        services.AddScoped<IPopupNotificationService, PopupNotificationService>();
+        services.AddScoped<IWorkflowEngineService, WorkflowEngineService>();
+
+        services.AddScoped<IConsumer<CustomerRegisteredEvent>, NotificationEventConsumer>();
+        services.AddScoped<IConsumer<OrderPlacedEvent>, NotificationEventConsumer>();
+        services.AddScoped<IConsumer<EntityInsertedEvent<ShoppingCartItem>>, NotificationEventConsumer>();
+
+        services.AddScoped<ProcessNotificationWorkflowsTask>();
     }
 
-    /// <summary>
-    /// Configure the using of added middleware
-    /// </summary>
-    /// <param name="application">Builder for configuring an application's request pipeline</param>
     public void Configure(IApplicationBuilder application)
     {
+        application.UseMiddleware<ProductViewTrackerMiddleware>();
     }
 
-    /// <summary>
-    /// Gets order of this startup configuration implementation
-    /// </summary>
-    public int Order => 1;
+    public int Order => 100;
 }

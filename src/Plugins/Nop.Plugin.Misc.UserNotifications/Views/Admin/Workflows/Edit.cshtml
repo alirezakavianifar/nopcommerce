@@ -1,0 +1,179 @@
+@model WorkflowModel
+@{
+    Layout = "_AdminLayout";
+    ViewBag.PageTitle = "Edit Workflow - " + Model.Name;
+    NopHtml.SetActiveMenuItemSystemName("Misc.UserNotifications.Workflows");
+}
+
+<div class="content-header clearfix">
+    <h1 class="float-left">Edit Workflow: @Model.Name</h1>
+    <div class="float-right">
+        <a asp-action="Workflows" class="btn btn-default">Back to Workflows</a>
+    </div>
+</div>
+
+<section class="content">
+    <div class="container-fluid">
+        <!-- Workflow Info -->
+        <form asp-action="EditWorkflow" method="post">
+            <input type="hidden" asp-for="Id" />
+            <div class="card card-default">
+                <div class="card-header">General Configuration</div>
+                <div class="card-body">
+                    <div class="form-group row">
+                        <div class="col-md-3"><nop-label asp-for="Name" /></div>
+                        <div class="col-md-9"><input asp-for="Name" class="form-control" required /></div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-md-3"><label>Trigger Action</label></div>
+                        <div class="col-md-9">
+                            <select asp-for="TriggerTypeId" class="form-control">
+                                <option value="1">Customer Registered</option>
+                                <option value="2">Order Placed</option>
+                                <option value="3">Product Viewed</option>
+                                <option value="4">Product Wishlisted</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-md-3"><nop-label asp-for="IsActive" /></div>
+                        <div class="col-md-9"><nop-editor asp-for="IsActive" /></div>
+                    </div>
+                    <button type="submit" class="btn btn-primary"><i class="far fa-save"></i> Save Workflow Details</button>
+                </div>
+            </div>
+        </form>
+
+        <!-- Multi-Stage Steps -->
+        <div class="card card-default mt-4">
+            <div class="card-header font-weight-bold">
+                <i class="fas fa-layer-group"></i> Multi-Stage Notification Sequence Steps
+            </div>
+            <div class="card-body">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Seq</th>
+                            <th>Delay (Minutes)</th>
+                            <th>Channels</th>
+                            <th>Title / Subject</th>
+                            <th>FarazSMS Pattern</th>
+                            <th>Discount</th>
+                            <th>Active</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.Steps != null && Model.Steps.Any())
+                        {
+                            foreach (var s in Model.Steps)
+                            {
+                                <tr>
+                                    <td>@s.StepOrder</td>
+                                    <td>
+                                        @if (s.DelayMinutes == 0)
+                                        {
+                                            <span class="badge badge-success">Immediate (0m)</span>
+                                        }
+                                        else
+                                        {
+                                            <span>@s.DelayMinutes mins</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (s.SendEmail) { <span class="badge badge-primary">Email</span> }
+                                        @if (s.SendSms) { <span class="badge badge-warning">SMS (FarazSMS)</span> }
+                                        @if (s.SendPopUp) { <span class="badge badge-danger">PopUp</span> }
+                                        @if (s.SendInbox) { <span class="badge badge-info">Inbox</span> }
+                                    </td>
+                                    <td>@s.SubjectTemplate</td>
+                                    <td>@(string.IsNullOrWhiteSpace(s.SmsPatternCode) ? "-" : s.SmsPatternCode)</td>
+                                    <td>@(s.GenerateDiscountCode ? $"{s.DiscountPercentage}% Off" : "No")</td>
+                                    <td>@(s.IsActive ? "Yes" : "No")</td>
+                                    <td>
+                                        <form asp-action="DeleteStep" method="post" style="display:inline-block;">
+                                            <input type="hidden" name="id" value="@s.Id" />
+                                            <input type="hidden" name="workflowId" value="@Model.Id" />
+                                            <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Delete this step?');"><i class="fas fa-trash"></i></button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr><td colspan="8" class="text-center">No steps configured yet. Add a step below.</td></tr>
+                        }
+                    </tbody>
+                </table>
+
+                <hr />
+                <h5 class="mt-4"><i class="fas fa-plus"></i> Add New Sequence Step</h5>
+                <form asp-action="SaveStep" method="post" class="mt-3">
+                    <input type="hidden" name="WorkflowId" value="@Model.Id" />
+                    <div class="row">
+                        <div class="col-md-2">
+                            <label>Step Sequence Order</label>
+                            <input type="number" name="StepOrder" class="form-control" value="@((Model.Steps?.Count ?? 0) + 1)" required />
+                        </div>
+                        <div class="col-md-2">
+                            <label>Delay (Minutes)</label>
+                            <input type="number" name="DelayMinutes" class="form-control" value="0" placeholder="0 for immediate" required />
+                        </div>
+                        <div class="col-md-8">
+                            <label>Delivery Channels</label>
+                            <div class="form-check form-check-inline ml-3">
+                                <input type="checkbox" name="SendEmail" value="true" class="form-check-input" id="chkEmail" checked />
+                                <label class="form-check-label" for="chkEmail">Email</label>
+                            </div>
+                            <div class="form-check form-check-inline ml-3">
+                                <input type="checkbox" name="SendSms" value="true" class="form-check-input" id="chkSms" checked />
+                                <label class="form-check-label" for="chkSms">SMS (FarazSMS)</label>
+                            </div>
+                            <div class="form-check form-check-inline ml-3">
+                                <input type="checkbox" name="SendPopUp" value="true" class="form-check-input" id="chkPopUp" />
+                                <label class="form-check-label" for="chkPopUp">Store PopUp / Toast</label>
+                            </div>
+                            <div class="form-check form-check-inline ml-3">
+                                <input type="checkbox" name="SendInbox" value="true" class="form-check-input" id="chkInbox" checked />
+                                <label class="form-check-label" for="chkInbox">Account Inbox</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group mt-3">
+                        <label>Notification Subject / Title Template</label>
+                        <input type="text" name="SubjectTemplate" class="form-control" placeholder="e.g. Special Offer for %Customer.FullName%!" required />
+                    </div>
+
+                    <div class="form-group">
+                        <label>Notification Message Body Template</label>
+                        <textarea name="BodyTemplate" class="form-control" rows="3" placeholder="Hello %Customer.FullName%, check out %Product.Name% at %Product.Url%! Use discount %Discount.Code%" required></textarea>
+                        <small class="form-text text-muted">Placeholders: %Customer.FullName%, %Customer.Email%, %Customer.Phone%, %Product.Name%, %Product.Price%, %Product.Url%, %Discount.Code%</small>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <label>FarazSMS Pattern Code (Optional)</label>
+                            <input type="text" name="SmsPatternCode" class="form-control" placeholder="e.g. p12345" />
+                        </div>
+                        <div class="col-md-4">
+                            <label>Auto-Generate Discount Code</label>
+                            <div class="form-check">
+                                <input type="checkbox" name="GenerateDiscountCode" value="true" class="form-check-input" id="chkDiscount" />
+                                <label class="form-check-label" for="chkDiscount">Enable Dynamic Coupon</label>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <label>Discount Percentage (%)</label>
+                            <input type="number" step="0.1" name="DiscountPercentage" class="form-control" value="0.0" />
+                        </div>
+                    </div>
+
+                    <input type="hidden" name="IsActive" value="true" />
+                    <button type="submit" class="btn btn-success mt-3"><i class="fas fa-plus-circle"></i> Add Step to Sequence</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
