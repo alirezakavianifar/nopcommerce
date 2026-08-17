@@ -15,8 +15,6 @@ using Nop.Plugin.Misc.SellerMarketing.Domain;
 using Nop.Plugin.Misc.SellerMarketing.Models;
 using Nop.Plugin.Misc.SellerMarketing.Services;
 
-using Nop.Web.Framework.Mvc.Filters;
-
 namespace Nop.Plugin.Misc.SellerMarketing.Controllers;
 
 [AutoValidateAntiforgeryToken]

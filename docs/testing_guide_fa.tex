@@ -8,13 +8,14 @@
 \usepackage{float}
 \usepackage{booktabs}
 \usepackage{enumitem}
+\usepackage{amsmath}
 \usepackage{xepersian}
 \settextfont{Tahoma}
 
 \title{\textbf{راهنمای جامع کاربری و تصویری گام به گام nopCommerce}\\
-\large(صفحه تخفیف‌های شگفت‌انگیز، سیستم تبلیغات فروشندگان، خرید گروهی و کیف پول)}
-\author{}
-\date{}
+\large(تخفیف‌های شگفت‌انگیز، سیستم بازاریابی فروشندگان، خرید گروهی، هوش مصنوعی، امنیت و ارسال مشروط)}
+\author{تیم فنی و توسعه یکپارچه nopCommerce}
+\date{مرداد ۱۴۰۵}
 
 \begin{document}
 
@@ -22,8 +23,8 @@
 \tableofcontents
 \newpage
 
-\section{مقدمه و آدرس برنامه}
-این راهنما جهت استفاده کاربران نهایی (مشتریان)، فروشندگان (تامین‌کنندگان) و مدیران فروشگاه nopCommerce به زبان فارسی تنظیم شده است. تمامی مراحل به همراه تصویر مربوط به آن گام به گام ارائه گردیده است.
+\section{مقدمه و آدرس‌های عمومی برنامه}
+این راهنما جهت استفاده کاربران نهایی (مشتریان)، فروشندگان (تامین‌کنندگان)، انبارداران و مدیران ارشد سامانه فروشگاهی nopCommerce به زبان فارسی تنظیم شده است. تمامی بخش‌های توسعه‌یافته به همراه تصاویر مستند و مستندات سرویس‌های \lr{REST API} برای اتصال نرم‌افزارهای خارجی (نرم‌افزار موبایل، پنل انبارداری و اپلیکیشن پیک/لجستیک) به صورت گام به گام ارائه گردیده است.
 
 \begin{center}
 \textbf{آدرس آنلاین فروشگاه:} \url{https://ground-buggy-karaoke.ngrok-free.dev} \\
@@ -34,56 +35,69 @@
 \begin{figure}[H]
     \centering
     \setlatin{\includegraphics[width=0.85\textwidth]{persian_home.png}}
-    \caption{نمای کلی صفحه اصلی فروشگاه با زبان فارسی و راست‌چین (RTL)}
+    \caption{نمای کلی صفحه اصلی فروشگاه با زبان فارسی و چینش راست‌چین (RTL)}
     \label{fig:persian_home}
 \end{figure}
 
-\section{معرفی ماژول‌های هوشمند سیستم}
-سیستم پیشرفته nopCommerce به ماژول‌های هوشمند زیر مجهز گردیده است:
+\section{معرفی ماژول‌های هوشمند و سرویس‌های پیشرفته}
+سیستم nopCommerce به مجموعه‌ای از ماژول‌های هوش مصنوعی پیشرفته مجهز گردیده است:
 \begin{itemize}[label=\small$\bullet$]
-    \item \textbf{ماژول B (جستجوی هوشمند):} جستجوی صوتی و تصویری هوش مصنوعی (نسخه ابری/محلی).
-    \item \textbf{ماژول C (تشخیص محصولات تکراری):} تشخیص محصولات تکراری با هوش مصنوعی جهت جلوگیری از ثبت تکراری کالاها در پنل انبارداری.
+    \item \textbf{ماژول B (جستجوی هوشمند متنی، صوتی و تصویری):}
+    شامل جستجوی معنایی متنی مبتنی بر بردار ویژگی‌ها (\lr{Text Embeddings})، جستجوی صوتی به زبان فارسی (\lr{Speech-to-Text}) و جستجوی تصویری کالاها (\lr{Visual Search}) به همراه \lr{REST API} اختصاصی.
+    \item \textbf{ماژول C (تشخیص خودکار کالاهای تکراری با هوش مصنوعی):}
+    اسکن خودکار تصاویر و ویژگی‌های فنی کاتالوگ فروشندگان و تشکیل صف بررسی هوشمند (\lr{Duplicate Queue}) در پنل مدیریت.
+    \item \textbf{ماژول بازاریابی و کاتالوگ فروشندگان (\lr{Seller Marketing}):}
+    ارسال و مدیریت درخواست‌های تبلیغاتی و محصولات جدید توسط فروشندگان از طریق پنل و وب‌سرویس \lr{REST}.
+    \item \textbf{سیستم خرید گروهی و پاداش لیدری (\lr{Group Purchase \& Rewards}):}
+    موتور مستقل محاسبه و واریز پاداش به کیف پول و تخصیص بلیط قرعه‌کشی بدون تداخل با تخفیف‌های سبد خرید.
+    \item \textbf{ماژول امنیت، تایید دو مرحله‌ای و محدودیت دستگاه (\lr{SMS 2FA \& Device Binding}):}
+    ورود امن پیامکی و احراز هویت سخت‌افزاری بر پایه \lr{Device Token} و لیست سفید \lr{IP}.
+    \item \textbf{موتور ارسال مشروط ۳ سطحی (\lr{3-Tier Conditional Shipping}):}
+    ارزیابی اولویت‌بندی ارسال بر اساس پوشش شهری، نوع محصول و انبار با ۴ شیوه ارسال.
 \end{itemize}
 
-\section{پیش‌نیازهای سیستم و تنظیمات فونت فارسی}
-برای کارکرد صحیح افزونه‌ها و نمایش کامل زبان فارسی:
+\section{پیش‌نیازهای سیستم و تنظیمات زبان فارسی}
+برای کارکرد صحیح افزونه‌ها و نمایش کامل محیط راست‌چین:
 \begin{enumerate}
-    \item \textbf{تنظیم زبان اصلی:} در پنل مدیریت به مسیر \lr{Configuration > Languages} مراجعه نموده و زبان فارسی (\lr{fa-IR}) را فعال و به عنوان زبان پیش‌فرض انتخاب کنید.
-    \item \textbf{بومی‌سازی و قلم وزیرمتن:} تمامی بخش‌های افزونه‌ها به ترجمه کامل فارسی مجهز شده و از قلم استاندارد **Vazirmatn** استفاده می‌کنند.
+    \item \textbf{تنظیم زبان پیش‌فرض:} در پنل مدیریت به مسیر \lr{Configuration > Languages} مراجعه نموده و زبان فارسی (\lr{fa-IR}) را به عنوان زبان پیش‌فرض فعال کنید.
+    \item \textbf{بومی‌سازی و قلم استاندارد:} تمامی بخش‌های اختصاصی به ترجمه جامع فارسی مجهز شده و از قلم استاندارد **وزیرمتن (Vazirmatn)** بهره می‌برند.
 \end{enumerate}
 
 \newpage
-\section{بخش اول: راهنمای گام به گام صفحه تخفیف‌های شگفت‌انگیز}
+\section{بخش اول: راهنمای صفحه تخفیف‌های شگفت‌انگیز}
 
-صفحه تخفیف‌های شگفت‌انگیز تمامی کالاهای دارای تخفیف فعال را در یک ویترین یکپارچه نمایش می‌دهد.
+صفحه تخفیف‌های شگفت‌انگیز تمامی کالاهای دارای تخفیف‌های دوره‌ای یا کمپین‌های فعال را در یک ویترین جذاب به همراه تایمر شمارش معکوس و درصد تخفیف نمایش می‌دهد.
 
 \subsection{گام ۱: نحوه تعریف تخفیف شگفت‌انگیز توسط مدیر \lr{(Admin)}}
-وارد پنل مدیریت شوید و به مسیر \textbf{ترفیعات > تخفیف‌ها} (\lr{Promotions > Discounts}) بروید. تخفیف جدید با نوع \lr{Assigned to products} ایجاد کنید و درصد تخفیف را وارد نمایید.
+وارد پنل مدیریت شوید و به مسیر \textbf{تبلیغات > تخفیف‌ها} (\lr{Promotions > Discounts}) بروید. با زدن دکمه \lr{جدید اضافه کنید}، تخفیف جدید با نوع \lr{Assigned to products} ایجاد کرده و درصد یا مبلغ تخفیف را تعیین نمایید.
 
 \begin{figure}[H]
     \centering
     \setlatin{\includegraphics[width=0.85\textwidth]{step1_admin_discounts.png}}
-    \caption{گام ۱: مدیریت تخفیف‌ها در پنل ارشد}
+    \caption{گام ۱: مدیریت و تعریف تخفیف‌ها در پنل مدیریت ارشد}
     \label{fig:step1_admin_discounts}
 \end{figure}
 
 \subsection{گام ۲: مشاهده و خرید از صفحه تخفیف‌ها توسط مشتری}
-مشتری به آدرس \url{https://ground-buggy-karaoke.ngrok-free.dev/amazing-discounts} مراجعه نموده و محصولات تخفیف‌دار را مشاهده و خریداری می‌کند.
+مشتریان به آدرس زیر مراجعه نموده و محصولات شگفت‌انگیز را به سبد خرید خود اضافه می‌کنند:
+\begin{center}
+    \url{https://ground-buggy-karaoke.ngrok-free.dev/amazing-discounts}
+\end{center}
 
 \begin{figure}[H]
     \centering
     \setlatin{\includegraphics[width=0.85\textwidth]{step2_amazing_discounts.png}}
-    \caption{گام ۲: ویترین محصولات تخفیف‌دار در صفحه تخفیف‌های شگفت‌انگیز}
+    \caption{گام ۲: ویترین محصولات در صفحه اختصاصی تخفیف‌های شگفت‌انگیز}
     \label{fig:step2_amazing_discounts}
 \end{figure}
 
 \newpage
-\section{بخش دوم: راهنمای گام به گام سیستم تبلیغات فروشندگان}
+\section{بخش دوم: راهنمای سیستم بازاریابی و کاتالوگ فروشندگان}
 
-این سیستم به فروشندگان اجازه می‌دهد درخواست برجسته‌سازی و تبلیغ محصولات خود را ثبت کنند.
+این سیستم به فروشندگان اجازه می‌دهد کاتالوگ محصولات جدید یا درخواست تبلیغات محصولات موجود را ثبت کنند تا پس از تایید مدیریت، در ویترین فروشگاه منتشر گردد.
 
-\subsection{گام ۳: ورود به داشبورد تبلیغات فروشنده (Seller Dashboard)}
-فروشنده پس از ورود، به داشبورد تبلیغات خود مراجعه می‌کند:
+\subsection{گام ۳: ورود به داشبورد بازاریابی و کاتالوگ فروشنده}
+فروشنده پس از ورود به حساب کاربری خود، از طریق منوی حساب یا آدرس زیر به داشبورد اختصاصی فروشگاه دسترسی پیدا می‌کند:
 \begin{center}
     \url{https://ground-buggy-karaoke.ngrok-free.dev/seller/dashboard}
 \end{center}
@@ -91,12 +105,12 @@
 \begin{figure}[H]
     \centering
     \setlatin{\includegraphics[width=0.85\textwidth]{step3_seller_dashboard.png}}
-    \caption{گام ۳: داشبورد تبلیغات و بازاریابی فروشنده}
+    \caption{گام ۳: داشبورد اختصاصی مدیریت کاتالوگ و تبلیغات فروشنده}
     \label{fig:step3_seller_dashboard}
 \end{figure}
 
-\subsection{گام ۴: ثبت درخواست محصول تبلیغاتی جدید}
-فروشنده با کلیک روی دکمه افزودن محصول تبلیغاتی، فرم ثبت تبلیغ را تکمیل می‌کند:
+\subsection{گام ۴: ثبت محصول و کاتالوگ جدید توسط فروشنده}
+فروشنده با کلیک روی گزینه «افزودن محصول جدید»، اطلاعات کالا اعم از نام، شناسه کالا (\lr{SKU})، قیمت، موجودی، تصویر و توضیحات را ثبت می‌نماید:
 \begin{center}
     \url{https://ground-buggy-karaoke.ngrok-free.dev/seller/product/add}
 \end{center}
@@ -104,12 +118,12 @@
 \begin{figure}[H]
     \centering
     \setlatin{\includegraphics[width=0.85\textwidth]{step4_seller_product_add.png}}
-    \caption{گام ۴: فرم ثبت محصول جدید برای تبلیغات}
+    \caption{گام ۴: فرم ثبت و بارگذاری کاتالوگ محصول جدید توسط فروشنده}
     \label{fig:step4_seller_product_add}
 \end{figure}
 
-\subsection{گام ۵: بررسی و تایید درخواست توسط مدیر \lr{(Admin Approval)}}
-مدیر فروشگاه درخواست‌های تبلیغاتی را بررسی و تایید می‌کند:
+\subsection{گام ۵: بررسی، تایید یا رد درخواست‌ها توسط مدیر \lr{(Admin Approvals)}}
+مدیر فروشگاه در پنل ارشد، صف درخواست‌های ارسالی فروشندگان را مشاهده می‌کند. مدیر می‌تواند با یک کلیک کالا را تایید و در سایت منتشر کند (\lr{Approve \& Publish})، یا در صورت نیاز با ثبت توضیح و بازخورد کالا را رد کرده و به فروشنده عودت دهد (\lr{Reject}):
 \begin{center}
     \url{https://ground-buggy-karaoke.ngrok-free.dev/Admin/SellerMarketing/List}
 \end{center}
@@ -117,15 +131,24 @@
 \begin{figure}[H]
     \centering
     \setlatin{\includegraphics[width=0.85\textwidth]{step5_admin_seller_marketing.png}}
-    \caption{گام ۵: مدیریت و تایید درخواست‌های تبلیغاتی فروشندگان در پنل ارشد}
+    \caption{گام ۵: جدول صف بررسی و تایید کاتالوگ فروشندگان در پنل ارشد}
     \label{fig:step5_admin_seller_marketing}
 \end{figure}
 
-\newpage
-\section{بخش سوم: راهنمای گام به گام سیستم خرید گروهی و کیف پول}
+\subsubsection*{سرویس‌های \lr{REST API} ماژول بازاریابی فروشندگان}
+برای پنل‌های اختصاصی تامین‌کنندگان، نرم‌افزارهای انبارداری و اپلیکیشن موبایل، اندپوینت‌های \lr{REST API} زیر با خروجی \lr{JSON} در دسترس است:
+\begin{itemize}[label=\small$\bullet$]
+    \item \textbf{ارسال درخواست تبلیغاتی یا کاتالوگ جدید:} \lr{POST /api/seller-marketing/submit} \\
+    دریافت پارامترهای کالا (\lr{productId} یا اطلاعات کامل کالا)، بودجه روزانه تبلیغات (\lr{dailyBudget})، یادداشت و تصویر.
+    \item \textbf{دریافت وضعیت درخواست‌های فروشنده:} \lr{GET /api/seller-marketing/my-requests} \\
+    بازگرداندن لیست درخواست‌های جاری، تاییدشده یا ردشده به همراه توضیحات بازخورد مدیر ارشد.
+\end{itemize}
 
-\subsection{گام ۶: فعال‌سازی خرید گروهی محصولات توسط مدیر}
-مدیر به مسیر خرید گروهی مراجعه کرده و محصولات را برای خرید گروهی فعال می‌کند:
+\newpage
+\section{بخش سوم: راهنمای سیستم خرید گروهی و موتور پاداش لیدری}
+
+\subsection{گام ۶: مدیریت و نظارت بر خریدهای گروهی توسط مدیر}
+مدیر ارشد می‌تواند وضعیت تمامی گروه‌های فعال، سرگروه‌ها، پیشرفت تعداد اعضا (\lr{Member Progress}) و تفکیک شهرهای تحویل را در مسیر زیر مشاهده نماید:
 \begin{center}
     \url{https://ground-buggy-karaoke.ngrok-free.dev/Admin/GroupPurchase/List}
 \end{center}
@@ -133,12 +156,12 @@
 \begin{figure}[H]
     \centering
     \setlatin{\includegraphics[width=0.85\textwidth]{step6_admin_group_purchase.png}}
-    \caption{گام ۶: مدیریت و فعال‌سازی محصولات خرید گروهی}
+    \caption{گام ۶: جدول مدیریت و نظارت بر وضعیت خریدهای گروهی در پنل ارشد}
     \label{fig:step6_admin_group_purchase}
 \end{figure}
 
-\subsection{گام ۷: تنظیم قوانین پاداش خرید گروهی توسط مدیر}
-مدیر میزان پاداش واریزی به کیف پول لیدرهای گروه را تعیین می‌کند:
+\subsection{گام ۷: تنظیم قوانین پاداش خرید گروهی (\lr{Reward Rules})}
+مدیر فروشگاه قوانین تشویقی و پاداش تکمیل گروه‌ها را تعیین می‌کند. این قوانین بر اساس نقش کاربر (سرگروه، سرگروه ارشد، اعضای زیرگروه) و نوع پاداش (شارژ نقدی کیف پول یا بلیط قرعه‌کشی) به دو شیوه درصدی از سبد خرید یا مبلغ ثابت تنظیم می‌گردند:
 \begin{center}
     \url{https://ground-buggy-karaoke.ngrok-free.dev/Admin/RewardRule/List}
 \end{center}
@@ -146,12 +169,15 @@
 \begin{figure}[H]
     \centering
     \setlatin{\includegraphics[width=0.85\textwidth]{step7_admin_reward_rules.png}}
-    \caption{گام ۷: مدیریت قوانین پاداش خرید گروهی}
+    \caption{گام ۷: جدول سطوح و تنظیمات قوانین پاداش خرید گروهی}
     \label{fig:step7_admin_reward_rules}
 \end{figure}
 
+\noindent \textbf{معماری مستقل پاداش‌ها (\lr{Decoupled Reward Engine}):} \\
+سرویس \lr{GroupRewardCalculationService} پاداش‌ها را \textbf{پس از نهایی‌شدن و پرداخت سفارش} به صورت مستقل محاسبه کرده و مستقیماً به کیف پول یا صندوق قرعه‌کشی کاربر واریز می‌نماید. این تفکیک کامل معماری از موتور تخفیف‌های سبد خرید (\lr{Cart Discounts}) مانع از هرگونه تداخل منطقی یا برخورد قوانین محاسباتی می‌گردد.
+
 \subsection{گام ۸: مدیریت گروه‌های لیدری توسط لیدر}
-لیدر می‌تواند وضعیت گروه‌های ایجاد شده خود را پیگیری نماید:
+مشتری که به عنوان سرگروه (\lr{Leader}) عمل می‌کند، از طریق پنل اختصاصی زیر اعضای جذب‌شده، لینک اختصاصی دعوت و وضعیت تکمیل ظرفیت گروه را مدیریت می‌کند:
 \begin{center}
     \url{https://ground-buggy-karaoke.ngrok-free.dev/customer/leader-groups}
 \end{center}
@@ -159,12 +185,12 @@
 \begin{figure}[H]
     \centering
     \setlatin{\includegraphics[width=0.85\textwidth]{step8_customer_leader_groups.png}}
-    \caption{گام ۸: صفحه گروه‌های لیدری مشتری}
+    \caption{گام ۸: صفحه اختصاصی مدیریت گروه‌های لیدری مشتری}
     \label{fig:step8_customer_leader_groups}
 \end{figure}
 
 \subsection{گام ۹: مشاهده تاریخچه زیرمجموعه‌ها توسط اعضا}
-اعضای گروه‌ها می‌توانند تاریخچه عضویت خود در گروه‌ها را مشاهده کنند:
+اعضای گروه‌ها می‌توانند گروه‌هایی را که در آن‌ها مشارکت داشته‌اند و وضعیت بهره‌مندی از تخفیف گروهی را مشاهده نمایند:
 \begin{center}
     \url{https://ground-buggy-karaoke.ngrok-free.dev/customer/subgroup-history}
 \end{center}
@@ -172,12 +198,12 @@
 \begin{figure}[H]
     \centering
     \setlatin{\includegraphics[width=0.85\textwidth]{step9_customer_subgroup_history.png}}
-    \caption{گام ۹: تاریخچه زیرمجموعه‌ها و گروه‌های عضو شده}
+    \caption{گام ۹: تاریخچه زیرمجموعه‌ها و مشارکت در خریدهای گروهی}
     \label{fig:step9_customer_subgroup_history}
 \end{figure}
 
 \subsection{گام ۱۰: مدیریت کیف پول و موجودی پاداش‌ها}
-کاربران موجودی عادی و پاداش خرید گروهی خود را مشاهده می‌نمایند:
+کاربران موجودی نقدی و پاداش‌های واریزشده از خریدهای گروهی را در کیف پول خود مشاهده کرده و در خریدهای بعدی مورد استفاده قرار می‌دهند:
 \begin{center}
     \url{https://ground-buggy-karaoke.ngrok-free.dev/customer/wallet}
 \end{center}
@@ -185,12 +211,12 @@
 \begin{figure}[H]
     \centering
     \setlatin{\includegraphics[width=0.85\textwidth]{step10_customer_wallet.png}}
-    \caption{گام ۱۰: صفحه کیف پول مشتری و پاداش‌های خرید گروهی}
+    \caption{گام ۱۰: صفحه مدیریت کیف پول مشتری و گزارش تراکنش‌های پاداش}
     \label{fig:step10_customer_wallet}
 \end{figure}
 
 \subsection{گام ۱۱: مشاهده امتیازات و شرکت در قرعه‌کشی}
-کاربران امتیازات قرعه‌کشی کسب‌شده خود را مشاهده و مدیریت می‌کنند:
+امتیازات قرعه‌کشی کسب‌شده از لیدری و خریدهای تیمی در این بخش ثبت شده و امکان شرکت در قرعه‌کشی‌های ادواری فراهم است:
 \begin{center}
     \url{https://ground-buggy-karaoke.ngrok-free.dev/customer/lottery}
 \end{center}
@@ -198,186 +224,169 @@
 \begin{figure}[H]
     \centering
     \setlatin{\includegraphics[width=0.85\textwidth]{step11_customer_lottery.png}}
-    \caption{گام ۱۱: صفحه امتیازات و قرعه‌کشی مشتری}
+    \caption{گام ۱۱: صفحه امتیازات قرعه‌کشی و بلیط‌های شانس مشتری}
     \label{fig:step11_customer_lottery}
 \end{figure}
 
 \newpage
-\section{بخش چهارم: راهنمای گام به گام ماژول‌های هوشمند \lr{(B)} و \lr{(C)}}
+\section{بخش چهارم: راهنمای ماژول‌های هوش مصنوعی (ماژول B و C)}
 
-\subsection{گام ۱۲: ماژول B (جستجوی هوشمند - صوتی و تصویری)}
-این ماژول قابلیت جستجوی صوتی و تصویری مبتنی بر هوش مصنوعی را در نوار جستجوی عمومی فروشگاه ارائه می‌دهد.
+\subsection{گام ۱۲: ماژول B (جستجوی هوشمند متنی، صوتی و تصویری)}
+ماژول جستجوی هوشمند \lr{ArtificialIntelligence} سه شیوه نوین جستجو را در اختیار کاربران و سامانه‌های خارجی قرار می‌دهد:
+\begin{enumerate}
+    \item \textbf{جستجوی معنایی متنی هوش مصنوعی (\lr{AI Semantic Text Search}):} \\
+    در این روش، عبارت جستجو شده توسط کاربر به یک بردار ۱۵۳۶ بعدی (\lr{Embedding Vector}) تبدیل شده و با بردار ویژگی‌ها، نام و مشخصات فنی تمامی کالاها مقایسه کسینوسی (\lr{Cosine Similarity}) می‌شود. این فناوری امکان درک معنایی و جستجوی مفهومی کالاها را فراهم می‌سازد.
+    \item \textbf{جستجوی تصویری هوش مصنوعی (\lr{Visual Search}):} \\
+    کاربر تصویری از محصول را آپلود کرده و هوش مصنوعی با استخراج ویژگی‌های بصری، کالاهای مشابه را نمایش می‌دهد.
+    \item \textbf{جستجوی صوتی هوش مصنوعی (\lr{Voice Search}):} \\
+    صوت ضبط‌شده کاربر با مدل تشخیص گفتار فارسی (\lr{Speech-to-Text}) تحلیل و نتایج کالاها مستقیماً بازگردانده می‌شود.
+\end{enumerate}
 
 \begin{figure}[H]
     \centering
     \setlatin{\includegraphics[width=0.85\textwidth]{module_b_smart_search.png}}
-    \caption{گام ۱۲: ماژول جستجوی هوشمند (جستجوی صوتی و تصویری هوش مصنوعی)}
+    \caption{گام ۱۲: ماژول جستجوی هوشمند (متنی، صوتی و تصویری هوش مصنوعی)}
     \label{fig:module_b_smart_search}
 \end{figure}
 
-\subsection{گام ۱۳: ماژول C (تشخیص محصولات تکراری با هوش مصنوعی)}
-این ماژول محصولات ثبت شده توسط فروشندگان را به صورت خودکار تحلیل کرده و از ثبت کالای تکراری در انبارداری جلوگیری می‌نماید.
+\subsubsection*{سرویس‌های \lr{REST API} جستجوی هوشمند}
+برای اپلیکیشن‌های موبایل، تبلت‌های انبارداری و پیک‌ها، اندپوینت‌های استاندارد \lr{RESTful} زیر ارائه شده است:
+\begin{itemize}[label=\small$\bullet$]
+    \item \textbf{جستجوی معنایی متنی:} \lr{POST /api/ai/text-search} یا \lr{GET /api/ai/text-search?query=...}
+    \item \textbf{جستجوی تصویری:} \lr{POST /api/ai/visual-search} (ارسال فایل تصویر در قالب \lr{multipart/form-data})
+    \item \textbf{جستجوی صوتی:} \lr{POST /api/ai/voice-search} (ارسال فایل صوتی ضبط‌شده)
+\end{itemize}
+
+\subsection{گام ۱۳: ماژول C (تشخیص خودکار کالاهای تکراری و صف داوری)}
+این ماژول کاتالوگ‌های جدید ثبت‌شده توسط فروشندگان مختلف را به صورت بلادرنگ اسکن می‌کند. در صورتی که تصویر یا مشخصات فنی با محصولات پیشین بیش از آستانه مشخص (مثلا ۹۰٪) شباهت داشته باشد، کالا به صف داوری ارسال می‌گردد. مدیر می‌تواند توضیحات فروشنده را بررسی و تصمیم‌گیری نماید:
+\begin{center}
+    \url{https://ground-buggy-karaoke.ngrok-free.dev/Admin/AiDuplicateProduct/List}
+\end{center}
 
 \begin{figure}[H]
     \centering
     \setlatin{\includegraphics[width=0.85\textwidth]{module_c_duplicate_detection.png}}
-    \caption{گام ۱۳: ماژول تشخیص محصولات تکراری با هوش مصنوعی در پنل ارشد}
+    \caption{گام ۱۳: داشبورد مدیریت صف کالاهای تکراری با هوش مصنوعی در پنل ارشد}
     \label{fig:module_c_duplicate_detection}
 \end{figure}
 
 \newpage
-\section{بخش پنجم: راهنمای گام به گام احراز هویت دو مرحله‌ای اس‌ام‌اسی و محدودیت‌های امنیتی}
+\section{بخش پنجم: راهنمای احراز هویت پیامکی و امنیت سخت‌افزاری}
 
-\subsection{گام ۱۴: ماژول احراز هویت دو مرحله‌ای پیامکی \lr{(SMS 2FA)}}
-این ماژول امکان فعال‌سازی ورود امن دو مرحله‌ای بر پایه ارسال کد پیامکی \lr{(OTP)} را برای مشتریان و مدیران سیستم فراهم می‌سازد. تنظیمات درگاه پیامک در مسیر زیر مدیریت می‌شود:
+\subsection{گام ۱۴: احراز هویت دو مرحله‌ای پیامکی مبتنی بر نقش \lr{(SMS 2FA)}}
+این ماژول امنیت دسترسی را با ارسال کد یکبار مصرف (\lr{OTP}) ارتقا می‌دهد. امکان فعال‌سازی اجباری دو مرحله‌ای به تفکیک نقش‌ها (\lr{Force2FAForAdmins} برای مدیران و \lr{Force2FAForVendors} برای فروشندگان) فراهم است:
 \begin{center}
     \url{https://ground-buggy-karaoke.ngrok-free.dev/Plugins/SMS/Configure}
 \end{center}
 
-\noindent \textbf{توجه برای تست سیستم:} از آنجا که درگاه پیامک در حال حاضر در حالت شبیه‌ساز \lr{(Mock)} پیکربندی شده است، برای رد شدن از این مرحله و احراز هویت موفق، می‌توانید کد یکبار مصرف پیش‌فرض \lr{12345} را در فیلد کد تأیید وارد کنید.
+\noindent \textbf{نکته تست سامانه:} در حالت آزمایشی یا شبیه‌ساز درگاه، کد پیش‌فرض تایید \lr{12345} قابل استفاده است.
 
 \begin{figure}[H]
     \centering
     \setlatin{\includegraphics[width=0.85\textwidth]{step14_sms_mfa.png}}
-    \caption{گام ۱۴: احراز هویت دو مرحله‌ای پیامکی و تایید ورود}
+    \caption{گام ۱۴: احراز هویت دو مرحله‌ای پیامکی و تایید ورود کاربران}
     \label{fig:step14_sms_mfa}
 \end{figure}
 
-\subsection{گام ۱۵: محدودیت‌های امنیتی IP و شناسه دستگاه \lr{(Device Token)}}
-جهت محافظت پیشرفته از پنل ارشد، مدیر می‌تواند لیست سفید آدرس‌های IP مجاز و هش توکن سخت‌افزاری دستگاه‌های مجاز را تعریف کند. دسترسی‌های غیرمجاز با پاسخ \lr{HTTP 403 Forbidden} مسدود می‌گردند.
+\subsection{گام ۱۵: امنیت دستگاه و لیست سفید \lr{IP} (\lr{Device Token Security})}
+\noindent \textbf{توضیح فنی معماری امنیت وب:} \\
+بر اساس پروتکل‌های استاندارد وب و امنیت مرورگرها در بستر \lr{HTTPS}، دسترسی به آدرس فیزیکی سخت‌افزار (\lr{MAC Address}) کارت شبکه کلاینت از داخل مرورگر به دلایل امنیتی (\lr{Sandbox}) مسدود است. بنابراین، راهکار استاندارد و ایمن پیاده‌سازی شده در این سامانه، بهره‌گیری از \textbf{امضای سخت‌افزاری مرورگر (\lr{Device Binding Token})} به همراه \textbf{لیست سفید آدرس‌های \lr{IP}} می‌باشد. دسترسی خارج از لیست سفید با خطای \lr{HTTP 403 Forbidden} مسدود می‌گردد.
 
 \begin{figure}[H]
     \centering
     \setlatin{\includegraphics[width=0.85\textwidth]{step15_security_restrictions.png}}
-    \caption{گام ۱۵: تنظیمات لیست سفید IP و امضای دستگاه مجاز}
+    \caption{گام ۱۵: تنظیمات لیست سفید IP و توکن سخت‌افزاری دستگاه‌های مجاز}
     \label{fig:step15_security_restrictions}
 \end{figure}
 
 \newpage
-\section{بخش ششم: راهنمای گام به گام روش‌های ارسال مشروط}
+\section{بخش ششم: راهنمای موتور ارسال مشروط ۳ سطحی}
 
-\subsection{گام ۱۶: مدیریت و پیکربندی روش‌های ارسال مشروط (Conditional Shipping)}
-این ماژول اولویت‌بندی ارسال سفارش‌ها را بر اساس سه شرط متوالی بررسی می‌کند: \textbf{۱. پوشش شهری}، \textbf{۲. پشتیبانی محصول} و \textbf{۳. انبار}. روش‌های اکسپرس، باربری، کارگو و پیک در مسیر زیر قابل مدیریت می‌باشند:
-\begin{center}
-    \url{https://ground-buggy-karaoke.ngrok-free.dev/Admin/ConditionalShipping/Configure}
-\end{center}
+\subsection{گام ۱۶: مدیریت روش‌های ارسال مشروط (\lr{Conditional Shipping})}
+موتور ارسال مشروط، روش‌های مجاز حمل را با ارزیابی ۳ شرط متوالی در خط لوله محاسباتی فیلتر می‌کند:
+\begin{equation*}
+    \text{۱. پوشش جغرافیایی شهر} \longrightarrow \text{۲. پشتیبانی نوع محصول} \longrightarrow \text{۳. موجودی و تجهیزات انبار}
+\end{equation*}
+
+روش‌های ۴‌گانه ارسال شامل موارد زیر می‌باشند:
+\begin{enumerate}
+    \item \textbf{پیک اختصاصی درون‌شهری (\lr{Courier}):} تحویل سریع در محدوده شهر فعال.
+    \item \textbf{باربری بین‌شهری (\lr{Freight}):} مخصوص بارهای حجیم یا سفارش‌های عمده.
+    \item \textbf{کارگو و حمل هوایی (\lr{Cargo}):} ارسال فوری بین‌استانی به شهرهای دارای فرودگاه.
+    \item \textbf{پست پیشتاز/اکسپرس (\lr{Express}):} پوشش سراسری کلیه شهرها و روستاها.
+\end{enumerate}
 
 \begin{figure}[H]
     \centering
     \setlatin{\includegraphics[width=0.85\textwidth]{step16_conditional_shipping.png}}
-    \caption{گام ۱۶: مدیریت روش‌های ارسال مشروط و اولویت‌بندی ارسال}
+    \caption{گام ۱۶: پنل پیکربندی و اولویت‌بندی ارسال مشروط محصولات}
     \label{fig:step16_conditional_shipping}
 \end{figure}
 
 \newpage
-\section{بخش هفتم: راهنمای گام به گام ماژول اعلانات کاربران}
+\section{بخش هفتم: راهنمای سایر ماژول‌ها (اعلانات، استعلام قیمت و چت‌بات)}
 
-\subsection{گام ۱۷: ماژول اعلانات سیستم و مدیریت پیام‌های عمومی \lr{(User Notifications)}}
-مدیر سیستم می‌تواند اعلانات عمومی، بنری یا پاپ‌آپ جدید را در مسیر زیر ایجاد نماید. اعلانات فعال هم‌زمان روی سایت و از طریق API همراه به اپلیکیشن موبایل منتقل می‌شوند:
-\begin{center}
-    \url{https://ground-buggy-karaoke.ngrok-free.dev/Admin/UserNotifications/List}
-\end{center}
-
+\subsection{گام ۱۷: ماژول اعلانات کاربران (\lr{User Notifications})}
+مدیر سیستم می‌تواند اعلانات همگانی و پیام‌های فوری را منتشر سازد. این پیام‌ها هم‌زمان روی سایت و از طریق وب‌سرویس \lr{/api/notifications/active} به اپلیکیشن‌های موبایل ارسال می‌شوند:
 \begin{figure}[H]
     \centering
     \setlatin{\includegraphics[width=0.85\textwidth]{step17_user_notifications.png}}
-    \caption{گام ۱۷: ماژول اعلانات عمومی و پیام‌های سیستم}
+    \caption{گام ۱۷: مدیریت اعلانات عمومی و پیام‌های سراسری سیستم}
     \label{fig:step17_user_notifications}
 \end{figure}
 
-\newpage
-\section{بخش هشتم: راهنمای گام به گام سیستم درخواست استعلام قیمت (RFQ)}
-
-\subsection{گام ۱۸: ثبت درخواست استعلام قیمت توسط مشتری \lr{(RFQ Customer)}}
-خریداران عمده می‌توانند در صفحه محصولات سفارشی یا صنعتی، فرم استعلام قیمت و حجم درخواستی را در مسیر زیر تکمیل و ارسال نمایند:
-\begin{center}
-    \url{https://ground-buggy-karaoke.ngrok-free.dev/rfq/submit}
-\end{center}
-
-\begin{figure}[H]
-    \centering
-    \setlatin{\includegraphics[width=0.85\textwidth]{step18_rfq_customer.png}}
-    \caption{گام ۱۸: فرم ثبت استعلام قیمت و پیشنهاد خریدار}
-    \label{fig:step18_rfq_customer}
-\end{figure}
-
-\subsection{گام ۱۹: مدیریت و پاسخ به استعلام‌های قیمت \lr{(RFQ Admin)}}
-فروشندگان و مدیران فروشگاه درخواست‌های استعلام قیمت واصله را در مسیر زیر بررسی نموده و قیمت پیشنهادی نهایی یا پیش‌فاکتور را صادر می‌نمایند:
-\begin{center}
-    \url{https://ground-buggy-karaoke.ngrok-free.dev/Admin/Rfq/List}
-\end{center}
-
+\subsection{گام ۱۸ و ۱۹: سیستم استعلام قیمت محصولات صنعتی و عمده (\lr{RFQ})}
+خریداران عمده فرم استعلام قیمت را در \lr{/rfq/submit} تکمیل کرده و تامین‌کنندگان و مدیران در پنل مدیریت استعلام‌ها (\lr{/Admin/Rfq/List}) پیش‌فاکتور رسمی را صادر می‌نمایند:
 \begin{figure}[H]
     \centering
     \setlatin{\includegraphics[width=0.85\textwidth]{step19_rfq_admin.png}}
-    \caption{گام ۱۹: داشبورد مدیریت و صدور پیش‌فاکتور استعلام قیمت}
+    \caption{گام ۱۹: داشبورد مدیریت و پاسخ به استعلام‌های قیمت عمده}
     \label{fig:step19_rfq_admin}
 \end{figure}
 
-\newpage
-\section{بخش نهم: راهنمای گام به گام سرویس‌های API همراه \lr{(Mobile REST API)}}
-
-\subsection{گام ۲۰: احراز هویت و فراخوانی سرویس‌های RESTful اپلیکیشن موبایل}
-تمامی قابلیت‌های خرید گروهی، کیف پول و اعلانات از طریق سرویس‌های زیر با فرمت خالص \lr{JSON} در دسترس اپلیکیشن همراه است. درخواست‌های غیرمجاز به صورت استاندارد پاسخ \lr{HTTP 401 Unauthorized} دریافت می‌کنند:
-\begin{center}
-    \url{https://ground-buggy-karaoke.ngrok-free.dev/api/group-purchase/}
-\end{center}
-
-\begin{figure}[H]
-    \centering
-    \setlatin{\includegraphics[width=0.85\textwidth]{step20_mobile_api.png}}
-    \caption{گام ۲۰: مستندات و تست سرویس‌های RESTful API همراه}
-    \label{fig:step20_mobile_api}
-\end{figure}
-
-\newpage
-\section{بخش دهم: راهنمای گام به گام ماژول چت‌بات هوش مصنوعی (ماژول D)}
-
-\subsection{گام ۲۱: پشتیبان و چت‌بات هوشمند (ماژول D) و ارجاع به اپراتور انسانی}
-این ماژول پاسخ‌گویی خودکار به سوالات خریداران، استعلام وضعیت سفارش و راهنمایی خرید را بر عهده دارد. در صورت نیاز کاربر با تایپ عبارت «ارجاع به پشتیبان»، گفتگو به اپراتور انسانی متصل می‌گردد.
-
+\subsection{گام ۲۰ و ۲۱: وب‌سرویس‌های موبایل و پشتیبان چت‌بات هوش مصنوعی}
+سرویس‌های موبایل بر بستر \lr{REST} پاسخ‌های \lr{JSON} ارائه می‌دهند. همچنین چت‌بات آنلاین هوش مصنوعی در صفحه پشتیبانی فعال بوده و با نوشتن عبارت «ارجاع به پشتیبان»، گفتگو را به اپراتور انسانی انتقال می‌دهد:
 \begin{figure}[H]
     \centering
     \setlatin{\includegraphics[width=0.85\textwidth]{step21_ai_chatbot.png}}
-    \caption{گام ۲۱: چت‌بات هوش مصنوعی و پشتیبانی آنلاین خریداران}
+    \caption{گام ۲۱: چت‌بات هوش مصنوعی و پشتیبانی هوشمند خریداران}
     \label{fig:step21_ai_chatbot}
 \end{figure}
 
 \newpage
-\section{جدول مرجع آدرس‌های سیستم (فروشگاه و مدیریت)}
+\section{جدول مرجع آدرس‌ها و وب‌سرویس‌های سیستم}
 
 \begin{table}[H]
 \centering
-\caption{جدول کامل مسیرهای دسترسی به همراه شماره گام (گام ۱ تا گام ۲۱)}
+\caption{جدول کامل مسیرهای دسترسی، صفحات فروشگاه، پنل مدیریت و اندپوینت‌های \lr{REST API}}
 \vspace{0.3cm}
-\begin{tabular}{p{1.5cm} p{3.5cm} p{6cm} p{6cm}}
+\begin{tabular}{p{1.2cm} p{3.8cm} p{5.5cm} p{5.5cm}}
 \toprule
-\textbf{شماره گام} & \textbf{نام بخش / قابلیت} & \textbf{آدرس بخش فروشگاه} & \textbf{آدرس بخش مدیریت} \\
+\textbf{گام} & \textbf{قابلیت / بخش} & \textbf{بخش فروشگاه / وب‌سرویس} & \textbf{بخش مدیریت ارشد} \\
 \midrule
 گام ۱ & مدیریت تخفیف‌ها & --- & \url{https://ground-buggy-karaoke.ngrok-free.dev/Admin/Discount/List} \\
-گام ۲ & صفحه تخفیف‌های شگفت‌انگیز & \url{https://ground-buggy-karaoke.ngrok-free.dev/amazing-discounts} & --- \\
-گام ۳ & داشبورد تبلیغات فروشنده & \url{https://ground-buggy-karaoke.ngrok-free.dev/seller/dashboard} & --- \\
-گام ۴ & ثبت محصول تبلیغاتی & \url{https://ground-buggy-karaoke.ngrok-free.dev/seller/product/add} & --- \\
-گام ۵ & مدیریت تبلیغات فروشندگان & --- & \url{https://ground-buggy-karaoke.ngrok-free.dev/Admin/SellerMarketing/List} \\
-گام ۶ & مدیریت خرید گروهی & --- & \url{https://ground-buggy-karaoke.ngrok-free.dev/Admin/GroupPurchase/List} \\
-گام ۷ & مدیریت قوانین پاداش & --- & \url{https://ground-buggy-karaoke.ngrok-free.dev/Admin/RewardRule/List} \\
+گام ۲ & تخفیف‌های شگفت‌انگیز & \url{https://ground-buggy-karaoke.ngrok-free.dev/amazing-discounts} & --- \\
+گام ۳ & داشبورد فروشندگان & \url{https://ground-buggy-karaoke.ngrok-free.dev/seller/dashboard} & --- \\
+گام ۴ & ثبت کاتالوگ فروشنده & \url{https://ground-buggy-karaoke.ngrok-free.dev/seller/product/add} & --- \\
+گام ۵ & تایید کاتالوگ فروشندگان & \lr{POST /api/seller-marketing/submit} \newline \lr{GET /api/seller-marketing/my-requests} & \url{https://ground-buggy-karaoke.ngrok-free.dev/Admin/SellerMarketing/List} \\
+گام ۶ & مدیریت خرید گروهی & \url{https://ground-buggy-karaoke.ngrok-free.dev/api/group-purchase/} & \url{https://ground-buggy-karaoke.ngrok-free.dev/Admin/GroupPurchase/List} \\
+گام ۷ & قوانین پاداش خرید گروهی & --- & \url{https://ground-buggy-karaoke.ngrok-free.dev/Admin/RewardRule/List} \\
 گام ۸ & گروه‌های لیدری مشتری & \url{https://ground-buggy-karaoke.ngrok-free.dev/customer/leader-groups} & --- \\
 گام ۹ & تاریخچه زیرمجموعه‌ها & \url{https://ground-buggy-karaoke.ngrok-free.dev/customer/subgroup-history} & --- \\
-گام ۱۰ & کیف پول و موجودی & \url{https://ground-buggy-karaoke.ngrok-free.dev/customer/wallet} & \url{https://ground-buggy-karaoke.ngrok-free.dev/Admin/CustomerWallet/List} \\
+گام ۱۰ & کیف پول مشتریان & \url{https://ground-buggy-karaoke.ngrok-free.dev/customer/wallet} & \url{https://ground-buggy-karaoke.ngrok-free.dev/Admin/CustomerWallet/List} \\
 گام ۱۱ & امتیازات و قرعه‌کشی & \url{https://ground-buggy-karaoke.ngrok-free.dev/customer/lottery} & --- \\
-گام ۱۲ & ماژول جستجوی هوشمند & \url{https://ground-buggy-karaoke.ngrok-free.dev/AiSearch/VisualSearch} & --- \\
-گام ۱۳ & ماژول تشخیص تکراری & --- & \url{https://ground-buggy-karaoke.ngrok-free.dev/Admin/AiDuplicateProduct/List} \\
+گام ۱۲ & جستجوی هوشمند (متن/صوت/عکس) & \lr{POST /api/ai/text-search} \newline \lr{POST /api/ai/visual-search} \newline \lr{POST /api/ai/voice-search} & --- \\
+گام ۱۳ & تشخیص محصولات تکراری & --- & \url{https://ground-buggy-karaoke.ngrok-free.dev/Admin/AiDuplicateProduct/List} \\
 گام ۱۴ & ورود دو مرحله‌ای پیامکی & \url{https://ground-buggy-karaoke.ngrok-free.dev/login} & \url{https://ground-buggy-karaoke.ngrok-free.dev/Plugins/SMS/Configure} \\
-گام ۱۵ & محدودیت‌های IP و دستگاه & --- & \url{https://ground-buggy-karaoke.ngrok-free.dev/Plugins/SMS/Configure} \\
-گام ۱۶ & ارسال مشروط محصولات & \url{https://ground-buggy-karaoke.ngrok-free.dev/cart} & \url{https://ground-buggy-karaoke.ngrok-free.dev/Admin/ConditionalShipping/Configure} \\
-گام ۱۷ & اعلانات سیستم و عمومی & \url{https://ground-buggy-karaoke.ngrok-free.dev/api/notifications/active} & \url{https://ground-buggy-karaoke.ngrok-free.dev/Admin/UserNotifications/List} \\
-گام ۱۸ & ثبت استعلام قیمت مشتری & \url{https://ground-buggy-karaoke.ngrok-free.dev/rfq/submit} & --- \\
-گام ۱۹ & مدیریت استعلام‌های قیمت & --- & \url{https://ground-buggy-karaoke.ngrok-free.dev/Admin/Rfq/List} \\
-گام ۲۰ & سرویس‌های API همراه & \url{https://ground-buggy-karaoke.ngrok-free.dev/api/group-purchase/} & --- \\
+گام ۱۵ & امنیت دستگاه و IP & --- & \url{https://ground-buggy-karaoke.ngrok-free.dev/Plugins/SMS/Configure} \\
+گام ۱۶ & ارسال مشروط ۳ سطحی & \url{https://ground-buggy-karaoke.ngrok-free.dev/cart} & \url{https://ground-buggy-karaoke.ngrok-free.dev/Admin/ConditionalShipping/Configure} \\
+گام ۱۷ & اعلانات کاربران & \url{https://ground-buggy-karaoke.ngrok-free.dev/api/notifications/active} & \url{https://ground-buggy-karaoke.ngrok-free.dev/Admin/UserNotifications/List} \\
+گام ۱۸ & ثبت استعلام قیمت (RFQ) & \url{https://ground-buggy-karaoke.ngrok-free.dev/rfq/submit} & --- \\
+گام ۱۹ & مدیریت استعلام‌ها & --- & \url{https://ground-buggy-karaoke.ngrok-free.dev/Admin/Rfq/List} \\
+گام ۲۰ & وب‌سرویس‌های موبایل & \url{https://ground-buggy-karaoke.ngrok-free.dev/api/group-purchase/} & --- \\
 گام ۲۱ & چت‌بات هوشمند (ماژول D) & \url{https://ground-buggy-karaoke.ngrok-free.dev/chat} & \url{https://ground-buggy-karaoke.ngrok-free.dev/Admin/ArtificialIntelligence/Configure} \\
 \bottomrule
 \end{tabular}
 \end{table}
 
 \end{document}
-

@@ -16,5 +16,6 @@ public class AdvancedSchemaMigration : AutoReversingMigration
         Create.TableFor<CustomerInboxMessage>();
         Create.TableFor<CustomerPendingPopup>();
         Create.TableFor<ProductViewLog>();
+        Create.TableFor<CustomerNotificationPreference>();
     }
 }

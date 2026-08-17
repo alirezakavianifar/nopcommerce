@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Nop.Web.Framework.Models;
 using Nop.Web.Framework.Mvc.ModelBinding;
 
@@ -21,4 +22,7 @@ public record AmazingDiscountProductModel : BaseNopEntityModel
 
     [NopResourceDisplayName("Plugins.Misc.AmazingDiscounts.Fields.EndDateUtc")]
     public DateTime? EndDateUtc { get; set; }
+
+    public IList<SelectListItem> AvailableProducts { get; set; } = new List<SelectListItem>();
 }
+

@@ -1,14 +1,47 @@
 @using Nop.Plugin.Misc.UserNotifications.Domain
 @model IList<NotificationAnnouncement>
 
-@if (Model.Any())
+@if (Model != null && Model.Any())
 {
-    <div class="user-notifications-wrapper" style="background: #fff3cd; border: 1px solid #ffeeba; padding: 10px; margin-bottom: 15px; border-radius: 4px;">
-        @foreach (var announcement in Model)
-        {
-            <div class="announcement-item" style="margin-bottom: 5px;">
-                <strong>@announcement.Title</strong>: @Html.Raw(announcement.Body)
-            </div>
-        }
+    <div id="notif-top-ticker-bar" class="notif-top-ticker-bar">
+        <div class="notif-ticker-content">
+            <span class="notif-ticker-badge"><i class="fas fa-bullhorn mr-1"></i> @T("Plugins.Misc.UserNotifications.Announcement")</span>
+            @for (var i = 0; i < Model.Count; i++)
+            {
+                var announcement = Model[i];
+                <div class="notif-ticker-item" style="display: @(i == 0 ? "inline-block" : "none");" data-index="@i">
+                    <strong>@announcement.Title</strong> &mdash; @Html.Raw(announcement.Body)
+                </div>
+            }
+        </div>
+        <button type="button" class="notif-ticker-close" onclick="dismissTopTicker()" title="Dismiss">&times;</button>
     </div>
+
+    <script>
+        function dismissTopTicker() {
+            var ticker = document.getElementById('notif-top-ticker-bar');
+            if (ticker) ticker.style.display = 'none';
+            try { sessionStorage.setItem('hide_notif_ticker', 'true'); } catch (e) { }
+        }
+
+        (function () {
+            try {
+                if (sessionStorage.getItem('hide_notif_ticker') === 'true') {
+                    var ticker = document.getElementById('notif-top-ticker-bar');
+                    if (ticker) ticker.style.display = 'none';
+                }
+            } catch (e) { }
+
+            // Auto-rotate ticker items if multiple exist
+            var items = document.querySelectorAll('.notif-ticker-item');
+            if (items.length > 1) {
+                var currentIndex = 0;
+                setInterval(function () {
+                    items[currentIndex].style.display = 'none';
+                    currentIndex = (currentIndex + 1) % items.length;
+                    items[currentIndex].style.display = 'inline-block';
+                }, 5000);
+            }
+        })();
+    </script>
 }

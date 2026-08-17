@@ -1,10 +1,87 @@
-@model int
-<li class="nav-item">
-    <a href="/customer/notifications" class="nav-link position-relative">
-        <i class="far fa-bell"></i> @T("Plugins.Misc.UserNotifications.Inbox")
-        @if (Model > 0)
+@model HeaderNotificationsFlyoutModel
+@using Nop.Plugin.Misc.UserNotifications.Models
+
+<link rel="stylesheet" href="~/Plugins/Misc.UserNotifications/Content/css/notifications.css" />
+<script src="~/Plugins/Misc.UserNotifications/Content/js/notifications.js" defer></script>
+
+<li class="nav-item notif-bell-container">
+    <button type="button" id="notif-bell-toggle" class="notif-bell-btn" title="@T("Plugins.Misc.UserNotifications.Inbox")" aria-label="Notifications">
+        <i class="far fa-bell"></i>
+        @if (Model.UnreadCount > 0)
         {
-            <span class="badge badge-pill badge-danger" style="position: relative; top: -8px; left: -2px;">@Model</span>
+            <span class="notif-badge-pill">@Model.UnreadCount</span>
         }
-    </a>
+        else
+        {
+            <span class="notif-badge-pill" style="display:none;">0</span>
+        }
+    </button>
+
+    <div id="notif-flyout-menu" class="notif-flyout-dropdown">
+        <div class="notif-flyout-header">
+            <h3 class="notif-flyout-title">
+                <i class="fas fa-bell text-primary"></i>
+                @T("Plugins.Misc.UserNotifications.Inbox")
+            </h3>
+            <button type="button" class="notif-mark-all-btn">
+                <i class="fas fa-check-double mr-1"></i> @T("Plugins.Misc.UserNotifications.MarkAllAsRead")
+            </button>
+        </div>
+
+        <div class="notif-flyout-tabs">
+            <button type="button" class="notif-flyout-tab active" data-category="All">@T("Plugins.Misc.UserNotifications.FilterAll")</button>
+            <button type="button" class="notif-flyout-tab" data-category="Order">@T("Plugins.Misc.UserNotifications.FilterOrders")</button>
+            <button type="button" class="notif-flyout-tab" data-category="Promotion">@T("Plugins.Misc.UserNotifications.FilterOffers")</button>
+            <button type="button" class="notif-flyout-tab" data-category="System">@T("Plugins.Misc.UserNotifications.FilterSystem")</button>
+        </div>
+
+        <ul id="notif-flyout-list" class="notif-flyout-body">
+            @if (Model.RecentItems != null && Model.RecentItems.Any())
+            {
+                foreach (var item in Model.RecentItems)
+                {
+                    <li class="notif-item-card @(item.IsRead ? "" : "unread")" data-id="@item.Id">
+                        <div class="notif-item-icon category-@item.Category">
+                            <i class="fas @item.Icon"></i>
+                        </div>
+                        <div class="notif-item-content">
+                            <h4 class="notif-item-title">
+                                @if (!string.IsNullOrWhiteSpace(item.ActionUrl))
+                                {
+                                    <a href="@item.ActionUrl" style="color: inherit; text-decoration: none;">@item.Title</a>
+                                }
+                                else
+                                {
+                                    @item.Title
+                                }
+                            </h4>
+                            <p class="notif-item-message">@item.Message</p>
+                            <div class="notif-item-meta">
+                                <span>@item.RelativeTime</span>
+                                @if (!string.IsNullOrWhiteSpace(item.CouponCode))
+                                {
+                                    <span class="notif-coupon-tag" onclick="UserNotifications.copyCoupon('@item.CouponCode', event)">
+                                        <i class="fas fa-ticket-alt"></i> @item.CouponCode
+                                    </span>
+                                }
+                            </div>
+                        </div>
+                    </li>
+                }
+            }
+            else
+            {
+                <li class="notif-empty-state">
+                    <div class="notif-empty-icon"><i class="far fa-bell-slash"></i></div>
+                    <div class="notif-empty-title">@T("Plugins.Misc.UserNotifications.Inbox.Empty")</div>
+                    <p class="notif-empty-desc">@T("Plugins.Misc.UserNotifications.Inbox.AllCaughtUp")</p>
+                </li>
+            }
+        </ul>
+
+        <div class="notif-flyout-footer">
+            <a href="/customer/notifications"><i class="fas fa-inbox mr-1"></i> @T("Plugins.Misc.UserNotifications.ViewAllNotifications")</a>
+            <a href="/customer/notifications/preferences" class="text-muted"><i class="fas fa-cog"></i></a>
+        </div>
+    </div>
 </li>

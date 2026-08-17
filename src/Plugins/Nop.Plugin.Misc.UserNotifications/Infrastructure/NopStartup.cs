@@ -20,6 +20,7 @@ public class NopStartup : INopStartup
         services.AddScoped<ISmsNotificationService, FarazSmsNotificationService>();
         services.AddScoped<IUserInboxService, UserInboxService>();
         services.AddScoped<IPopupNotificationService, PopupNotificationService>();
+        services.AddScoped<INotificationPreferenceService, NotificationPreferenceService>();
         services.AddScoped<IWorkflowEngineService, WorkflowEngineService>();
 
         services.AddScoped<IConsumer<CustomerRegisteredEvent>, NotificationEventConsumer>();

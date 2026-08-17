@@ -9,6 +9,7 @@ public interface IAiService
     Task<string> ChatResponseAsync(IList<object> history);
     Task<IList<int>> VisualSearchAsync(byte[] imageData);
     Task<AiDuplicateCheckResult> CheckDuplicateAsync(int productId);
+    Task<IList<int>> TextSearchAsync(string query, int maxResults = 10);
 }
 
 public class AiDuplicateCheckResult

@@ -66,6 +66,17 @@ public class RouteProvider : BaseRouteProvider, IRouteProvider
             name: "Plugin.Misc.SellerMarketing.Admin.Reject",
             pattern: "Admin/SellerMarketing/Reject",
             defaults: new { controller = "SellerMarketingAdmin", action = "Reject", area = "Admin" });
+
+        // REST API routes for external apps / seller & warehouse integration
+        endpointRouteBuilder.MapControllerRoute(
+            name: "Plugin.Misc.SellerMarketing.Api.Submit",
+            pattern: "api/seller-marketing/submit",
+            defaults: new { controller = "SellerMarketingApi", action = "Submit" });
+
+        endpointRouteBuilder.MapControllerRoute(
+            name: "Plugin.Misc.SellerMarketing.Api.MyRequests",
+            pattern: "api/seller-marketing/my-requests",
+            defaults: new { controller = "SellerMarketingApi", action = "MyRequests" });
     }
 
     public int Priority => 1000;

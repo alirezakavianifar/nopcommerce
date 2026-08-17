@@ -46,7 +46,8 @@ public class UserNotificationsPlugin : BasePlugin, IMiscPlugin, IWidgetPlugin, I
             PublicWidgetZones.HomepageTop,
             PublicWidgetZones.HeaderBefore,
             PublicWidgetZones.HeaderLinksAfter,
-            PublicWidgetZones.BodyStartHtmlTagAfter
+            PublicWidgetZones.BodyStartHtmlTagAfter,
+            PublicWidgetZones.AccountNavigationAfter
         });
     }
 
@@ -57,6 +58,9 @@ public class UserNotificationsPlugin : BasePlugin, IMiscPlugin, IWidgetPlugin, I
 
         if (widgetZone == PublicWidgetZones.BodyStartHtmlTagAfter)
             return typeof(PopupModalViewComponent);
+
+        if (widgetZone == PublicWidgetZones.AccountNavigationAfter)
+            return typeof(AccountNavigationNotificationsViewComponent);
 
         return typeof(UserNotificationsViewComponent);
     }
@@ -105,6 +109,7 @@ public class UserNotificationsPlugin : BasePlugin, IMiscPlugin, IWidgetPlugin, I
             ["Plugins.Misc.UserNotifications.Inbox"] = "My Notifications",
             ["Plugins.Misc.UserNotifications.Inbox.Unread"] = "Unread",
             ["Plugins.Misc.UserNotifications.Inbox.Empty"] = "You have no notifications in your account inbox.",
+            ["Plugins.Misc.UserNotifications.Inbox.AllCaughtUp"] = "You're all caught up! There are no unread notifications right now.",
             ["Plugins.Misc.UserNotifications.Inbox.New"] = "New",
             ["Plugins.Misc.UserNotifications.Inbox.ViewDetails"] = "View Details",
             ["Plugins.Misc.UserNotifications.Popup.Claim"] = "Claim Special Offer",
@@ -128,7 +133,42 @@ public class UserNotificationsPlugin : BasePlugin, IMiscPlugin, IWidgetPlugin, I
             ["Plugins.Misc.UserNotifications.Fields.IsPublished"] = "Is published",
             ["Plugins.Misc.UserNotifications.Added"] = "The announcement has been added successfully.",
             ["Plugins.Misc.UserNotifications.Updated"] = "The announcement has been updated successfully.",
-            ["Plugins.Misc.UserNotifications.Deleted"] = "The announcement has been deleted successfully."
+            ["Plugins.Misc.UserNotifications.Deleted"] = "The announcement has been deleted successfully.",
+            ["Plugins.Misc.UserNotifications.FilterAll"] = "All",
+            ["Plugins.Misc.UserNotifications.FilterOrders"] = "Orders",
+            ["Plugins.Misc.UserNotifications.FilterOffers"] = "Offers & Deals",
+            ["Plugins.Misc.UserNotifications.FilterSystem"] = "System",
+            ["Plugins.Misc.UserNotifications.MarkAllAsRead"] = "Mark all as read",
+            ["Plugins.Misc.UserNotifications.MarkAsRead"] = "Mark as read",
+            ["Plugins.Misc.UserNotifications.ClearRead"] = "Clear read",
+            ["Plugins.Misc.UserNotifications.CopyCode"] = "Copy Code",
+            ["Plugins.Misc.UserNotifications.PromoCode"] = "PROMO CODE",
+            ["Plugins.Misc.UserNotifications.SearchPlaceholder"] = "Search notifications, offers, or codes...",
+            ["Plugins.Misc.UserNotifications.ViewAllNotifications"] = "View all in Inbox",
+            ["Plugins.Misc.UserNotifications.Preferences"] = "Notification Preferences",
+            ["Plugins.Misc.UserNotifications.BackToInbox"] = "Back to Inbox",
+            ["Plugins.Misc.UserNotifications.PreferencesSaved"] = "Your notification preferences have been saved successfully.",
+            ["Plugins.Misc.UserNotifications.Preferences.ChannelsTitle"] = "Delivery Channels",
+            ["Plugins.Misc.UserNotifications.Preferences.ChannelsDesc"] = "Choose how and where you want to receive notifications from us.",
+            ["Plugins.Misc.UserNotifications.Preferences.OnSiteToasts"] = "On-Site Toast Popups",
+            ["Plugins.Misc.UserNotifications.Preferences.OnSiteToastsDesc"] = "Show non-intrusive floating toasts on screen while browsing.",
+            ["Plugins.Misc.UserNotifications.Preferences.Sound"] = "Notification Sound Chime",
+            ["Plugins.Misc.UserNotifications.Preferences.SoundDesc"] = "Play a subtle pleasant audio chime when a new notification arrives.",
+            ["Plugins.Misc.UserNotifications.Preferences.TestSound"] = "Test audio chime",
+            ["Plugins.Misc.UserNotifications.Preferences.Email"] = "Email Notifications",
+            ["Plugins.Misc.UserNotifications.Preferences.EmailDesc"] = "Receive order updates, dispatch notes, and special offers in your email.",
+            ["Plugins.Misc.UserNotifications.Preferences.Sms"] = "SMS Notifications",
+            ["Plugins.Misc.UserNotifications.Preferences.SmsDesc"] = "Get real-time instant SMS for order status and flash deals.",
+            ["Plugins.Misc.UserNotifications.Preferences.TopicsTitle"] = "Notification Topics",
+            ["Plugins.Misc.UserNotifications.Preferences.TopicsDesc"] = "Select the types of updates you are interested in.",
+            ["Plugins.Misc.UserNotifications.Preferences.OrderUpdates"] = "Orders & Deliveries",
+            ["Plugins.Misc.UserNotifications.Preferences.OrderUpdatesDesc"] = "Order confirmation, payment receipts, shipment tracking, and delivery alerts.",
+            ["Plugins.Misc.UserNotifications.Preferences.Promotions"] = "Promotions & Discounts",
+            ["Plugins.Misc.UserNotifications.Preferences.PromotionsDesc"] = "Special vouchers, dynamic coupons, abandoned cart reminders, and sales.",
+            ["Plugins.Misc.UserNotifications.Preferences.Announcements"] = "Store Announcements",
+            ["Plugins.Misc.UserNotifications.Preferences.AnnouncementsDesc"] = "Holiday schedules, maintenance, new features, and policy updates.",
+            ["Plugins.Misc.UserNotifications.StartShopping"] = "Start Shopping",
+            ["Plugins.Misc.UserNotifications.Announcement"] = "Announcement"
         };
 
         var faResources = new Dictionary<string, string>
@@ -140,6 +180,7 @@ public class UserNotificationsPlugin : BasePlugin, IMiscPlugin, IWidgetPlugin, I
             ["Plugins.Misc.UserNotifications.Inbox"] = "اعلان‌های من",
             ["Plugins.Misc.UserNotifications.Inbox.Unread"] = "خوانده‌نشده",
             ["Plugins.Misc.UserNotifications.Inbox.Empty"] = "هیچ اعلانی در صندوق ورودی شما وجود ندارد.",
+            ["Plugins.Misc.UserNotifications.Inbox.AllCaughtUp"] = "همه پیام‌ها خوانده شده است! هیچ اعلان جدیدی وجود ندارد.",
             ["Plugins.Misc.UserNotifications.Inbox.New"] = "جدید",
             ["Plugins.Misc.UserNotifications.Inbox.ViewDetails"] = "مشاهده جزئیات",
             ["Plugins.Misc.UserNotifications.Popup.Claim"] = "دریافت پیشنهاد ویژه",
@@ -163,7 +204,42 @@ public class UserNotificationsPlugin : BasePlugin, IMiscPlugin, IWidgetPlugin, I
             ["Plugins.Misc.UserNotifications.Fields.IsPublished"] = "منتشر شده",
             ["Plugins.Misc.UserNotifications.Added"] = "اطلاعیه با موفقیت افزوده شد.",
             ["Plugins.Misc.UserNotifications.Updated"] = "اطلاعیه با موفقیت بروزرسانی شد.",
-            ["Plugins.Misc.UserNotifications.Deleted"] = "اطلاعیه با موفقیت حذف شد."
+            ["Plugins.Misc.UserNotifications.Deleted"] = "اطلاعیه با موفقیت حذف شد.",
+            ["Plugins.Misc.UserNotifications.FilterAll"] = "همه",
+            ["Plugins.Misc.UserNotifications.FilterOrders"] = "سفارش‌ها",
+            ["Plugins.Misc.UserNotifications.FilterOffers"] = "تخفیف‌ها و پیشنهادات",
+            ["Plugins.Misc.UserNotifications.FilterSystem"] = "سیستم",
+            ["Plugins.Misc.UserNotifications.MarkAllAsRead"] = "علامت‌گذاری همه به عنوان خوانده شده",
+            ["Plugins.Misc.UserNotifications.MarkAsRead"] = "خوانده شد",
+            ["Plugins.Misc.UserNotifications.ClearRead"] = "پاکسازی خوانده‌شده‌ها",
+            ["Plugins.Misc.UserNotifications.CopyCode"] = "کپی کد",
+            ["Plugins.Misc.UserNotifications.PromoCode"] = "کد تخفیف",
+            ["Plugins.Misc.UserNotifications.SearchPlaceholder"] = "جستجوی اعلان‌ها، تخفیف‌ها یا کدها...",
+            ["Plugins.Misc.UserNotifications.ViewAllNotifications"] = "مشاهده همه اعلان‌ها",
+            ["Plugins.Misc.UserNotifications.Preferences"] = "تنظیمات دریافت اعلانات",
+            ["Plugins.Misc.UserNotifications.BackToInbox"] = "بازگشت به صندوق پیام‌ها",
+            ["Plugins.Misc.UserNotifications.PreferencesSaved"] = "تنظیمات اعلانات شما با موفقیت ذخیره شد.",
+            ["Plugins.Misc.UserNotifications.Preferences.ChannelsTitle"] = "کانال‌های دریافت",
+            ["Plugins.Misc.UserNotifications.Preferences.ChannelsDesc"] = "انتخاب کنید اعلانات از چه طریق به دست شما برسد.",
+            ["Plugins.Misc.UserNotifications.Preferences.OnSiteToasts"] = "اعلان‌های شناور در سایت",
+            ["Plugins.Misc.UserNotifications.Preferences.OnSiteToastsDesc"] = "نمایش پیام‌های شناور و پیشنهادات هنگام گشت‌وگذار در فروشگاه.",
+            ["Plugins.Misc.UserNotifications.Preferences.Sound"] = "صدای زنگ اعلان",
+            ["Plugins.Misc.UserNotifications.Preferences.SoundDesc"] = "پخش صدای ملایم هنگام دریافت اعلان جدید.",
+            ["Plugins.Misc.UserNotifications.Preferences.TestSound"] = "تست صدای زنگ",
+            ["Plugins.Misc.UserNotifications.Preferences.Email"] = "اعلان‌های ایمیلی",
+            ["Plugins.Misc.UserNotifications.Preferences.EmailDesc"] = "دریافت وضعیت سفارشات و پیشنهادات ویژه از طریق ایمیل.",
+            ["Plugins.Misc.UserNotifications.Preferences.Sms"] = "پیامک‌های اطلاع‌رسانی",
+            ["Plugins.Misc.UserNotifications.Preferences.SmsDesc"] = "دریافت پیامک فوری برای رهگیری سفارش و تخفیف‌های لحظه‌ای.",
+            ["Plugins.Misc.UserNotifications.Preferences.TopicsTitle"] = "موضوعات اعلانات",
+            ["Plugins.Misc.UserNotifications.Preferences.TopicsDesc"] = "انواع موضوعاتی که مایل به دریافت آنها هستید را انتخاب نمایید.",
+            ["Plugins.Misc.UserNotifications.Preferences.OrderUpdates"] = "سفارش‌ها و مرسولات",
+            ["Plugins.Misc.UserNotifications.Preferences.OrderUpdatesDesc"] = "تأیید سفارش، فاکتور، رهگیری مرسوله و تحویل کالا.",
+            ["Plugins.Misc.UserNotifications.Preferences.Promotions"] = "تخفیف‌ها و حراجی‌ها",
+            ["Plugins.Misc.UserNotifications.Preferences.PromotionsDesc"] = "کوپن‌های تخفیف اختصاصی، یادآور سبد خرید و حراج‌های ویژه.",
+            ["Plugins.Misc.UserNotifications.Preferences.Announcements"] = "اطلاعیه‌های فروشگاه",
+            ["Plugins.Misc.UserNotifications.Preferences.AnnouncementsDesc"] = "ساعات کاری، خدمات جدید و اخبار مهم فروشگاه.",
+            ["Plugins.Misc.UserNotifications.StartShopping"] = "شروع خرید",
+            ["Plugins.Misc.UserNotifications.Announcement"] = "اطلاعیه"
         };
 
         foreach (var lang in languages)

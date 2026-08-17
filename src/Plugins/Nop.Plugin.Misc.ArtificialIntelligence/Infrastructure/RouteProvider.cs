@@ -31,6 +31,27 @@ public class RouteProvider : IRouteProvider
             defaults: new { controller = "AiStorefront", action = "VoiceSearch" });
 
         endpointRouteBuilder.MapControllerRoute(
+            name: "Plugin.Misc.ArtificialIntelligence.TextSearch",
+            pattern: "AiSearch/TextSearch",
+            defaults: new { controller = "AiStorefront", action = "TextSearch" });
+
+        // REST API routes for mobile, warehouse, courier external apps
+        endpointRouteBuilder.MapControllerRoute(
+            name: "Plugin.Misc.ArtificialIntelligence.Api.VisualSearch",
+            pattern: "api/ai/visual-search",
+            defaults: new { controller = "AiStorefront", action = "VisualSearch" });
+
+        endpointRouteBuilder.MapControllerRoute(
+            name: "Plugin.Misc.ArtificialIntelligence.Api.VoiceSearch",
+            pattern: "api/ai/voice-search",
+            defaults: new { controller = "AiStorefront", action = "VoiceSearch" });
+
+        endpointRouteBuilder.MapControllerRoute(
+            name: "Plugin.Misc.ArtificialIntelligence.Api.TextSearch",
+            pattern: "api/ai/text-search",
+            defaults: new { controller = "AiStorefront", action = "TextSearch" });
+
+        endpointRouteBuilder.MapControllerRoute(
             name: "Plugin.Misc.ArtificialIntelligence.ChatbotSendMessage",
             pattern: "AiChat/SendMessage",
             defaults: new { controller = "AiStorefront", action = "ChatbotSendMessage" });

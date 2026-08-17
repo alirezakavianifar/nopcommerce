@@ -52,8 +52,10 @@ public class AiStorefrontController : BasePluginController
     }
 
     [HttpPost]
+    [IgnoreAntiforgeryToken]
     public async Task<IActionResult> VisualSearch(IFormFile file)
     {
+        file ??= Request.Form?.Files?.FirstOrDefault();
         if (file == null || file.Length == 0)
             return Json(new { success = false, message = "No file uploaded." });
 
@@ -65,9 +67,10 @@ public class AiStorefrontController : BasePluginController
 
             var productIds = await _aiService.VisualSearchAsync(fileBytes);
             var products = await _productService.GetProductsByIdsAsync(productIds.ToArray());
-            var results = await MapProductsToJsonAsync(products);
+            var orderedProducts = productIds.Select(id => products.FirstOrDefault(p => p.Id == id)).Where(p => p != null).ToList();
+            var results = await MapProductsToJsonAsync(orderedProducts);
 
-            return Json(new { success = true, products = results });
+            return Json(new { success = true, count = results.Count, products = results });
         }
         catch (Exception ex)
         {
@@ -76,8 +79,10 @@ public class AiStorefrontController : BasePluginController
     }
 
     [HttpPost]
+    [IgnoreAntiforgeryToken]
     public async Task<IActionResult> VoiceSearch(IFormFile file)
     {
+        file ??= Request.Form?.Files?.FirstOrDefault();
         if (file == null || file.Length == 0)
             return Json(new { success = false, message = "No file uploaded." });
 
@@ -90,13 +95,48 @@ public class AiStorefrontController : BasePluginController
             var queryText = await _aiService.SpeechToTextAsync(fileBytes, file.FileName);
             if (string.IsNullOrWhiteSpace(queryText))
             {
-                return Json(new { success = true, query = "", products = new List<object>() });
+                return Json(new { success = true, query = "", count = 0, products = new List<object>() });
             }
 
-            var searchResults = await _productService.SearchProductsAsync(keywords: queryText);
-            var results = await MapProductsToJsonAsync(searchResults.Take(6).ToList());
+            var productIds = await _aiService.TextSearchAsync(queryText, 6);
+            var products = await _productService.GetProductsByIdsAsync(productIds.ToArray());
+            var orderedProducts = productIds.Select(id => products.FirstOrDefault(p => p.Id == id)).Where(p => p != null).ToList();
+            var results = await MapProductsToJsonAsync(orderedProducts);
 
-            return Json(new { success = true, query = queryText, products = results });
+            return Json(new { success = true, query = queryText, count = results.Count, products = results });
+        }
+        catch (Exception ex)
+        {
+            return Json(new { success = false, message = ex.Message });
+        }
+    }
+
+    [HttpGet]
+    [HttpPost]
+    [IgnoreAntiforgeryToken]
+    public async Task<IActionResult> TextSearch([FromBody] AiTextSearchRequestModel model = null, string query = null, int maxResults = 10)
+    {
+        var searchQuery = model?.Query ?? query ?? Request.Query["query"].ToString();
+        if (string.IsNullOrWhiteSpace(searchQuery) && Request.HasFormContentType)
+        {
+            searchQuery = Request.Form["query"].ToString();
+        }
+
+        var limit = model?.MaxResults > 0 ? model.MaxResults : (maxResults > 0 ? maxResults : 10);
+
+        if (string.IsNullOrWhiteSpace(searchQuery))
+        {
+            return Json(new { success = false, message = "Search query is required.", products = new List<object>() });
+        }
+
+        try
+        {
+            var productIds = await _aiService.TextSearchAsync(searchQuery, limit);
+            var products = await _productService.GetProductsByIdsAsync(productIds.ToArray());
+            var orderedProducts = productIds.Select(id => products.FirstOrDefault(p => p.Id == id)).Where(p => p != null).ToList();
+            var results = await MapProductsToJsonAsync(orderedProducts);
+
+            return Json(new { success = true, query = searchQuery, count = results.Count, products = results });
         }
         catch (Exception ex)
         {
@@ -105,6 +145,7 @@ public class AiStorefrontController : BasePluginController
     }
 
     [HttpPost]
+    [IgnoreAntiforgeryToken]
     public async Task<IActionResult> ChatbotSendMessage([FromBody] List<ChatMessageModel> history)
     {
         if (history == null)
@@ -200,9 +241,12 @@ public class AiStorefrontController : BasePluginController
             {
                 id = product.Id,
                 name = product.Name,
+                sku = product.Sku,
+                shortDescription = product.ShortDescription,
                 url = $"{_webHelper.GetStoreLocation()}{seName}",
                 pictureUrl = pictureUrl,
-                price = priceStr
+                price = priceStr,
+                priceValue = finalPrice
             });
         }
 
@@ -216,4 +260,10 @@ public class ChatMessageModel
 {
     public string Role { get; set; }
     public string Content { get; set; }
+}
+
+public class AiTextSearchRequestModel
+{
+    public string Query { get; set; }
+    public int MaxResults { get; set; } = 10;
 }

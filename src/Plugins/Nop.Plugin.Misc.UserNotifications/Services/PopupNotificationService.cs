@@ -12,7 +12,17 @@ public class PopupNotificationService : IPopupNotificationService
         _popupRepository = popupRepository;
     }
 
-    public async Task AddPopupAsync(int customerId, string title, string message, string actionUrl = null, string popupType = "Modal")
+    public async Task AddPopupAsync(
+        int customerId,
+        string title,
+        string message,
+        string actionUrl = null,
+        string popupType = "Toast",
+        string category = "Promotion",
+        string icon = null,
+        string imageUrl = null,
+        string couponCode = null,
+        DateTime? expiresOnUtc = null)
     {
         var popup = new CustomerPendingPopup
         {
@@ -20,7 +30,12 @@ public class PopupNotificationService : IPopupNotificationService
             Title = title,
             Message = message,
             ActionUrl = actionUrl,
-            PopupType = popupType,
+            PopupType = string.IsNullOrWhiteSpace(popupType) ? "Toast" : popupType,
+            Category = string.IsNullOrWhiteSpace(category) ? "Promotion" : category,
+            Icon = icon,
+            ImageUrl = imageUrl,
+            CouponCode = couponCode,
+            ExpiresOnUtc = expiresOnUtc,
             IsDismissed = false,
             CreatedOnUtc = DateTime.UtcNow
         };
@@ -43,6 +58,20 @@ public class PopupNotificationService : IPopupNotificationService
     {
         var popup = await _popupRepository.GetByIdAsync(popupId);
         if (popup != null && popup.CustomerId == customerId)
+        {
+            popup.IsDismissed = true;
+            await _popupRepository.UpdateAsync(popup);
+        }
+    }
+
+    public async Task DismissAllPopupsAsync(int customerId)
+    {
+        var popups = await _popupRepository.GetAllAsync(query =>
+        {
+            return query.Where(p => p.CustomerId == customerId && !p.IsDismissed);
+        });
+
+        foreach (var popup in popups)
         {
             popup.IsDismissed = true;
             await _popupRepository.UpdateAsync(popup);

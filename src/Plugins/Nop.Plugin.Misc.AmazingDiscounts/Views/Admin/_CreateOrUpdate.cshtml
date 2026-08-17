@@ -14,7 +14,7 @@
                         <nop-label asp-for="ProductId" />
                     </div>
                     <div class="col-md-9">
-                        <input asp-for="ProductId" class="form-control" type="number" required />
+                        <nop-select asp-for="ProductId" asp-items="Model.AvailableProducts" />
                         <span asp-validation-for="ProductId" class="text-danger"></span>
                     </div>
                 </div>

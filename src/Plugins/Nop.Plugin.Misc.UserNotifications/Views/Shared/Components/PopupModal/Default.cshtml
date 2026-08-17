@@ -1,29 +1,79 @@
 @model IList<Nop.Plugin.Misc.UserNotifications.Domain.CustomerPendingPopup>
 @if (Model != null && Model.Any())
 {
-    foreach (var popup in Model)
+    <!-- Toast Notifications Stack -->
+    <div id="notif-toast-stack" class="notif-toast-stack">
+        @foreach (var popup in Model.Where(p => p.PopupType == "Toast" || string.IsNullOrEmpty(p.PopupType)))
+        {
+            <div id="notif-toast-@popup.Id" class="notif-toast-card">
+                @if (!string.IsNullOrWhiteSpace(popup.ImageUrl))
+                {
+                    <img src="@popup.ImageUrl" class="notif-toast-thumb" alt="Preview" />
+                }
+                else
+                {
+                    <div class="notif-item-icon category-@(popup.Category ?? "Promotion")">
+                        <i class="fas @(popup.Icon ?? "fa-bell")"></i>
+                    </div>
+                }
+                <div style="flex-grow: 1; min-width: 0;">
+                    <h5 class="notif-item-title">@popup.Title</h5>
+                    <p class="notif-item-message" style="margin-bottom: 4px;">@popup.Message</p>
+                    @if (!string.IsNullOrWhiteSpace(popup.CouponCode))
+                    {
+                        <div style="margin-top: 4px;">
+                            <span class="notif-coupon-tag" onclick="UserNotifications.copyCoupon('@popup.CouponCode', event)">
+                                <i class="fas fa-ticket-alt"></i> @popup.CouponCode (@T("Plugins.Misc.UserNotifications.CopyCode"))
+                            </span>
+                        </div>
+                    }
+                    @if (!string.IsNullOrWhiteSpace(popup.ActionUrl))
+                    {
+                        <a href="@popup.ActionUrl" class="btn btn-sm btn-outline-primary" style="margin-top: 6px; font-size: 0.75rem; padding: 2px 8px;" onclick="dismissNotifPopup(@popup.Id)">
+                            @T("Plugins.Misc.UserNotifications.Inbox.ViewDetails")
+                        </a>
+                    }
+                </div>
+                <button type="button" class="notif-toast-close" onclick="dismissNotifPopup(@popup.Id)">&times;</button>
+                <div class="notif-toast-progress"></div>
+            </div>
+        }
+    </div>
+
+    <!-- Celebration / Reward Modals -->
+    @foreach (var popup in Model.Where(p => p.PopupType == "Celebration" || p.PopupType == "Modal"))
     {
-        <div id="notif-popup-modal-@popup.Id" class="modal fade show" tabindex="-1" role="dialog" style="display: block; background: rgba(0,0,0,0.5);" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered" role="document">
-                <div class="modal-content shadow-lg border-0">
-                    <div class="modal-header bg-primary text-white">
-                        <h5 class="modal-title font-weight-bold">
-                            <i class="fas fa-bullhorn mr-2"></i> @popup.Title
-                        </h5>
-                        <button type="button" class="close text-white" onclick="dismissNotifPopup(@popup.Id)">&times;</button>
+        <div id="notif-celebration-@popup.Id" class="notif-celebration-backdrop" onclick="if(event.target === this) dismissNotifPopup(@popup.Id)">
+            <div class="notif-celebration-card">
+                <div class="notif-celebration-badge-icon">
+                    <i class="fas @(popup.Icon ?? "fa-gift")"></i>
+                </div>
+                <h3 class="notif-celebration-title">@popup.Title</h3>
+                <p class="notif-celebration-body">@popup.Message</p>
+
+                @if (!string.IsNullOrWhiteSpace(popup.CouponCode))
+                {
+                    <div class="notif-voucher-box">
+                        <div>
+                            <small class="text-muted d-block text-left" style="font-size: 0.7rem;">@T("Plugins.Misc.UserNotifications.PromoCode")</small>
+                            <span class="notif-voucher-code">@popup.CouponCode</span>
+                        </div>
+                        <button type="button" class="notif-copy-btn" onclick="UserNotifications.copyCoupon('@popup.CouponCode', event)">
+                            <i class="fas fa-copy mr-1"></i> @T("Plugins.Misc.UserNotifications.CopyCode")
+                        </button>
                     </div>
-                    <div class="modal-body p-4">
-                        <p class="lead text-dark">@popup.Message</p>
-                        @if (!string.IsNullOrWhiteSpace(popup.ActionUrl))
-                        {
-                            <div class="text-center mt-3">
-                                <a href="@popup.ActionUrl" class="btn btn-success btn-lg px-4" onclick="dismissNotifPopup(@popup.Id)">@T("Plugins.Misc.UserNotifications.Popup.Claim")</a>
-                            </div>
-                        }
-                    </div>
-                    <div class="modal-footer bg-light">
-                        <button type="button" class="btn btn-secondary" onclick="dismissNotifPopup(@popup.Id)">@T("Plugins.Misc.UserNotifications.Popup.Dismiss")</button>
-                    </div>
+                }
+
+                <div class="d-flex justify-content-center gap-2 mt-3">
+                    @if (!string.IsNullOrWhiteSpace(popup.ActionUrl))
+                    {
+                        <a href="@popup.ActionUrl" class="btn btn-primary px-4" onclick="dismissNotifPopup(@popup.Id)">
+                            @T("Plugins.Misc.UserNotifications.Popup.Claim")
+                        </a>
+                    }
+                    <button type="button" class="btn btn-outline-secondary px-3" onclick="dismissNotifPopup(@popup.Id)">
+                        @T("Plugins.Misc.UserNotifications.Popup.Dismiss")
+                    </button>
                 </div>
             </div>
         </div>
@@ -31,9 +81,24 @@
 
     <script>
         function dismissNotifPopup(id) {
-            var modal = document.getElementById('notif-popup-modal-' + id);
+            var toast = document.getElementById('notif-toast-' + id);
+            if (toast) {
+                toast.classList.add('hide');
+                setTimeout(function () { if (toast.parentNode) toast.parentNode.removeChild(toast); }, 300);
+            }
+            var modal = document.getElementById('notif-celebration-' + id);
             if (modal) { modal.style.display = 'none'; }
             fetch('/customer/notifications/dismiss-popup?id=' + id, { method: 'POST' });
         }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            if (window.UserNotifications) {
+                @if (Model.Any(p => p.PopupType == "Celebration"))
+                {
+                    <text>window.UserNotifications.fireConfetti();</text>
+                }
+                window.UserNotifications.playChime();
+            }
+        });
     </script>
 }

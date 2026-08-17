@@ -1,0 +1,27 @@
+[Script Info]
+Title: Persian Subtitles (RLE BIDI Enforced)
+ScriptType: v4.00+
+WrapStyle: 0
+ScaledBorderAndShadow: yes
+YCbCr Matrix: None
+PlayResX: 1728
+PlayResY: 1080
+
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: Default,Vazirmatn,60,&H00FFFFFF,&H00000000,&H00000000,&H90000000,-1,0,0,0,100,100,0,0,1,4,2,2,40,40,65,1
+
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+Dialogue: 0,0:00:00.50,0:00:05.50,Default,,0,0,0,,‫ورود به پنل مدیریت nopCommerce و دسترسی به منوی تنظیمات‬
+Dialogue: 0,0:00:06.00,0:00:11.50,Default,,0,0,0,,‫مسیریابی به بخش پیکربندی افزونه هوش مصنوعی (Artificial Intelligence)‬
+Dialogue: 0,0:00:12.00,0:00:17.50,Default,,0,0,0,,‫باز کردن صفحه تنظیمات سرویس‌های هوش مصنوعی nopCommerce‬
+Dialogue: 0,0:00:18.00,0:00:24.50,Default,,0,0,0,,‫تنظیم سرویس ابری AvalAI‬\N‫(ارائه‌دهنده مدل‌های هوش مصنوعی)‬
+Dialogue: 0,0:00:25.00,0:00:31.50,Default,,0,0,0,,‫وارد کردن کلید دسترسی (API Key) و آدرس سرور AvalAI‬\N‫(https://api.avalai.ir/v1)‬
+Dialogue: 0,0:00:32.00,0:00:39.50,Default,,0,0,0,,‫تنظیم سقف اعتبار، محدوده توکن‌ها و اعتبارسنجی ارتباط با API‬
+Dialogue: 0,0:00:40.00,0:00:47.50,Default,,0,0,0,,‫پیکربندی سرویس‌های هوش مصنوعی محلی (Local Self-Hosted AI)‬
+Dialogue: 0,0:00:48.00,0:00:55.50,Default,,0,0,0,,‫تنظیم سرویس تبدیل گفتار به متن محلی‬\N‫(Faster-Whisper / Whisper.cpp)‬
+Dialogue: 0,0:00:56.00,0:01:02.50,Default,,0,0,0,,‫تنظیم مدل‌های برداری (Embeddings) و بینایی ماشین (Vision/Qwen2-VL)‬
+Dialogue: 0,0:01:03.00,0:01:09.50,Default,,0,0,0,,‫تنظیم آستانه شباهت بردارها (0.85) و مدل‌های گفتگو‬
+Dialogue: 0,0:01:10.00,0:01:15.50,Default,,0,0,0,,‫ذخیره‌سازی تنظیمات و فعال‌سازی قابلیت‌های هوش مصنوعی سیستم‬
+Dialogue: 0,0:01:16.00,0:01:19.50,Default,,0,0,0,,‫آماده‌سازی موفقیت‌آمیز ماژول هوش مصنوعی در فروشگاه nopCommerce‬

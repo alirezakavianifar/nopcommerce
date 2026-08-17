@@ -1,0 +1,22 @@
+[Script Info]
+Title: Persian Subtitles for Group Purchase & Wallet System
+ScriptType: v4.00+
+WrapStyle: 0
+ScaledBorderAndShadow: yes
+YCbCr Matrix: None
+PlayResX: 1728
+PlayResY: 1080
+
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: Default,Vazirmatn,62,&H00FFFFFF,&H00000000,&H00000000,&H90000000,-1,0,0,0,100,100,0,0,1,4,2,2,40,40,65,1
+
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+Dialogue: 0,0:00:00.00,0:00:08.00,Default,,0,0,0,,‫ورود به سبد خرید فروشگاه و مشاهده ویجت ایجاد خرید گروهی‬\N‫(Group Purchase Cart Widget)‬
+Dialogue: 0,0:00:08.00,0:00:16.00,Default,,0,0,0,,‫ورود به حساب کاربری من و مشاهده گزینه‌های کیف پول و خرید گروهی‬
+Dialogue: 0,0:00:16.00,0:00:25.00,Default,,0,0,0,,‫صفحه کیف پول من (/customer/wallet) - مشاهده موجودی و دفترچه تراکنش‌ها‬
+Dialogue: 0,0:00:25.00,0:00:34.00,Default,,0,0,0,,‫داشبورد گروه‌های مدیریت من (/customer/leader-groups) - آمار خریدهای گروهی‬
+Dialogue: 0,0:00:34.00,0:00:43.00,Default,,0,0,0,,‫صفحه امتیازات قرعه‌کشی و تاریخچه زیرگروه‌ها (/customer/lottery)‬
+Dialogue: 0,0:00:43.00,0:00:52.00,Default,,0,0,0,,‫پنل مدیریت nopCommerce (/Admin/GroupPurchase/List) - مدیریت کلی گروه‌ها‬
+Dialogue: 0,0:00:52.00,0:01:00.00,Default,,0,0,0,,‫مدیریت کیف پول مشتریان و تنظیمات قوانین پاداش سرگروه‌ها در پنل مدیریت‬

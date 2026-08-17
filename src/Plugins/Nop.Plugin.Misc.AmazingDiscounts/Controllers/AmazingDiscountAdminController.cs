@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Nop.Plugin.Misc.AmazingDiscounts.Domain;
 using Nop.Plugin.Misc.AmazingDiscounts.Models;
 using Nop.Plugin.Misc.AmazingDiscounts.Services;
@@ -77,6 +78,7 @@ public class AmazingDiscountAdminController : BasePluginController
     public virtual async Task<IActionResult> Create()
     {
         var model = new AmazingDiscountProductModel();
+        await PrepareProductListAsync(model);
         return View("~/Plugins/Misc.AmazingDiscounts/Views/Admin/Create.cshtml", model);
     }
 
@@ -85,7 +87,7 @@ public class AmazingDiscountAdminController : BasePluginController
     [Route("Create")]
     public virtual async Task<IActionResult> Create(AmazingDiscountProductModel model, bool continueEditing)
     {
-        if (ModelState.IsValid)
+        if (ModelState.IsValid && model.ProductId > 0)
         {
             var product = new AmazingDiscountProduct
             {
@@ -106,6 +108,7 @@ public class AmazingDiscountAdminController : BasePluginController
             return RedirectToAction("Edit", new { id = product.Id });
         }
 
+        await PrepareProductListAsync(model);
         return View("~/Plugins/Misc.AmazingDiscounts/Views/Admin/Create.cshtml", model);
     }
 
@@ -129,6 +132,7 @@ public class AmazingDiscountAdminController : BasePluginController
             EndDateUtc = product.EndDateUtc
         };
 
+        await PrepareProductListAsync(model);
         return View("~/Plugins/Misc.AmazingDiscounts/Views/Admin/Edit.cshtml", model);
     }
 
@@ -141,7 +145,7 @@ public class AmazingDiscountAdminController : BasePluginController
         if (product == null)
             return RedirectToAction("List");
 
-        if (ModelState.IsValid)
+        if (ModelState.IsValid && model.ProductId > 0)
         {
             product.ProductId = model.ProductId;
             product.DisplayOrder = model.DisplayOrder;
@@ -159,6 +163,7 @@ public class AmazingDiscountAdminController : BasePluginController
             return RedirectToAction("Edit", new { id = product.Id });
         }
 
+        await PrepareProductListAsync(model);
         return View("~/Plugins/Misc.AmazingDiscounts/Views/Admin/Edit.cshtml", model);
     }
 
@@ -176,5 +181,22 @@ public class AmazingDiscountAdminController : BasePluginController
         _notificationService.SuccessNotification(await _localizationService.GetResourceAsync("Admin.Common.Deleted"));
 
         return RedirectToAction("List");
+    }
+
+    protected virtual async Task PrepareProductListAsync(AmazingDiscountProductModel model)
+    {
+        var products = await _productService.SearchProductsAsync(pageIndex: 0, pageSize: 500);
+        model.AvailableProducts = products.Select(p => new SelectListItem
+        {
+            Text = $"{p.Name} (ID: {p.Id})",
+            Value = p.Id.ToString(),
+            Selected = p.Id == model.ProductId
+        }).ToList();
+
+        model.AvailableProducts.Insert(0, new SelectListItem
+        {
+            Text = "--- یک محصول انتخاب کنید ---",
+            Value = "0"
+        });
     }
 }

@@ -1,0 +1,25 @@
+[Script Info]
+Title: Persian Subtitles for User Notifications & Workflows System
+ScriptType: v4.00+
+WrapStyle: 0
+ScaledBorderAndShadow: yes
+YCbCr Matrix: None
+PlayResX: 1728
+PlayResY: 1080
+
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: Default,Vazirmatn,58,&H00FFFFFF,&H00000000,&H00000000,&H90000000,-1,0,0,0,100,100,0,0,1,4,2,2,40,40,65,1
+
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+Dialogue: 0,0:00:00.50,0:00:07.00,Default,,0,0,0,,‫ورود به فروشگاه به زبان فارسی و مشاهده زنگوله اعلانات در هدر سایت‬\N‫(Notification Bell Icon)‬
+Dialogue: 0,0:00:07.50,0:00:14.00,Default,,0,0,0,,‫باز کردن منوی کشویی اعلانات با تب‌های دسته‌بندی فارسی‬\N‫(همه، سفارش‌ها، تخفیف‌ها و پیشنهادات، سیستم)‬
+Dialogue: 0,0:00:14.50,0:00:22.00,Default,,0,0,0,,‫داشبورد تنظیمات دریافت اعلانات کاربری (/customer/notifications/preferences)‬\N‫سفارشی‌سازی اعلان‌های شناور، صدای زنگ، پیامک و ایمیل‬
+Dialogue: 0,0:00:22.50,0:00:29.00,Default,,0,0,0,,‫تست صدای زنگ و ذخیره‌سازی موفقیت‌آمیز تنظیمات دریافت اعلانات‬\N‫با پیام تایید سبز فارسی‬
+Dialogue: 0,0:00:29.50,0:00:36.00,Default,,0,0,0,,‫صندوق پیام‌ها و هاب اعلان‌های کاربر (/customer/notifications)‬\N‫فیلتر موضوعات، جستجوی هوشمند کدها و عملیات مدیریت اعلان‌ها‬
+Dialogue: 0,0:00:36.50,0:00:43.00,Default,,0,0,0,,‫پنل مدیریت پیشرفته nopCommerce - فرآیندهای خودکار اعلانات‬\N‫(/Admin/UserNotifications/Workflows)‬
+Dialogue: 0,0:00:43.50,0:00:49.00,Default,,0,0,0,,‫ایجاد فرآیند خودکار با محرک‌های هوشمند‬\N‫(ثبت‌نام، سبد خرید رها شده، وضعیت سفارش و تخفیف پویا)‬
+Dialogue: 0,0:00:49.50,0:00:54.50,Default,,0,0,0,,‫مدیریت اطلاعیه‌ها و بنرهای سراسری فروشگاه‬\N‫(/Admin/UserNotifications/List)‬
+Dialogue: 0,0:00:55.00,0:01:00.00,Default,,0,0,0,,‫تنظیمات درگاه پیامک FarazSMS / IPPanel و کدهای پترن خدماتی‬\N‫(/Admin/UserNotifications/FarazSms)‬
+Dialogue: 0,0:01:00.50,0:01:08.00,Default,,0,0,0,,‫گزارش و صف ارسال اعلانات چندکاناله و بازگشت به فروشگاه‬\N‫(/Admin/UserNotifications/Queue)‬

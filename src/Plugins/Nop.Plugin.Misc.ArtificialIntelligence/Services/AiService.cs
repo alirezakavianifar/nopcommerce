@@ -266,6 +266,93 @@ public class AiService : IAiService
         return new AiDuplicateCheckResult { IsDuplicate = false };
     }
 
+    public async Task<IList<int>> TextSearchAsync(string query, int maxResults = 10)
+    {
+        if (string.IsNullOrWhiteSpace(query))
+            return new List<int>();
+
+        var scoredMatches = new List<(int ProductId, double Score)>();
+
+        try
+        {
+            var queryVector = await GetEmbeddingAsync(query);
+
+            if (queryVector != null && queryVector.Length > 0)
+            {
+                var allCaches = await _embeddingCacheRepository.GetAllAsync(q => q);
+                var uniqueCaches = allCaches
+                    .GroupBy(c => c.ProductId)
+                    .Select(g => g.OrderByDescending(c => c.LastUpdatedOnUtc).First())
+                    .ToList();
+
+                foreach (var cache in uniqueCaches)
+                {
+                    float[] targetVector = null;
+                    try
+                    {
+                        var trimmedJson = cache.VectorJson.Trim();
+                        if (trimmedJson.StartsWith("{"))
+                        {
+                            var cachedData = JsonSerializer.Deserialize<ProductEmbeddingData>(cache.VectorJson);
+                            targetVector = cachedData?.Vector;
+                        }
+                        else if (trimmedJson.StartsWith("["))
+                        {
+                            targetVector = JsonSerializer.Deserialize<float[]>(cache.VectorJson);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        await _logger.ErrorAsync($"Failed to deserialize embedding cache for product {cache.ProductId}", ex);
+                    }
+
+                    if (targetVector == null || targetVector.Length == 0)
+                        continue;
+
+                    var similarity = CosineSimilarity(queryVector, targetVector);
+                    if (similarity > 0.05)
+                    {
+                        scoredMatches.Add((cache.ProductId, similarity));
+                    }
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            await _logger.ErrorAsync($"Error performing semantic AI text search for query: {query}", ex);
+        }
+
+        var resultIds = scoredMatches
+            .OrderByDescending(m => m.Score)
+            .Select(m => m.ProductId)
+            .Take(maxResults)
+            .ToList();
+
+        // Fallback / supplement with keyword search to guarantee high-quality results
+        if (resultIds.Count < maxResults)
+        {
+            try
+            {
+                var keywordMatches = await _productService.SearchProductsAsync(keywords: query);
+                foreach (var p in keywordMatches)
+                {
+                    if (!resultIds.Contains(p.Id))
+                    {
+                        resultIds.Add(p.Id);
+                        if (resultIds.Count >= maxResults)
+                            break;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                await _logger.ErrorAsync($"Keyword search fallback error in TextSearchAsync for query: {query}", ex);
+            }
+        }
+
+        return resultIds;
+    }
+
     #region Helpers
 
     private string GetMd5Hash(string input)

@@ -1,0 +1,151 @@
+@model CustomerNotificationPreferenceModel
+@using Nop.Plugin.Misc.UserNotifications.Models
+@{
+    Layout = "_ColumnsTwo";
+    ViewBag.PageTitle = T("Plugins.Misc.UserNotifications.Preferences").Text;
+}
+
+@section left
+{
+    @await Component.InvokeAsync("CustomerNavigation", new { selectedTabId = 200 })
+}
+
+<link rel="stylesheet" href="~/Plugins/Misc.UserNotifications/Content/css/notifications.css" />
+<script src="~/Plugins/Misc.UserNotifications/Content/js/notifications.js" defer></script>
+
+<div class="page account-page notification-preferences-page">
+    <div class="page-title d-flex justify-content-between align-items-center mb-3">
+        <h1 class="h3 font-weight-bold mb-0">
+            <i class="fas fa-sliders-h text-primary mr-2"></i> @T("Plugins.Misc.UserNotifications.Preferences")
+        </h1>
+        <div>
+            <a href="/customer/notifications" class="btn btn-outline-primary button-2 btn-sm">
+                <i class="fas fa-inbox mr-1"></i> @T("Plugins.Misc.UserNotifications.BackToInbox")
+            </a>
+        </div>
+    </div>
+    <div class="page-body">
+
+    @if (ViewBag.SuccessMessage != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
+            <i class="fas fa-check-circle mr-2"></i> @ViewBag.SuccessMessage
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    }
+
+    <form method="post" action="/customer/notifications/preferences">
+        <!-- 1. Delivery Channels -->
+        <div class="notif-pref-card">
+            <h3 class="notif-pref-title">
+                <i class="fas fa-paper-plane text-primary mr-2"></i>
+                @T("Plugins.Misc.UserNotifications.Preferences.ChannelsTitle")
+            </h3>
+            <p class="notif-pref-subtitle">
+                @T("Plugins.Misc.UserNotifications.Preferences.ChannelsDesc")
+            </p>
+
+            <div class="notif-pref-row">
+                <div>
+                    <h4 class="notif-pref-label">@T("Plugins.Misc.UserNotifications.Preferences.OnSiteToasts")</h4>
+                    <p class="notif-pref-desc">@T("Plugins.Misc.UserNotifications.Preferences.OnSiteToastsDesc")</p>
+                </div>
+                <label class="notif-switch">
+                    <input type="checkbox" name="OnSiteToastsEnabled" value="true" @(Model.OnSiteToastsEnabled ? "checked" : "") />
+                    <span class="notif-slider"></span>
+                </label>
+            </div>
+
+            <div class="notif-pref-row">
+                <div>
+                    <h4 class="notif-pref-label">@T("Plugins.Misc.UserNotifications.Preferences.Sound")</h4>
+                    <p class="notif-pref-desc">@T("Plugins.Misc.UserNotifications.Preferences.SoundDesc")</p>
+                </div>
+                <div class="d-flex align-items-center gap-3">
+                    <button type="button" class="btn btn-sm btn-outline-secondary py-1 px-2" onclick="UserNotifications.playChime()" title="@(T("Plugins.Misc.UserNotifications.Preferences.TestSound").Text.StartsWith("Plugins.", StringComparison.OrdinalIgnoreCase) ? (T("Plugins.Misc.UserNotifications.Preferences.Sound").Text.Contains("صدا") ? "تست صدای زنگ" : "Test audio chime") : T("Plugins.Misc.UserNotifications.Preferences.TestSound").Text)">
+                        <i class="fas fa-volume-up"></i>
+                    </button>
+                    <label class="notif-switch">
+                        <input type="checkbox" name="SoundEnabled" value="true" @(Model.SoundEnabled ? "checked" : "") />
+                        <span class="notif-slider"></span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="notif-pref-row">
+                <div>
+                    <h4 class="notif-pref-label">@T("Plugins.Misc.UserNotifications.Preferences.Email")</h4>
+                    <p class="notif-pref-desc">@T("Plugins.Misc.UserNotifications.Preferences.EmailDesc")</p>
+                </div>
+                <label class="notif-switch">
+                    <input type="checkbox" name="EmailEnabled" value="true" @(Model.EmailEnabled ? "checked" : "") />
+                    <span class="notif-slider"></span>
+                </label>
+            </div>
+
+            <div class="notif-pref-row">
+                <div>
+                    <h4 class="notif-pref-label">@T("Plugins.Misc.UserNotifications.Preferences.Sms")</h4>
+                    <p class="notif-pref-desc">@T("Plugins.Misc.UserNotifications.Preferences.SmsDesc")</p>
+                </div>
+                <label class="notif-switch">
+                    <input type="checkbox" name="SmsEnabled" value="true" @(Model.SmsEnabled ? "checked" : "") />
+                    <span class="notif-slider"></span>
+                </label>
+            </div>
+        </div>
+
+        <!-- 2. Topics & Categories -->
+        <div class="notif-pref-card">
+            <h3 class="notif-pref-title">
+                <i class="fas fa-tags text-primary mr-2"></i>
+                @T("Plugins.Misc.UserNotifications.Preferences.TopicsTitle")
+            </h3>
+            <p class="notif-pref-subtitle">
+                @T("Plugins.Misc.UserNotifications.Preferences.TopicsDesc")
+            </p>
+
+            <div class="notif-pref-row">
+                <div>
+                    <h4 class="notif-pref-label">@T("Plugins.Misc.UserNotifications.Preferences.OrderUpdates")</h4>
+                    <p class="notif-pref-desc">@T("Plugins.Misc.UserNotifications.Preferences.OrderUpdatesDesc")</p>
+                </div>
+                <label class="notif-switch">
+                    <input type="checkbox" name="OrderUpdatesEnabled" value="true" @(Model.OrderUpdatesEnabled ? "checked" : "") />
+                    <span class="notif-slider"></span>
+                </label>
+            </div>
+
+            <div class="notif-pref-row">
+                <div>
+                    <h4 class="notif-pref-label">@T("Plugins.Misc.UserNotifications.Preferences.Promotions")</h4>
+                    <p class="notif-pref-desc">@T("Plugins.Misc.UserNotifications.Preferences.PromotionsDesc")</p>
+                </div>
+                <label class="notif-switch">
+                    <input type="checkbox" name="PromotionsEnabled" value="true" @(Model.PromotionsEnabled ? "checked" : "") />
+                    <span class="notif-slider"></span>
+                </label>
+            </div>
+
+            <div class="notif-pref-row">
+                <div>
+                    <h4 class="notif-pref-label">@T("Plugins.Misc.UserNotifications.Preferences.Announcements")</h4>
+                    <p class="notif-pref-desc">@T("Plugins.Misc.UserNotifications.Preferences.AnnouncementsDesc")</p>
+                </div>
+                <label class="notif-switch">
+                    <input type="checkbox" name="SystemAnnouncementsEnabled" value="true" @(Model.SystemAnnouncementsEnabled ? "checked" : "") />
+                    <span class="notif-slider"></span>
+                </label>
+            </div>
+        </div>
+
+        <div class="text-right mt-4 buttons">
+            <button type="submit" class="btn btn-primary button-1 px-5 shadow-sm">
+                <i class="fas fa-save mr-1"></i> @T("Common.Save")
+            </button>
+        </div>
+    </form>
+    </div>
+</div>

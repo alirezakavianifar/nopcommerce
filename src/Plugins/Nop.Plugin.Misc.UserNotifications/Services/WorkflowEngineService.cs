@@ -11,6 +11,7 @@ using Nop.Services.Catalog;
 using Nop.Services.Common;
 using Nop.Services.Customers;
 using Nop.Services.Discounts;
+using Nop.Services.Media;
 using Nop.Services.Messages;
 using Nop.Services.Orders;
 using Nop.Services.Seo;
@@ -25,6 +26,7 @@ public class WorkflowEngineService : IWorkflowEngineService
     private readonly ICustomerService _customerService;
     private readonly IGenericAttributeService _genericAttributeService;
     private readonly IProductService _productService;
+    private readonly IPictureService _pictureService;
     private readonly IUrlRecordService _urlRecordService;
     private readonly IOrderService _orderService;
     private readonly IDiscountService _discountService;
@@ -33,6 +35,7 @@ public class WorkflowEngineService : IWorkflowEngineService
     private readonly ISmsNotificationService _smsNotificationService;
     private readonly IUserInboxService _userInboxService;
     private readonly IPopupNotificationService _popupNotificationService;
+    private readonly INotificationPreferenceService _preferenceService;
     private readonly IStoreContext _storeContext;
     private readonly IWebHelper _webHelper;
     private readonly ILogger<WorkflowEngineService> _logger;
@@ -44,6 +47,7 @@ public class WorkflowEngineService : IWorkflowEngineService
         ICustomerService customerService,
         IGenericAttributeService genericAttributeService,
         IProductService productService,
+        IPictureService pictureService,
         IUrlRecordService urlRecordService,
         IOrderService orderService,
         IDiscountService discountService,
@@ -52,6 +56,7 @@ public class WorkflowEngineService : IWorkflowEngineService
         ISmsNotificationService smsNotificationService,
         IUserInboxService userInboxService,
         IPopupNotificationService popupNotificationService,
+        INotificationPreferenceService preferenceService,
         IStoreContext storeContext,
         IWebHelper webHelper,
         ILogger<WorkflowEngineService> logger)
@@ -62,6 +67,7 @@ public class WorkflowEngineService : IWorkflowEngineService
         _customerService = customerService;
         _genericAttributeService = genericAttributeService;
         _productService = productService;
+        _pictureService = pictureService;
         _urlRecordService = urlRecordService;
         _orderService = orderService;
         _discountService = discountService;
@@ -70,6 +76,7 @@ public class WorkflowEngineService : IWorkflowEngineService
         _smsNotificationService = smsNotificationService;
         _userInboxService = userInboxService;
         _popupNotificationService = popupNotificationService;
+        _preferenceService = preferenceService;
         _storeContext = storeContext;
         _webHelper = webHelper;
         _logger = logger;
@@ -152,11 +159,27 @@ public class WorkflowEngineService : IWorkflowEngineService
                 var product = item.ProductId.HasValue ? await _productService.GetProductByIdAsync(item.ProductId.Value) : null;
                 var order = item.OrderId.HasValue ? await _orderService.GetOrderByIdAsync(item.OrderId.Value) : null;
 
+                // Category & Icon detection
+                string category = "System";
+                string icon = "fa-bell";
+                if (order != null)
+                {
+                    category = "Order";
+                    icon = "fa-box";
+                }
+                else if (step.GenerateDiscountCode || product != null)
+                {
+                    category = "Promotion";
+                    icon = "fa-gift";
+                }
+
                 // Dynamic Discount Code generation if configured
                 string discountCode = null;
+                DateTime? discountExpiry = null;
                 if (step.GenerateDiscountCode && step.DiscountPercentage > 0)
                 {
                     discountCode = $"NOTIF-{Guid.NewGuid().ToString("N")[..8].ToUpper()}";
+                    discountExpiry = DateTime.UtcNow.AddDays(7);
                     var discount = new Discount
                     {
                         Name = $"Dynamic Notification Discount {discountCode}",
@@ -167,7 +190,7 @@ public class WorkflowEngineService : IWorkflowEngineService
                         CouponCode = discountCode,
                         IsActive = true,
                         StartDateUtc = DateTime.UtcNow,
-                        EndDateUtc = DateTime.UtcNow.AddDays(7),
+                        EndDateUtc = discountExpiry,
                         LimitationTimes = 1
                     };
                     await _discountService.InsertDiscountAsync(discount);
@@ -177,6 +200,18 @@ public class WorkflowEngineService : IWorkflowEngineService
                 var storeLocation = _webHelper.GetStoreLocation();
                 var productSeName = product != null ? await _urlRecordService.GetSeNameAsync(product) : string.Empty;
 
+                // Product image thumbnail
+                string imageUrl = null;
+                if (product != null)
+                {
+                    var picture = (await _pictureService.GetPicturesByProductIdAsync(product.Id, 1)).FirstOrDefault();
+                    if (picture != null)
+                    {
+                        var (url, _) = await _pictureService.GetPictureUrlAsync(picture, 150, true);
+                        imageUrl = url;
+                    }
+                }
+
                 // Render dynamic text templates
                 var title = ReplaceTokens(step.SubjectTemplate, customer, product, productSeName, order, discountCode, storeLocation);
                 var body = ReplaceTokens(step.BodyTemplate, customer, product, productSeName, order, discountCode, storeLocation);
@@ -184,22 +219,42 @@ public class WorkflowEngineService : IWorkflowEngineService
                 item.RenderedTitle = title;
                 item.RenderedBody = body;
 
+                var actionUrl = product != null ? $"{storeLocation}{productSeName}" : (order != null ? $"{storeLocation}orderdetails/{order.Id}" : storeLocation);
+
                 // 1. Account Inbox
                 if (step.SendInbox)
                 {
-                    var actionUrl = product != null ? $"{storeLocation}{productSeName}" : storeLocation;
-                    await _userInboxService.AddInboxMessageAsync(customer.Id, title, body, actionUrl);
+                    await _userInboxService.AddInboxMessageAsync(
+                        customer.Id,
+                        title,
+                        body,
+                        actionUrl,
+                        category,
+                        icon,
+                        imageUrl,
+                        discountCode,
+                        discountExpiry);
                 }
 
-                // 2. Storefront Popup Modal / Toast
-                if (step.SendPopUp)
+                // 2. Storefront Popup Modal / Toast (Respecting user preferences)
+                if (step.SendPopUp && await _preferenceService.IsNotificationAllowedAsync(customer.Id, "Toast", category))
                 {
-                    var actionUrl = product != null ? $"{storeLocation}{productSeName}" : storeLocation;
-                    await _popupNotificationService.AddPopupAsync(customer.Id, title, body, actionUrl, "Modal");
+                    var popupType = !string.IsNullOrWhiteSpace(discountCode) ? "Celebration" : "Toast";
+                    await _popupNotificationService.AddPopupAsync(
+                        customer.Id,
+                        title,
+                        body,
+                        actionUrl,
+                        popupType,
+                        category,
+                        icon,
+                        imageUrl,
+                        discountCode,
+                        discountExpiry);
                 }
 
-                // 3. FarazSMS Integration
-                if (step.SendSms)
+                // 3. FarazSMS Integration (Respecting user preferences)
+                if (step.SendSms && await _preferenceService.IsNotificationAllowedAsync(customer.Id, "Sms", category))
                 {
                     var phone = await _genericAttributeService.GetAttributeAsync<string>(customer, "Phone");
                     if (!string.IsNullOrWhiteSpace(phone))
@@ -214,8 +269,8 @@ public class WorkflowEngineService : IWorkflowEngineService
                     }
                 }
 
-                // 4. Transactional Email Queue
-                if (step.SendEmail && !string.IsNullOrWhiteSpace(customer.Email))
+                // 4. Transactional Email Queue (Respecting user preferences)
+                if (step.SendEmail && !string.IsNullOrWhiteSpace(customer.Email) && await _preferenceService.IsNotificationAllowedAsync(customer.Id, "Email", category))
                 {
                     var emailAccounts = await _emailAccountService.GetAllEmailAccountsAsync();
                     var emailAccount = emailAccounts.FirstOrDefault();
