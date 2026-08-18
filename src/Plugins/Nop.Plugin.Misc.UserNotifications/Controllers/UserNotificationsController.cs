@@ -48,8 +48,20 @@ public class UserNotificationsController : BasePluginController
         _permissionService = permissionService;
     }
 
+    private static bool _resourcesInitialized = false;
+
     private async Task EnsureLocaleResourcesAsync()
     {
+        if (_resourcesInitialized)
+            return;
+
+        var sample = await _localizationService.GetResourceAsync("Plugins.Misc.UserNotifications.Workflows", 0, false, "", true);
+        if (!string.IsNullOrEmpty(sample))
+        {
+            _resourcesInitialized = true;
+            return;
+        }
+
         var languages = await _languageService.GetAllLanguagesAsync();
 
         var enResources = new Dictionary<string, string>
