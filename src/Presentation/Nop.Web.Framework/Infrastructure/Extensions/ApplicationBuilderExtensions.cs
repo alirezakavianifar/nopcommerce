@@ -1,4 +1,4 @@
-﻿using System.Globalization;
+using System.Globalization;
 using System.Net;
 using System.Runtime.ExceptionServices;
 using iTextSharp.text;
@@ -511,6 +511,11 @@ public static class ApplicationBuilderExtensions
                     if (IPAddress.TryParse(strIp, out var ip))
                         options.KnownProxies.Add(ip);
                 }
+            }
+            else if (string.IsNullOrEmpty(hostingConfig.KnownNetworks))
+            {
+                options.KnownProxies.Add(IPAddress.Loopback);
+                options.KnownProxies.Add(IPAddress.IPv6Loopback);
             }
 
             if (!string.IsNullOrEmpty(hostingConfig.KnownNetworks))

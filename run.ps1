@@ -15,6 +15,8 @@ Write-Host "  nopCommerce Dev Runner (with auto-restart)" -ForegroundColor Cyan
 Write-Host "  Press Ctrl+C to fully stop the application" -ForegroundColor Cyan
 Write-Host "==================================================" -ForegroundColor Cyan
 
+$env:ASPNETCORE_ENVIRONMENT = "Development"
+
 function Stop-ProcessOnPort([int]$TargetPort) {
     $pids = @()
     try {

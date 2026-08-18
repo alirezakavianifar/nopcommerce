@@ -432,6 +432,8 @@ Write-Host ""
 Write-Host "  Share this URL with your client: " -ForegroundColor Yellow -NoNewline
 Write-Host $publicUrl -ForegroundColor White
 Write-Host ""
+Write-Step "TIP" "If browser displays ERR_TOO_MANY_REDIRECTS, open in Incognito window (Ctrl+Shift+N) to bypass old 301 cached redirects." "Yellow"
+Write-Host ""
 Write-Divider
 Write-Host ""
 Write-Host "  INFO: The ngrok Web Inspector is available at: http://localhost:4040" -ForegroundColor DarkGray
