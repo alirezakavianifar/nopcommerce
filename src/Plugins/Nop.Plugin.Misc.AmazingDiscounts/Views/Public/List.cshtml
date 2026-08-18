@@ -243,7 +243,7 @@
 <div class="amazing-discounts-container">
     <div class="amazing-discounts-hero">
         <h1>@T("Plugins.Misc.AmazingDiscounts.PageTitle")</h1>
-        <p>Unbeatable deals on top products. Grab them before they're gone!</p>
+        <p>@T("Plugins.Misc.AmazingDiscounts.HeroSubtitle")</p>
     </div>
 
     @if (Model.Products.Any())
@@ -259,7 +259,7 @@
                         }
                         else
                         {
-                            <span class="amazing-badge-label">Hot Offer</span>
+                            <span class="amazing-badge-label">@T("Plugins.Misc.AmazingDiscounts.HotOffer")</span>
                         }
                         @if (product.DiscountPercentage > 0)
                         {
@@ -290,7 +290,7 @@
                                 <span class="amazing-price">@product.Price</span>
                             </div>
                             <a href="@Url.RouteUrl("Product", new { SeName = product.SeName })" class="amazing-btn">
-                                View Deal
+                                @T("Plugins.Misc.AmazingDiscounts.ViewDeal")
                             </a>
                         </div>
                     </div>
@@ -302,7 +302,7 @@
     {
         <div class="amazing-empty">
             <span class="amazing-empty-icon">🏷️</span>
-            <p>No amazing discounts at the moment. Check back soon for exclusive promotions!</p>
+            <p>@T("Plugins.Misc.AmazingDiscounts.EmptyList")</p>
         </div>
     }
 </div>
