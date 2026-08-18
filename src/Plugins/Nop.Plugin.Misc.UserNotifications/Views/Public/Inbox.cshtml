@@ -203,8 +203,9 @@
                     card.style.opacity = '0';
                     setTimeout(function () { card.remove(); }, 200);
                 }
-                if (data && typeof data.unreadCount !== 'undefined') {
-                    UserNotifications.updateBadge(data.unreadCount);
+                var unreadCount = data ? (data.unreadCount !== undefined ? data.unreadCount : data.UnreadCount) : undefined;
+                if (typeof unreadCount !== 'undefined') {
+                    UserNotifications.updateBadge(unreadCount);
                 }
             });
     }

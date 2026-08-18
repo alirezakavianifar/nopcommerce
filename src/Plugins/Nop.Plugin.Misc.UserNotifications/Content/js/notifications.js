@@ -171,20 +171,36 @@
             fetch(this.config.flyoutUrl + '?category=' + encodeURIComponent(category))
                 .then(function (res) { return res.json(); })
                 .then(function (data) {
-                    if (!data || !data.success) return;
+                    var success = data && (data.success !== undefined ? data.success : data.Success);
+                    if (!success) return;
 
-                    if (data.items && data.items.length > 0) {
+                    var items = data.items || data.Items;
+                    if (items && items.length > 0) {
                         var html = '';
-                        data.items.forEach(function (item) {
-                            html += '<li class="notif-item-card ' + (item.isRead ? '' : 'unread') + '" data-id="' + item.id + '">';
-                            html += '  <div class="notif-item-icon category-' + item.category + '"><i class="fas ' + item.icon + '"></i></div>';
+                        items.forEach(function (item) {
+                            var id = item.id || item.Id;
+                            var isRead = item.isRead !== undefined ? item.isRead : item.IsRead;
+                            var category = item.category || item.Category || 'System';
+                            var icon = item.icon || item.Icon || 'fa-bell';
+                            var title = item.title || item.Title || '';
+                            var message = item.message || item.Message || '';
+                            var relativeTime = item.relativeTime || item.RelativeTime || '';
+                            var couponCode = item.couponCode || item.CouponCode;
+                            var actionUrl = item.actionUrl || item.ActionUrl;
+
+                            var titleHtml = actionUrl
+                                ? '<a href="' + actionUrl + '" style="color: inherit; text-decoration: none;">' + title + '</a>'
+                                : title;
+
+                            html += '<li class="notif-item-card ' + (isRead ? '' : 'unread') + '" data-id="' + id + '">';
+                            html += '  <div class="notif-item-icon category-' + category + '"><i class="fas ' + icon + '"></i></div>';
                             html += '  <div class="notif-item-content">';
-                            html += '    <h4 class="notif-item-title">' + item.title + '</h4>';
-                            html += '    <p class="notif-item-message">' + item.message + '</p>';
+                            html += '    <h4 class="notif-item-title">' + titleHtml + '</h4>';
+                            html += '    <p class="notif-item-message">' + message + '</p>';
                             html += '    <div class="notif-item-meta">';
-                            html += '      <span>' + item.relativeTime + '</span>';
-                            if (item.couponCode) {
-                                html += '      <span class="notif-coupon-tag" onclick="UserNotifications.copyCoupon(\'' + item.couponCode + '\', event)"><i class="fas fa-ticket-alt"></i> ' + item.couponCode + '</span>';
+                            html += '      <span>' + relativeTime + '</span>';
+                            if (couponCode) {
+                                html += '      <span class="notif-coupon-tag" onclick="UserNotifications.copyCoupon(\'' + couponCode + '\', event)"><i class="fas fa-ticket-alt"></i> ' + couponCode + '</span>';
                             }
                             html += '    </div>';
                             html += '  </div>';
@@ -206,8 +222,9 @@
                     if (cardEl) {
                         cardEl.classList.remove('unread');
                     }
-                    if (data && typeof data.unreadCount !== 'undefined') {
-                        self.updateBadge(data.unreadCount);
+                    var count = data ? (data.unreadCount !== undefined ? data.unreadCount : data.UnreadCount) : undefined;
+                    if (typeof count !== 'undefined') {
+                        self.updateBadge(count);
                     }
                 });
         },
@@ -252,6 +269,7 @@
 
         // 5. Toast Stack Engine
         showToast: function (options) {
+            if (!options) return;
             var stack = document.getElementById('notif-toast-stack');
             if (!stack) {
                 stack = document.createElement('div');
@@ -260,25 +278,34 @@
                 document.body.appendChild(stack);
             }
 
+            var id = options.id || options.Id;
+            var title = options.title || options.Title || '';
+            var message = options.message || options.Message || '';
+            var category = options.category || options.Category || 'Promotion';
+            var icon = options.icon || options.Icon || 'fa-bell';
+            var imageUrl = options.imageUrl || options.ImageUrl;
+            var couponCode = options.couponCode || options.CouponCode;
+            var actionUrl = options.actionUrl || options.ActionUrl;
+
             var toast = document.createElement('div');
             toast.className = 'notif-toast-card';
 
-            var iconHtml = options.imageUrl
-                ? '<img src="' + options.imageUrl + '" class="notif-toast-thumb" alt="Product" />'
-                : '<div class="notif-item-icon category-' + (options.category || 'Promotion') + '"><i class="fas ' + (options.icon || 'fa-bell') + '"></i></div>';
+            var iconHtml = imageUrl
+                ? '<img src="' + imageUrl + '" class="notif-toast-thumb" alt="Product" />'
+                : '<div class="notif-item-icon category-' + category + '"><i class="fas ' + icon + '"></i></div>';
 
-            var couponHtml = options.couponCode
-                ? '<div style="margin-top: 6px;"><span class="notif-coupon-tag" onclick="UserNotifications.copyCoupon(\'' + options.couponCode + '\', event)"><i class="fas fa-ticket-alt"></i> ' + options.couponCode + ' (Copy)</span></div>'
+            var couponHtml = couponCode
+                ? '<div style="margin-top: 6px;"><span class="notif-coupon-tag" onclick="UserNotifications.copyCoupon(\'' + couponCode + '\', event)"><i class="fas fa-ticket-alt"></i> ' + couponCode + ' (Copy)</span></div>'
                 : '';
 
-            var actionBtnHtml = options.actionUrl
-                ? '<a href="' + options.actionUrl + '" class="btn btn-sm btn-outline-primary" style="margin-top: 6px; font-size: 0.75rem; padding: 2px 8px;">View Details</a>'
+            var actionBtnHtml = actionUrl
+                ? '<a href="' + actionUrl + '" class="btn btn-sm btn-outline-primary" style="margin-top: 6px; font-size: 0.75rem; padding: 2px 8px;">View Details</a>'
                 : '';
 
             toast.innerHTML = iconHtml +
                 '<div style="flex-grow: 1; min-width: 0;">' +
-                '  <h5 class="notif-item-title">' + options.title + '</h5>' +
-                '  <p class="notif-item-message" style="margin-bottom: 2px;">' + options.message + '</p>' +
+                '  <h5 class="notif-item-title">' + title + '</h5>' +
+                '  <p class="notif-item-message" style="margin-bottom: 2px;">' + message + '</p>' +
                 couponHtml + actionBtnHtml +
                 '</div>' +
                 '<button type="button" class="notif-toast-close">&times;</button>' +
@@ -296,8 +323,8 @@
                 setTimeout(function () {
                     if (toast.parentNode) toast.parentNode.removeChild(toast);
                 }, 300);
-                if (options.id) {
-                    fetch('/customer/notifications/dismiss-popup?id=' + options.id, { method: 'POST' });
+                if (id) {
+                    fetch('/customer/notifications/dismiss-popup?id=' + id, { method: 'POST' });
                 }
             }
 
@@ -326,15 +353,19 @@
                 fetch(self.config.pollUrl)
                     .then(function (res) { return res.json(); })
                     .then(function (data) {
-                        if (!data || !data.success) return;
+                        var success = data && (data.success !== undefined ? data.success : data.Success);
+                        if (!success) return;
 
-                        if (typeof data.unreadCount !== 'undefined') {
-                            self.updateBadge(data.unreadCount);
+                        var unreadCount = data.unreadCount !== undefined ? data.unreadCount : data.UnreadCount;
+                        if (typeof unreadCount !== 'undefined') {
+                            self.updateBadge(unreadCount);
                         }
 
-                        if (data.popups && data.popups.length > 0) {
-                            data.popups.forEach(function (popup) {
-                                if (popup.popupType === 'Celebration') {
+                        var popups = data.popups || data.Popups;
+                        if (popups && popups.length > 0) {
+                            popups.forEach(function (popup) {
+                                var popupType = popup.popupType || popup.PopupType;
+                                if (popupType === 'Celebration') {
                                     self.fireConfetti();
                                 }
                                 self.showToast(popup);
