@@ -140,7 +140,30 @@ public class GroupPurchasePlugin : BasePlugin, IMiscPlugin, IAdminMenuPlugin, IW
                 ["Plugins.Misc.GroupPurchase.Customer.WalletTab"] = "My Wallet",
                 ["Plugins.Misc.GroupPurchase.Customer.LeaderGroupsTab"] = "My Leader Groups",
                 ["Plugins.Misc.GroupPurchase.Customer.SubgroupHistoryTab"] = "My Subgroup History",
-                ["Plugins.Misc.GroupPurchase.Customer.LotteryTab"] = "My Lottery Points"
+                ["Plugins.Misc.GroupPurchase.Customer.LotteryTab"] = "My Lottery Points",
+
+                ["Plugins.Misc.GroupPurchase.Commission.Manage"] = "Manage Commissions",
+                ["Plugins.Misc.GroupPurchase.Commission.AddNew"] = "Add Commission",
+                ["Plugins.Misc.GroupPurchase.Commission.Edit"] = "Edit Commission",
+                ["Plugins.Misc.GroupPurchase.Commission.BackToList"] = "Back to list",
+                ["Plugins.Misc.GroupPurchase.Commission.Fields.Scope"] = "Commission Scope",
+                ["Plugins.Misc.GroupPurchase.Commission.Fields.EntityId"] = "Entity ID",
+                ["Plugins.Misc.GroupPurchase.Commission.Fields.EntityId.Hint"] = "Enter Product ID, Category ID, Vendor ID, or Manufacturer ID based on selected Scope.",
+                ["Plugins.Misc.GroupPurchase.Commission.Fields.EntityName"] = "Name / Description",
+                ["Plugins.Misc.GroupPurchase.Commission.Fields.Percentage"] = "Commission Percentage (%)",
+                ["Plugins.Misc.GroupPurchase.Commission.ImportExcelNote"] = "Upload Excel (.xlsx) with columns: Scope (Product/Category/Vendor/Manufacturer), EntityId, Percentage, Name.",
+                ["Plugins.Misc.GroupPurchase.Commission.SyncForoushGostar"] = "Sync with Foroush Gostar",
+                ["Plugins.Misc.GroupPurchase.RewardRule.Fields.MinRewardAmount"] = "Min Reward Amount (Floor)",
+                ["Plugins.Misc.GroupPurchase.RewardRule.Fields.MaxRewardAmount"] = "Max Reward Amount (Cap)",
+                ["Plugins.Misc.GroupPurchase.CustomerClub.Configure"] = "Customer Club Settings",
+                ["Plugins.Misc.GroupPurchase.CustomerClub.ConversionRatios"] = "Dual Conversion Ratios",
+                ["Plugins.Misc.GroupPurchase.CustomerClub.Fields.EnableDualConversion"] = "Enable Dual Conversion",
+                ["Plugins.Misc.GroupPurchase.CustomerClub.Fields.PointsToLotteryChanceRatio"] = "Points per 1 Lottery Chance",
+                ["Plugins.Misc.GroupPurchase.CustomerClub.Fields.PointsToLotteryChanceRatio.Hint"] = "E.g. 10 means 10 points = 1 lottery chance.",
+                ["Plugins.Misc.GroupPurchase.CustomerClub.Fields.PointsToCurrencyRatio"] = "Currency Value per 1 Point",
+                ["Plugins.Misc.GroupPurchase.CustomerClub.Fields.PointsToCurrencyRatio.Hint"] = "E.g. 1000 means 1 point = 1,000 currency units in wallet.",
+                ["Plugins.Misc.GroupPurchase.CustomerClub.Fields.DefaultMinRewardAmount"] = "Default Min Reward Amount",
+                ["Plugins.Misc.GroupPurchase.CustomerClub.Fields.DefaultMaxRewardAmount"] = "Default Max Reward Amount"
             };
 
             var faResources = new Dictionary<string, string>
@@ -196,7 +219,30 @@ public class GroupPurchasePlugin : BasePlugin, IMiscPlugin, IAdminMenuPlugin, IW
                 ["Plugins.Misc.GroupPurchase.Customer.WalletTab"] = "کیف پول من",
                 ["Plugins.Misc.GroupPurchase.Customer.LeaderGroupsTab"] = "گروه‌های لیدری من",
                 ["Plugins.Misc.GroupPurchase.Customer.SubgroupHistoryTab"] = "تاریخچه زیرمجموعه‌های من",
-                ["Plugins.Misc.GroupPurchase.Customer.LotteryTab"] = "امتیازات قرعه‌کشی من"
+                ["Plugins.Misc.GroupPurchase.Customer.LotteryTab"] = "امتیازات قرعه‌کشی من",
+
+                ["Plugins.Misc.GroupPurchase.Commission.Manage"] = "مدیریت درصدهای حق‌العمل و سود",
+                ["Plugins.Misc.GroupPurchase.Commission.AddNew"] = "افزودن درصد حق‌العمل",
+                ["Plugins.Misc.GroupPurchase.Commission.Edit"] = "ویرایش درصد حق‌العمل",
+                ["Plugins.Misc.GroupPurchase.Commission.BackToList"] = "بازگشت به لیست",
+                ["Plugins.Misc.GroupPurchase.Commission.Fields.Scope"] = "سطح حق‌العمل (کالا/دسته/فروشنده/برند)",
+                ["Plugins.Misc.GroupPurchase.Commission.Fields.EntityId"] = "شناسه موجودیت",
+                ["Plugins.Misc.GroupPurchase.Commission.Fields.EntityId.Hint"] = "شناسه کالا، دسته‌بندی، فروشنده یا برند را متناسب با سطح انتخاب‌شده وارد نمایید.",
+                ["Plugins.Misc.GroupPurchase.Commission.Fields.EntityName"] = "نام / یادداشت",
+                ["Plugins.Misc.GroupPurchase.Commission.Fields.Percentage"] = "درصد حق‌العمل (کارمزد)",
+                ["Plugins.Misc.GroupPurchase.Commission.ImportExcelNote"] = "فایل اکسل (.xlsx) با ستون‌های Scope (Product, Category, Vendor, Manufacturer)، EntityId، Percentage و Name را بارگذاری نمایید.",
+                ["Plugins.Misc.GroupPurchase.Commission.SyncForoushGostar"] = "سینک با فروش‌گستر",
+                ["Plugins.Misc.GroupPurchase.RewardRule.Fields.MinRewardAmount"] = "حداقل مبلغ پاداش (کف پاداش)",
+                ["Plugins.Misc.GroupPurchase.RewardRule.Fields.MaxRewardAmount"] = "حداکثر مبلغ پاداش (سقف پاداش)",
+                ["Plugins.Misc.GroupPurchase.CustomerClub.Configure"] = "تنظیمات باشگاه مشتریان",
+                ["Plugins.Misc.GroupPurchase.CustomerClub.ConversionRatios"] = "ضرایب تبدیل دوگانه امتیازات",
+                ["Plugins.Misc.GroupPurchase.CustomerClub.Fields.EnableDualConversion"] = "فعال‌سازی تبدیل دوگانه امتیازات",
+                ["Plugins.Misc.GroupPurchase.CustomerClub.Fields.PointsToLotteryChanceRatio"] = "امتیاز مورد نیاز به ازای ۱ شانس قرعه‌کشی",
+                ["Plugins.Misc.GroupPurchase.CustomerClub.Fields.PointsToLotteryChanceRatio.Hint"] = "مثلاً عدد ۱۰ به این معنی است که هر ۱۰ امتیاز تبدیل به ۱ شانس قرعه‌کشی می‌شود.",
+                ["Plugins.Misc.GroupPurchase.CustomerClub.Fields.PointsToCurrencyRatio"] = "ارزش ریالی/تومانی به ازای هر ۱ امتیاز",
+                ["Plugins.Misc.GroupPurchase.CustomerClub.Fields.PointsToCurrencyRatio.Hint"] = "مثلاً عدد ۱۰۰۰ به این معنی است که هر ۱ امتیاز معادل ۱۰۰۰ تومان اعتبار کیف پول خواهد بود.",
+                ["Plugins.Misc.GroupPurchase.CustomerClub.Fields.DefaultMinRewardAmount"] = "حداقل مبلغ پیش‌فرض پاداش",
+                ["Plugins.Misc.GroupPurchase.CustomerClub.Fields.DefaultMaxRewardAmount"] = "حداکثر مبلغ پیش‌فرض پاداش"
             };
 
             if (enLang != null)
@@ -298,6 +344,26 @@ public class GroupPurchasePlugin : BasePlugin, IMiscPlugin, IAdminMenuPlugin, IW
                 Visible = true
             };
             pluginNode.ChildNodes.Add(walletNode);
+
+            var commissionNode = new AdminMenuItem
+            {
+                SystemName = "Misc.GroupPurchase.Commissions",
+                Title = isPersian ? "درصدهای حق‌العمل و سود" : "Commissions & Gross Profit",
+                Url = "/Admin/CommissionAdmin/List",
+                IconClass = "fas fa-percentage",
+                Visible = true
+            };
+            pluginNode.ChildNodes.Add(commissionNode);
+
+            var clubNode = new AdminMenuItem
+            {
+                SystemName = "Misc.GroupPurchase.CustomerClub",
+                Title = isPersian ? "تنظیمات باشگاه مشتریان" : "Customer Club Settings",
+                Url = "/Admin/CustomerClubAdmin/Configure",
+                IconClass = "fas fa-gift",
+                Visible = true
+            };
+            pluginNode.ChildNodes.Add(clubNode);
         }
     }
 

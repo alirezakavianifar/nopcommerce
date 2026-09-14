@@ -43,6 +43,16 @@ public partial class RewardRule : BaseEntity
     public int MinMembers { get; set; }
 
     /// <summary>
+    /// Gets or sets the minimum allowed reward amount (floor clamp)
+    /// </summary>
+    public decimal? MinRewardAmount { get; set; }
+
+    /// <summary>
+    /// Gets or sets the maximum allowed reward amount (ceiling cap)
+    /// </summary>
+    public decimal? MaxRewardAmount { get; set; }
+
+    /// <summary>
     /// Gets or sets the target role
     /// </summary>
     public RewardRuleTargetRole TargetRole

@@ -48,7 +48,9 @@ public class RewardRuleController : BasePluginController
                 Value = rr.Value,
                 CategoryId = rr.CategoryId,
                 MinCartAmount = rr.MinCartAmount,
-                MinMembers = rr.MinMembers
+                MinMembers = rr.MinMembers,
+                MinRewardAmount = rr.MinRewardAmount,
+                MaxRewardAmount = rr.MaxRewardAmount
             });
         });
 
@@ -77,7 +79,9 @@ public class RewardRuleController : BasePluginController
                 Value = model.Value,
                 CategoryId = model.CategoryId,
                 MinCartAmount = model.MinCartAmount,
-                MinMembers = model.MinMembers
+                MinMembers = model.MinMembers,
+                MinRewardAmount = model.MinRewardAmount,
+                MaxRewardAmount = model.MaxRewardAmount
             };
 
             await _rewardRuleService.InsertRewardRuleAsync(rewardRule);
@@ -107,7 +111,9 @@ public class RewardRuleController : BasePluginController
             Value = rewardRule.Value,
             CategoryId = rewardRule.CategoryId,
             MinCartAmount = rewardRule.MinCartAmount,
-            MinMembers = rewardRule.MinMembers
+            MinMembers = rewardRule.MinMembers,
+            MinRewardAmount = rewardRule.MinRewardAmount,
+            MaxRewardAmount = rewardRule.MaxRewardAmount
         };
 
         return View("~/Plugins/Misc.GroupPurchase/Views/RewardRule/Edit.cshtml", model);
@@ -131,6 +137,8 @@ public class RewardRuleController : BasePluginController
             rewardRule.CategoryId = model.CategoryId;
             rewardRule.MinCartAmount = model.MinCartAmount;
             rewardRule.MinMembers = model.MinMembers;
+            rewardRule.MinRewardAmount = model.MinRewardAmount;
+            rewardRule.MaxRewardAmount = model.MaxRewardAmount;
 
             await _rewardRuleService.UpdateRewardRuleAsync(rewardRule);
 

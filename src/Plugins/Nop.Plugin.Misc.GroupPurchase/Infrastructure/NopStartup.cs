@@ -23,6 +23,9 @@ public class NopStartup : INopStartup
         services.AddScoped<IGroupRewardCalculationService, GroupRewardCalculationService>();
         services.AddScoped<IWalletService, WalletService>();
         services.AddScoped<ILotteryService, LotteryService>();
+        services.AddScoped<ICommissionService, CommissionService>();
+        services.AddScoped<IExternalCommissionProvider, ForoushGostarSyncService>();
+        services.AddScoped<ICustomerClubService, CustomerClubService>();
     }
 
     /// <summary>

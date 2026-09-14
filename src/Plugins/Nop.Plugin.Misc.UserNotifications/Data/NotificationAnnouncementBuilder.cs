@@ -14,6 +14,7 @@ public class NotificationAnnouncementBuilder : NopEntityBuilder<NotificationAnno
             .WithColumn(nameof(NotificationAnnouncement.StartDateUtc)).AsDateTime().Nullable()
             .WithColumn(nameof(NotificationAnnouncement.EndDateUtc)).AsDateTime().Nullable()
             .WithColumn(nameof(NotificationAnnouncement.IsPublished)).AsBoolean().NotNullable()
+            .WithColumn(nameof(NotificationAnnouncement.CustomerRoleId)).AsInt32().Nullable()
             .WithColumn(nameof(NotificationAnnouncement.CreatedOnUtc)).AsDateTime().NotNullable();
     }
 }

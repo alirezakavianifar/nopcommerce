@@ -1,0 +1,90 @@
+@model Nop.Plugin.Misc.GroupPurchase.Models.CustomerClubModel
+@{
+    Layout = "_AdminLayout";
+    ViewBag.PageTitle = T("Plugins.Misc.GroupPurchase.CustomerClub.Configure").Text;
+}
+
+<form asp-controller="CustomerClubAdmin" asp-action="Configure" method="post">
+    <div class="content-header clearfix">
+        <h1 class="float-left">
+            @T("Plugins.Misc.GroupPurchase.CustomerClub.Configure")
+        </h1>
+        <div class="float-right">
+            <button type="submit" name="save" class="btn btn-primary">
+                <i class="far fa-save"></i>
+                @T("Admin.Common.Save")
+            </button>
+        </div>
+    </div>
+
+    <div asp-validation-summary="All"></div>
+
+    <section class="content">
+        <div class="container-fluid">
+            <div class="form-horizontal">
+                <div class="cards-group">
+                    <div class="card card-default">
+                        <div class="card-header">
+                            @T("Plugins.Misc.GroupPurchase.CustomerClub.ConversionRatios")
+                        </div>
+                        <div class="card-body">
+                            
+                            <div class="form-group row">
+                                <div class="col-md-3">
+                                    <nop-label asp-for="EnableDualConversion" />
+                                </div>
+                                <div class="col-md-9">
+                                    <nop-editor asp-for="EnableDualConversion" />
+                                    <span asp-validation-for="EnableDualConversion"></span>
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <div class="col-md-3">
+                                    <nop-label asp-for="PointsToLotteryChanceRatio" />
+                                </div>
+                                <div class="col-md-9">
+                                    <nop-editor asp-for="PointsToLotteryChanceRatio" />
+                                    <span asp-validation-for="PointsToLotteryChanceRatio"></span>
+                                    <small class="form-text text-muted">@T("Plugins.Misc.GroupPurchase.CustomerClub.Fields.PointsToLotteryChanceRatio.Hint")</small>
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <div class="col-md-3">
+                                    <nop-label asp-for="PointsToCurrencyRatio" />
+                                </div>
+                                <div class="col-md-9">
+                                    <nop-editor asp-for="PointsToCurrencyRatio" />
+                                    <span asp-validation-for="PointsToCurrencyRatio"></span>
+                                    <small class="form-text text-muted">@T("Plugins.Misc.GroupPurchase.CustomerClub.Fields.PointsToCurrencyRatio.Hint")</small>
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <div class="col-md-3">
+                                    <nop-label asp-for="DefaultMinRewardAmount" />
+                                </div>
+                                <div class="col-md-9">
+                                    <nop-editor asp-for="DefaultMinRewardAmount" />
+                                    <span asp-validation-for="DefaultMinRewardAmount"></span>
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <div class="col-md-3">
+                                    <nop-label asp-for="DefaultMaxRewardAmount" />
+                                </div>
+                                <div class="col-md-9">
+                                    <nop-editor asp-for="DefaultMaxRewardAmount" />
+                                    <span asp-validation-for="DefaultMaxRewardAmount"></span>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</form>

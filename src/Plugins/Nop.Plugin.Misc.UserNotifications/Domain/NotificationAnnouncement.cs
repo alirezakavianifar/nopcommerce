@@ -33,6 +33,11 @@ public partial class NotificationAnnouncement : BaseEntity
     public bool IsPublished { get; set; }
 
     /// <summary>
+    /// Gets or sets the optional customer role filter
+    /// </summary>
+    public int? CustomerRoleId { get; set; }
+
+    /// <summary>
     /// Gets or sets the date and time of instance creation
     /// </summary>
     public DateTime CreatedOnUtc { get; set; }

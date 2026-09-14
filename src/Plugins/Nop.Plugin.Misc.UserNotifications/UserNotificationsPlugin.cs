@@ -44,6 +44,7 @@ public class UserNotificationsPlugin : BasePlugin, IMiscPlugin, IWidgetPlugin, I
         return Task.FromResult<IList<string>>(new List<string>
         {
             PublicWidgetZones.HomepageTop,
+            PublicWidgetZones.HeaderAfter,
             PublicWidgetZones.HeaderBefore,
             PublicWidgetZones.HeaderLinksAfter,
             PublicWidgetZones.BodyStartHtmlTagAfter,

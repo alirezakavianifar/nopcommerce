@@ -1,0 +1,152 @@
+
+        <!DOCTYPE html>
+        <html dir="rtl" lang="fa">
+        <head>
+            <meta charset="utf-8">
+            <title>تایید وب‌سرویس و REST API تخفیفات شگفت‌انگیز (Module 2)</title>
+            <style>
+                body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #0f172a; color: #f8fafc; padding: 30px; margin: 0; }
+                .container { max-width: 1100px; margin: 0 auto; }
+                .badge { display: inline-block; background: #10b981; color: white; padding: 4px 12px; border-radius: 9999px; font-weight: bold; font-size: 0.85rem; }
+                .badge-get { background: #8b5cf6; }
+                .card { background: #1e293b; border-radius: 16px; padding: 24px; margin-bottom: 24px; border: 1px solid #334155; box-shadow: 0 10px 25px rgba(0,0,0,0.3); }
+                .endpoint-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; border-bottom: 1px solid #334155; padding-bottom: 12px; }
+                .endpoint-title { font-size: 1.15rem; font-weight: bold; color: #38bdf8; direction: ltr; font-family: Consolas, monospace; }
+                .status-ok { color: #4ade80; font-weight: bold; font-size: 0.95rem; }
+                pre { background: #090d16; padding: 18px; border-radius: 10px; color: #38bdf8; font-family: 'Consolas', monospace; font-size: 0.9rem; direction: ltr; text-align: left; overflow-x: auto; max-height: 480px; border: 1px solid #1e293b; }
+                .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 20px; }
+                .stat-box { background: #0f172a; border-radius: 12px; padding: 16px; text-align: center; border: 1px solid #334155; }
+                .stat-val { font-size: 1.5rem; font-weight: bold; color: #f59e0b; margin-bottom: 4px; }
+                .stat-label { font-size: 0.85rem; color: #94a3b8; }
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px;">
+                    <div>
+                        <h1 style="margin: 0; font-size: 1.8rem; color: #ffffff;">اعتبارسنجی وب‌سرویس REST API تخفیفات شگفت‌انگیز (Module 2)</h1>
+                        <p style="margin: 6px 0 0 0; color: #94a3b8;">تایید همگام‌سازی اطلاعات کمپین تخفیف، قیمت‌ها، زمان‌بندی و تصاویر کالاها برای اپلیکیشن موبایل</p>
+                    </div>
+                    <span class="badge" style="background: #7c3aed; font-size: 0.95rem; padding: 8px 16px;">⚡ REST API Verified</span>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-box">
+                        <div class="stat-val">5</div>
+                        <div class="stat-label">تعداد کالاهای فعال تخفیف‌دار</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-val">200 OK</div>
+                        <div class="stat-label">وضعیت پاسخ HTTP</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-val">Live Countdown</div>
+                        <div class="stat-label">شمارش معکوس پویا</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-val">Stock Progress</div>
+                        <div class="stat-label">ردیابی موجودی کالا</div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="endpoint-header">
+                        <div>
+                            <span class="badge badge-get">GET</span>
+                            <span class="endpoint-title" style="margin-right: 12px;">/api/amazing-discounts</span>
+                        </div>
+                        <span class="status-ok">✔ HTTP 200 OK (Synchronized)</span>
+                    </div>
+                    <p style="color: #cbd5e1; font-size: 0.95rem; margin-top: 0;">پیلود ساختاریافته تحویلی به اپلیکیشن موبایل شامل قیمت‌های قبل و بعد تخفیف، مدت زمان باقی‌مانده، درصد رزرو کالا و لینک تصاویر:</p>
+                    <pre><code>[
+  {
+    "id": 4,
+    "productId": 4,
+    "productName": "Apple MacBook Pro",
+    "customLabel": "پیشنهاد ویژه اپل",
+    "oldPrice": "$2,200.00",
+    "price": "$1,800.00",
+    "discountPercentage": 18,
+    "pictureUrl": "http://localhost:59580/images/thumbs/0000024_apple-macbook-pro_400.jpeg",
+    "startDateUtc": "2026-08-01T00:00:00",
+    "endDateUtc": "2026-12-31T23:59:59",
+    "remainingSeconds": 10315549,
+    "formattedRemaining": "119d 09h 25m 49s",
+    "stockQuantity": 12,
+    "claimedPercentage": 85,
+    "isAvailable": true
+  },
+  {
+    "id": 5,
+    "productId": 1,
+    "productName": "Build your own computer",
+    "customLabel": "تخفیف فوق‌العاده کیس",
+    "oldPrice": "$1,500.00",
+    "price": "$1,200.00",
+    "discountPercentage": 20,
+    "pictureUrl": "http://localhost:59580/images/thumbs/0000020_build-your-own-computer_400.jpeg",
+    "startDateUtc": "2026-08-01T00:00:00",
+    "endDateUtc": "2026-12-31T23:59:59",
+    "remainingSeconds": 10315549,
+    "formattedRemaining": "119d 09h 25m 49s",
+    "stockQuantity": 12,
+    "claimedPercentage": 76,
+    "isAvailable": true
+  },
+  {
+    "id": 6,
+    "productId": 3,
+    "productName": "Lenovo IdeaCentre",
+    "customLabel": "حراج شگفت‌انگیز لنوو",
+    "oldPrice": "$650.00",
+    "price": "$500.00",
+    "discountPercentage": 23,
+    "pictureUrl": "http://localhost:59580/images/thumbs/0000023_lenovo-ideacentre_400.jpeg",
+    "startDateUtc": "2026-08-01T00:00:00",
+    "endDateUtc": "2026-12-31T23:59:59",
+    "remainingSeconds": 10315549,
+    "formattedRemaining": "119d 09h 25m 49s",
+    "stockQuantity": 12,
+    "claimedPercentage": 74,
+    "isAvailable": true
+  },
+  {
+    "id": 7,
+    "productId": 5,
+    "productName": "Asus Laptop",
+    "customLabel": "تعداد محدود ایسوس",
+    "oldPrice": "$2,000.00",
+    "price": "$1,500.00",
+    "discountPercentage": 25,
+    "pictureUrl": "http://localhost:59580/images/thumbs/0000026_asus-laptop_400.jpeg",
+    "startDateUtc": "2026-08-01T00:00:00",
+    "endDateUtc": "2026-12-31T23:59:59",
+    "remainingSeconds": 10315549,
+    "formattedRemaining": "119d 09h 25m 49s",
+    "stockQuantity": 12,
+    "claimedPercentage": 72,
+    "isAvailable": true
+  },
+  {
+    "id": 8,
+    "productId": 1,
+    "productName": "Build your own computer",
+    "customLabel": "فروش ویژه طلایی با تخفیف ۵۰٪",
+    "oldPrice": "$1,500.00",
+    "price": "$1,200.00",
+    "discountPercentage": 20,
+    "pictureUrl": "http://localhost:59580/images/thumbs/0000020_build-your-own-computer_400.jpeg",
+    "startDateUtc": "2026-08-01T00:00:00",
+    "endDateUtc": "2026-12-31T23:59:59",
+    "remainingSeconds": 10315549,
+    "formattedRemaining": "119d 09h 25m 49s",
+    "stockQuantity": 12,
+    "claimedPercentage": 76,
+    "isAvailable": true
+  }
+]</code></pre>
+                </div>
+            </div>
+        </body>
+        </html>
+        

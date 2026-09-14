@@ -35,7 +35,7 @@ public class AmazingDiscountsPlugin : BasePlugin, IMiscPlugin, IWidgetPlugin, IA
 
     public Task<IList<string>> GetWidgetZonesAsync()
     {
-        return Task.FromResult<IList<string>>(new List<string> { PublicWidgetZones.Footer });
+        return Task.FromResult<IList<string>>(new List<string> { PublicWidgetZones.Footer, PublicWidgetZones.BodyEndHtmlTagBefore });
     }
 
     public Type GetWidgetViewComponent(string widgetZone)
@@ -125,7 +125,7 @@ public class AmazingDiscountsPlugin : BasePlugin, IMiscPlugin, IWidgetPlugin, IA
             title = isPersian ? "تخفیف‌های شگفت‌انگیز" : "Amazing Discounts";
         }
 
-        var menu = rootNode.GetItemBySystemName("Catalog");
+        var menu = rootNode.GetItemBySystemName("Promotions") ?? rootNode.GetItemBySystemName("Catalog");
         if (menu != null)
         {
             menu.ChildNodes.Add(new AdminMenuItem

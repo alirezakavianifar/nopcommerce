@@ -210,4 +210,6 @@ src/Tests/Nop.Tests/Connections.resx
 node_modules/
 *.aux
 *.out
-*.toc
+*.toc
+scratch/
+test_*.pdf

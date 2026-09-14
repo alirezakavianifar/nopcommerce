@@ -12,6 +12,7 @@ public class LegalConfirmationLogBuilder : NopEntityBuilder<LegalConfirmationLog
             .WithColumn(nameof(LegalConfirmationLog.CustomerId)).AsInt32().NotNullable()
             .WithColumn(nameof(LegalConfirmationLog.GroupPurchaseId)).AsInt32().NotNullable()
             .WithColumn(nameof(LegalConfirmationLog.ConfirmationType)).AsString(100).NotNullable()
+            .WithColumn(nameof(LegalConfirmationLog.MessageShown)).AsString(int.MaxValue).Nullable()
             .WithColumn(nameof(LegalConfirmationLog.IpAddress)).AsString(100).Nullable()
             .WithColumn(nameof(LegalConfirmationLog.CreatedOnUtc)).AsDateTime().NotNullable();
     }

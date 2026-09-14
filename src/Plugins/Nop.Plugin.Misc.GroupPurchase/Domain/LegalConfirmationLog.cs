@@ -28,6 +28,11 @@ public partial class LegalConfirmationLog : BaseEntity
     public string IpAddress { get; set; }
 
     /// <summary>
+    /// Gets or sets the exact message shown to the user
+    /// </summary>
+    public string MessageShown { get; set; }
+
+    /// <summary>
     /// Gets or sets the creation date
     /// </summary>
     public DateTime CreatedOnUtc { get; set; }

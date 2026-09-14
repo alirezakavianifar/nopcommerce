@@ -18,6 +18,8 @@ public class GroupPurchaseController : BasePluginController
     }
 
     [HttpPost]
+    [Route("GroupPurchase/Convert")]
+    [Route("GroupPurchase/ConvertToGroupPurchase")]
     public async Task<IActionResult> ConvertToGroupPurchase()
     {
         var customer = await _workContext.GetCurrentCustomerAsync();
@@ -30,6 +32,8 @@ public class GroupPurchaseController : BasePluginController
     }
 
     [HttpPost]
+    [Route("GroupPurchase/Join")]
+    [Route("GroupPurchase/JoinGroupPurchase")]
     public async Task<IActionResult> JoinGroupPurchase(string code)
     {
         var customer = await _workContext.GetCurrentCustomerAsync();
@@ -38,7 +42,7 @@ public class GroupPurchaseController : BasePluginController
 
         var memberSize = await _groupPurchaseService.JoinGroupPurchaseAsync(customer, code);
         if (memberSize == null)
-            return Json(new { success = false, message = "Invalid or expired code." });
+            return Json(new { success = false, message = "کد گروه نامعتبر یا منقضی شده است." });
 
         return Json(new { success = true });
     }

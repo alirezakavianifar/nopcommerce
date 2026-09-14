@@ -22,5 +22,10 @@ public record AnnouncementModel : BaseNopEntityModel
     [NopResourceDisplayName("Plugins.Misc.UserNotifications.Fields.IsPublished")]
     public bool IsPublished { get; set; }
 
+    [NopResourceDisplayName("Plugins.Misc.UserNotifications.Fields.CustomerRole")]
+    public int? CustomerRoleId { get; set; }
+
+    public IList<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem> AvailableCustomerRoles { get; set; } = new List<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>();
+
     public DateTime CreatedOnUtc { get; set; }
 }

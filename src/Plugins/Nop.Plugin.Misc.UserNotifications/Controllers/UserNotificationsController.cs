@@ -16,6 +16,7 @@ namespace Nop.Plugin.Misc.UserNotifications.Controllers;
 
 [AuthorizeAdmin]
 [Area(AreaNames.ADMIN)]
+[Route("Admin/UserNotifications")]
 [AutoValidateAntiforgeryToken]
 public class UserNotificationsController : BasePluginController
 {
@@ -27,6 +28,7 @@ public class UserNotificationsController : BasePluginController
     protected readonly ILanguageService _languageService;
     protected readonly INotificationService _nopNotificationService;
     protected readonly IPermissionService _permissionService;
+    protected readonly Nop.Services.Customers.ICustomerService _customerService;
 
     public UserNotificationsController(
         IUserNotificationService notificationService,
@@ -36,7 +38,8 @@ public class UserNotificationsController : BasePluginController
         ILocalizationService localizationService,
         ILanguageService languageService,
         INotificationService nopNotificationService,
-        IPermissionService permissionService)
+        IPermissionService permissionService,
+        Nop.Services.Customers.ICustomerService customerService)
     {
         _notificationService = notificationService;
         _workflowEngineService = workflowEngineService;
@@ -46,175 +49,18 @@ public class UserNotificationsController : BasePluginController
         _languageService = languageService;
         _nopNotificationService = nopNotificationService;
         _permissionService = permissionService;
+        _customerService = customerService;
     }
-
-    private static bool _resourcesInitialized = false;
 
     private async Task EnsureLocaleResourcesAsync()
     {
-        if (_resourcesInitialized)
-            return;
-
-        var sample = await _localizationService.GetResourceAsync("Plugins.Misc.UserNotifications.Workflows", 0, false, "", true);
-        if (!string.IsNullOrEmpty(sample))
-        {
-            _resourcesInitialized = true;
-            return;
-        }
-
-        var languages = await _languageService.GetAllLanguagesAsync();
-
-        var enResources = new Dictionary<string, string>
-        {
-            ["Plugins.Misc.UserNotifications.Announcements"] = "System Announcements",
-            ["Plugins.Misc.UserNotifications.Workflows"] = "Notification Workflows",
-            ["Plugins.Misc.UserNotifications.FarazSms"] = "FarazSMS Settings",
-            ["Plugins.Misc.UserNotifications.Queue"] = "Delivery Queue Logs",
-            ["Plugins.Misc.UserNotifications.Inbox"] = "My Notifications",
-            ["Plugins.Misc.UserNotifications.Inbox.Unread"] = "Unread",
-            ["Plugins.Misc.UserNotifications.Inbox.Empty"] = "You have no notifications in your account inbox.",
-            ["Plugins.Misc.UserNotifications.Inbox.AllCaughtUp"] = "You're all caught up! There are no unread notifications right now.",
-            ["Plugins.Misc.UserNotifications.Inbox.New"] = "New",
-            ["Plugins.Misc.UserNotifications.Inbox.ViewDetails"] = "View Details",
-            ["Plugins.Misc.UserNotifications.Popup.Claim"] = "Claim Special Offer",
-            ["Plugins.Misc.UserNotifications.Popup.Dismiss"] = "Dismiss",
-            ["Plugins.Misc.UserNotifications.AddAnnouncement"] = "Add a new announcement",
-            ["Plugins.Misc.UserNotifications.EditAnnouncement"] = "Edit announcement",
-            ["Plugins.Misc.UserNotifications.AddWorkflow"] = "Add new workflow",
-            ["Plugins.Misc.UserNotifications.WorkflowName"] = "Workflow Name",
-            ["Plugins.Misc.UserNotifications.TriggerAction"] = "Trigger Action",
-            ["Plugins.Misc.UserNotifications.IsActive"] = "Is Active",
-            ["Plugins.Misc.UserNotifications.CreatedOn"] = "Created On (UTC)",
-            ["Plugins.Misc.UserNotifications.Actions"] = "Actions",
-            ["Plugins.Misc.UserNotifications.ConfigureSteps"] = "Configure Steps",
-            ["Plugins.Misc.UserNotifications.SaveWorkflow"] = "Save Workflow",
-            ["Plugins.Misc.UserNotifications.BackToWorkflows"] = "Back to Workflows",
-            ["Plugins.Misc.UserNotifications.BackToList"] = "back to list",
-            ["Plugins.Misc.UserNotifications.Fields.Title"] = "Title",
-            ["Plugins.Misc.UserNotifications.Fields.Body"] = "Body",
-            ["Plugins.Misc.UserNotifications.Fields.StartDateUtc"] = "Start Date (UTC)",
-            ["Plugins.Misc.UserNotifications.Fields.EndDateUtc"] = "End Date (UTC)",
-            ["Plugins.Misc.UserNotifications.Fields.IsPublished"] = "Is published",
-            ["Plugins.Misc.UserNotifications.Added"] = "The announcement has been added successfully.",
-            ["Plugins.Misc.UserNotifications.Updated"] = "The announcement has been updated successfully.",
-            ["Plugins.Misc.UserNotifications.Deleted"] = "The announcement has been deleted successfully.",
-            ["Plugins.Misc.UserNotifications.FilterAll"] = "All",
-            ["Plugins.Misc.UserNotifications.FilterOrders"] = "Orders",
-            ["Plugins.Misc.UserNotifications.FilterOffers"] = "Offers & Deals",
-            ["Plugins.Misc.UserNotifications.FilterSystem"] = "System",
-            ["Plugins.Misc.UserNotifications.MarkAllAsRead"] = "Mark all as read",
-            ["Plugins.Misc.UserNotifications.MarkAsRead"] = "Mark as read",
-            ["Plugins.Misc.UserNotifications.ClearRead"] = "Clear read",
-            ["Plugins.Misc.UserNotifications.CopyCode"] = "Copy Code",
-            ["Plugins.Misc.UserNotifications.PromoCode"] = "PROMO CODE",
-            ["Plugins.Misc.UserNotifications.SearchPlaceholder"] = "Search notifications, offers, or codes...",
-            ["Plugins.Misc.UserNotifications.ViewAllNotifications"] = "View all in Inbox",
-            ["Plugins.Misc.UserNotifications.Preferences"] = "Notification Preferences",
-            ["Plugins.Misc.UserNotifications.BackToInbox"] = "Back to Inbox",
-            ["Plugins.Misc.UserNotifications.PreferencesSaved"] = "Your notification preferences have been saved successfully.",
-            ["Plugins.Misc.UserNotifications.Preferences.ChannelsTitle"] = "Delivery Channels",
-            ["Plugins.Misc.UserNotifications.Preferences.ChannelsDesc"] = "Choose how and where you want to receive notifications from us.",
-            ["Plugins.Misc.UserNotifications.Preferences.OnSiteToasts"] = "On-Site Toast Popups",
-            ["Plugins.Misc.UserNotifications.Preferences.OnSiteToastsDesc"] = "Show non-intrusive floating toasts on screen while browsing.",
-            ["Plugins.Misc.UserNotifications.Preferences.Sound"] = "Notification Sound Chime",
-            ["Plugins.Misc.UserNotifications.Preferences.SoundDesc"] = "Play a subtle pleasant audio chime when a new notification arrives.",
-            ["Plugins.Misc.UserNotifications.Preferences.Email"] = "Email Notifications",
-            ["Plugins.Misc.UserNotifications.Preferences.EmailDesc"] = "Receive order updates, dispatch notes, and special offers in your email.",
-            ["Plugins.Misc.UserNotifications.Preferences.Sms"] = "SMS Notifications",
-            ["Plugins.Misc.UserNotifications.Preferences.SmsDesc"] = "Get real-time instant SMS for order status and flash deals.",
-            ["Plugins.Misc.UserNotifications.Preferences.TopicsTitle"] = "Notification Topics",
-            ["Plugins.Misc.UserNotifications.Preferences.TopicsDesc"] = "Select the types of updates you are interested in.",
-            ["Plugins.Misc.UserNotifications.Preferences.OrderUpdates"] = "Orders & Deliveries",
-            ["Plugins.Misc.UserNotifications.Preferences.OrderUpdatesDesc"] = "Order confirmation, payment receipts, shipment tracking, and delivery alerts.",
-            ["Plugins.Misc.UserNotifications.Preferences.Promotions"] = "Promotions & Discounts",
-            ["Plugins.Misc.UserNotifications.Preferences.PromotionsDesc"] = "Special vouchers, dynamic coupons, abandoned cart reminders, and sales.",
-            ["Plugins.Misc.UserNotifications.Preferences.Announcements"] = "Store Announcements",
-            ["Plugins.Misc.UserNotifications.Preferences.AnnouncementsDesc"] = "Holiday schedules, maintenance, new features, and policy updates.",
-            ["Plugins.Misc.UserNotifications.StartShopping"] = "Start Shopping",
-            ["Plugins.Misc.UserNotifications.Announcement"] = "Announcement"
-        };
-
-        var faResources = new Dictionary<string, string>
-        {
-            ["Plugins.Misc.UserNotifications.Announcements"] = "اطلاعیه‌های سیستم",
-            ["Plugins.Misc.UserNotifications.Workflows"] = "فرآیندهای خودکار اعلانات",
-            ["Plugins.Misc.UserNotifications.FarazSms"] = "تنظیمات FarazSMS",
-            ["Plugins.Misc.UserNotifications.Queue"] = "گزارش ارسال اعلانات",
-            ["Plugins.Misc.UserNotifications.Inbox"] = "اعلان‌های من",
-            ["Plugins.Misc.UserNotifications.Inbox.Unread"] = "خوانده‌نشده",
-            ["Plugins.Misc.UserNotifications.Inbox.Empty"] = "هیچ اعلانی در صندوق ورودی شما وجود ندارد.",
-            ["Plugins.Misc.UserNotifications.Inbox.AllCaughtUp"] = "همه پیام‌ها خوانده شده است! هیچ اعلان جدیدی وجود ندارد.",
-            ["Plugins.Misc.UserNotifications.Inbox.New"] = "جدید",
-            ["Plugins.Misc.UserNotifications.Inbox.ViewDetails"] = "مشاهده جزئیات",
-            ["Plugins.Misc.UserNotifications.Popup.Claim"] = "دریافت پیشنهاد ویژه",
-            ["Plugins.Misc.UserNotifications.Popup.Dismiss"] = "بستن",
-            ["Plugins.Misc.UserNotifications.AddAnnouncement"] = "افزودن اطلاعیه جدید",
-            ["Plugins.Misc.UserNotifications.EditAnnouncement"] = "ویرایش اطلاعیه",
-            ["Plugins.Misc.UserNotifications.AddWorkflow"] = "افزودن فرآیند جدید",
-            ["Plugins.Misc.UserNotifications.WorkflowName"] = "نام فرآیند",
-            ["Plugins.Misc.UserNotifications.TriggerAction"] = "اقدام محرک",
-            ["Plugins.Misc.UserNotifications.IsActive"] = "وضعیت فعال",
-            ["Plugins.Misc.UserNotifications.CreatedOn"] = "تاریخ ایجاد (UTC)",
-            ["Plugins.Misc.UserNotifications.Actions"] = "عملیات",
-            ["Plugins.Misc.UserNotifications.ConfigureSteps"] = "پیکربندی مراحل",
-            ["Plugins.Misc.UserNotifications.SaveWorkflow"] = "ذخیره فرآیند",
-            ["Plugins.Misc.UserNotifications.BackToWorkflows"] = "بازگشت به لیست فرآیندها",
-            ["Plugins.Misc.UserNotifications.BackToList"] = "بازگشت به لیست",
-            ["Plugins.Misc.UserNotifications.Fields.Title"] = "عنوان",
-            ["Plugins.Misc.UserNotifications.Fields.Body"] = "متن پیام",
-            ["Plugins.Misc.UserNotifications.Fields.StartDateUtc"] = "تاریخ شروع (UTC)",
-            ["Plugins.Misc.UserNotifications.Fields.EndDateUtc"] = "تاریخ پایان (UTC)",
-            ["Plugins.Misc.UserNotifications.Fields.IsPublished"] = "منتشر شده",
-            ["Plugins.Misc.UserNotifications.Added"] = "اطلاعیه با موفقیت افزوده شد.",
-            ["Plugins.Misc.UserNotifications.Updated"] = "اطلاعیه با موفقیت بروزرسانی شد.",
-            ["Plugins.Misc.UserNotifications.Deleted"] = "اطلاعیه با موفقیت حذف شد.",
-            ["Plugins.Misc.UserNotifications.FilterAll"] = "همه",
-            ["Plugins.Misc.UserNotifications.FilterOrders"] = "سفارش‌ها",
-            ["Plugins.Misc.UserNotifications.FilterOffers"] = "تخفیف‌ها و پیشنهادات",
-            ["Plugins.Misc.UserNotifications.FilterSystem"] = "سیستم",
-            ["Plugins.Misc.UserNotifications.MarkAllAsRead"] = "علامت‌گذاری همه به عنوان خوانده شده",
-            ["Plugins.Misc.UserNotifications.MarkAsRead"] = "خوانده شد",
-            ["Plugins.Misc.UserNotifications.ClearRead"] = "پاکسازی خوانده‌شده‌ها",
-            ["Plugins.Misc.UserNotifications.CopyCode"] = "کپی کد",
-            ["Plugins.Misc.UserNotifications.PromoCode"] = "کد تخفیف",
-            ["Plugins.Misc.UserNotifications.SearchPlaceholder"] = "جستجوی اعلان‌ها، تخفیف‌ها یا کدها...",
-            ["Plugins.Misc.UserNotifications.ViewAllNotifications"] = "مشاهده همه اعلان‌ها",
-            ["Plugins.Misc.UserNotifications.Preferences"] = "تنظیمات دریافت اعلانات",
-            ["Plugins.Misc.UserNotifications.BackToInbox"] = "بازگشت به صندوق پیام‌ها",
-            ["Plugins.Misc.UserNotifications.PreferencesSaved"] = "تنظیمات اعلانات شما با موفقیت ذخیره شد.",
-            ["Plugins.Misc.UserNotifications.Preferences.ChannelsTitle"] = "کانال‌های دریافت",
-            ["Plugins.Misc.UserNotifications.Preferences.ChannelsDesc"] = "انتخاب کنید اعلانات از چه طریق به دست شما برسد.",
-            ["Plugins.Misc.UserNotifications.Preferences.OnSiteToasts"] = "اعلان‌های شناور در سایت",
-            ["Plugins.Misc.UserNotifications.Preferences.OnSiteToastsDesc"] = "نمایش پیام‌های شناور و پیشنهادات هنگام گشت‌وگذار در فروشگاه.",
-            ["Plugins.Misc.UserNotifications.Preferences.Sound"] = "صدای زنگ اعلان",
-            ["Plugins.Misc.UserNotifications.Preferences.SoundDesc"] = "پخش صدای ملایم هنگام دریافت اعلان جدید.",
-            ["Plugins.Misc.UserNotifications.Preferences.Email"] = "اعلان‌های ایمیلی",
-            ["Plugins.Misc.UserNotifications.Preferences.EmailDesc"] = "دریافت وضعیت سفارشات و پیشنهادات ویژه از طریق ایمیل.",
-            ["Plugins.Misc.UserNotifications.Preferences.Sms"] = "پیامک‌های اطلاع‌رسانی",
-            ["Plugins.Misc.UserNotifications.Preferences.SmsDesc"] = "دریافت پیامک فوری برای رهگیری سفارش و تخفیف‌های لحظه‌ای.",
-            ["Plugins.Misc.UserNotifications.Preferences.TopicsTitle"] = "موضوعات اعلانات",
-            ["Plugins.Misc.UserNotifications.Preferences.TopicsDesc"] = "انواع موضوعاتی که مایل به دریافت آنها هستید را انتخاب نمایید.",
-            ["Plugins.Misc.UserNotifications.Preferences.OrderUpdates"] = "سفارش‌ها و مرسولات",
-            ["Plugins.Misc.UserNotifications.Preferences.OrderUpdatesDesc"] = "تأیید سفارش، فاکتور، رهگیری مرسوله و تحویل کالا.",
-            ["Plugins.Misc.UserNotifications.Preferences.Promotions"] = "تخفیف‌ها و حراجی‌ها",
-            ["Plugins.Misc.UserNotifications.Preferences.PromotionsDesc"] = "کوپن‌های تخفیف اختصاصی، یادآور سبد خرید و حراج‌های ویژه.",
-            ["Plugins.Misc.UserNotifications.Preferences.Announcements"] = "اطلاعیه‌های فروشگاه",
-            ["Plugins.Misc.UserNotifications.Preferences.AnnouncementsDesc"] = "ساعات کاری، خدمات جدید و اخبار مهم فروشگاه.",
-            ["Plugins.Misc.UserNotifications.StartShopping"] = "شروع خرید",
-            ["Plugins.Misc.UserNotifications.Announcement"] = "اطلاعیه"
-        };
-
-        foreach (var lang in languages)
-        {
-            var isPersian = lang.LanguageCulture.StartsWith("fa", StringComparison.OrdinalIgnoreCase);
-            var resources = isPersian ? faResources : enResources;
-            await _localizationService.AddOrUpdateLocaleResourceAsync(resources, lang.Id);
-        }
+        await Task.CompletedTask;
     }
 
     #region Announcements
 
     [CheckPermission(StandardPermission.Promotions.DISCOUNTS_VIEW)]
+    [Route("List")]
     public virtual async Task<IActionResult> List()
     {
         await EnsureLocaleResourcesAsync();
@@ -224,6 +70,7 @@ public class UserNotificationsController : BasePluginController
 
     [HttpPost]
     [CheckPermission(StandardPermission.Promotions.DISCOUNTS_VIEW)]
+    [Route("List")]
     public virtual async Task<IActionResult> List(AnnouncementSearchModel searchModel)
     {
         var announcements = await _notificationService.GetAllAnnouncementsAsync(searchModel.Page - 1, searchModel.PageSize, true);
@@ -236,22 +83,46 @@ public class UserNotificationsController : BasePluginController
                 Body = a.Body,
                 StartDateUtc = a.StartDateUtc,
                 EndDateUtc = a.EndDateUtc,
-                IsPublished = a.IsPublished
+                IsPublished = a.IsPublished,
+                CustomerRoleId = a.CustomerRoleId
             });
         });
 
         return Json(model);
     }
 
+    protected virtual async Task PrepareAnnouncementModelAsync(AnnouncementModel model)
+    {
+        model.AvailableCustomerRoles.Add(new Microsoft.AspNetCore.Mvc.Rendering.SelectListItem
+        {
+            Text = await _localizationService.GetResourceAsync("Admin.Common.All") ?? "All Roles",
+            Value = "0"
+        });
+
+        var roles = await _customerService.GetAllCustomerRolesAsync();
+        foreach (var role in roles)
+        {
+            model.AvailableCustomerRoles.Add(new Microsoft.AspNetCore.Mvc.Rendering.SelectListItem
+            {
+                Text = role.Name,
+                Value = role.Id.ToString(),
+                Selected = model.CustomerRoleId == role.Id
+            });
+        }
+    }
+
     [CheckPermission(StandardPermission.Promotions.DISCOUNTS_CREATE_EDIT_DELETE)]
+    [Route("Create")]
     public virtual async Task<IActionResult> Create()
     {
         var model = new AnnouncementModel();
+        await PrepareAnnouncementModelAsync(model);
         return View("~/Plugins/Misc.UserNotifications/Views/Admin/Create.cshtml", model);
     }
 
     [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
     [CheckPermission(StandardPermission.Promotions.DISCOUNTS_CREATE_EDIT_DELETE)]
+    [Route("Create")]
     public virtual async Task<IActionResult> Create(AnnouncementModel model, bool continueEditing)
     {
         if (ModelState.IsValid)
@@ -263,6 +134,7 @@ public class UserNotificationsController : BasePluginController
                 StartDateUtc = model.StartDateUtc,
                 EndDateUtc = model.EndDateUtc,
                 IsPublished = model.IsPublished,
+                CustomerRoleId = model.CustomerRoleId > 0 ? model.CustomerRoleId : null,
                 CreatedOnUtc = DateTime.UtcNow
             };
 
@@ -275,10 +147,12 @@ public class UserNotificationsController : BasePluginController
             return RedirectToAction("Edit", new { id = announcement.Id });
         }
 
+        await PrepareAnnouncementModelAsync(model);
         return View("~/Plugins/Misc.UserNotifications/Views/Admin/Create.cshtml", model);
     }
 
     [CheckPermission(StandardPermission.Promotions.DISCOUNTS_CREATE_EDIT_DELETE)]
+    [Route("Edit/{id}")]
     public virtual async Task<IActionResult> Edit(int id)
     {
         var announcement = await _notificationService.GetAnnouncementByIdAsync(id);
@@ -292,14 +166,17 @@ public class UserNotificationsController : BasePluginController
             Body = announcement.Body,
             StartDateUtc = announcement.StartDateUtc,
             EndDateUtc = announcement.EndDateUtc,
-            IsPublished = announcement.IsPublished
+            IsPublished = announcement.IsPublished,
+            CustomerRoleId = announcement.CustomerRoleId
         };
 
+        await PrepareAnnouncementModelAsync(model);
         return View("~/Plugins/Misc.UserNotifications/Views/Admin/Edit.cshtml", model);
     }
 
     [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
     [CheckPermission(StandardPermission.Promotions.DISCOUNTS_CREATE_EDIT_DELETE)]
+    [Route("Edit/{id}")]
     public virtual async Task<IActionResult> Edit(AnnouncementModel model, bool continueEditing)
     {
         if (ModelState.IsValid)
@@ -313,6 +190,7 @@ public class UserNotificationsController : BasePluginController
             announcement.StartDateUtc = model.StartDateUtc;
             announcement.EndDateUtc = model.EndDateUtc;
             announcement.IsPublished = model.IsPublished;
+            announcement.CustomerRoleId = model.CustomerRoleId > 0 ? model.CustomerRoleId : null;
 
             await _notificationService.UpdateAnnouncementAsync(announcement);
             _nopNotificationService.SuccessNotification(await _localizationService.GetResourceAsync("Plugins.Misc.UserNotifications.Updated"));
@@ -323,11 +201,13 @@ public class UserNotificationsController : BasePluginController
             return RedirectToAction("Edit", new { id = announcement.Id });
         }
 
+        await PrepareAnnouncementModelAsync(model);
         return View("~/Plugins/Misc.UserNotifications/Views/Admin/Edit.cshtml", model);
     }
 
     [HttpPost]
     [CheckPermission(StandardPermission.Promotions.DISCOUNTS_CREATE_EDIT_DELETE)]
+    [Route("Delete/{id}")]
     public virtual async Task<IActionResult> Delete(int id)
     {
         var announcement = await _notificationService.GetAnnouncementByIdAsync(id);
@@ -345,6 +225,7 @@ public class UserNotificationsController : BasePluginController
     #region Automated Workflows
 
     [CheckPermission(StandardPermission.Promotions.DISCOUNTS_VIEW)]
+    [Route("Workflows")]
     public virtual async Task<IActionResult> Workflows()
     {
         await EnsureLocaleResourcesAsync();
@@ -362,6 +243,7 @@ public class UserNotificationsController : BasePluginController
     }
 
     [CheckPermission(StandardPermission.Promotions.DISCOUNTS_CREATE_EDIT_DELETE)]
+    [Route("CreateWorkflow")]
     public virtual async Task<IActionResult> CreateWorkflow()
     {
         await EnsureLocaleResourcesAsync();
@@ -371,6 +253,7 @@ public class UserNotificationsController : BasePluginController
 
     [HttpPost]
     [CheckPermission(StandardPermission.Promotions.DISCOUNTS_CREATE_EDIT_DELETE)]
+    [Route("CreateWorkflow")]
     public virtual async Task<IActionResult> CreateWorkflow(WorkflowModel model)
     {
         if (ModelState.IsValid)
@@ -390,6 +273,7 @@ public class UserNotificationsController : BasePluginController
     }
 
     [CheckPermission(StandardPermission.Promotions.DISCOUNTS_CREATE_EDIT_DELETE)]
+    [Route("EditWorkflow/{id}")]
     public virtual async Task<IActionResult> EditWorkflow(int id)
     {
         await EnsureLocaleResourcesAsync();
@@ -429,6 +313,7 @@ public class UserNotificationsController : BasePluginController
 
     [HttpPost]
     [CheckPermission(StandardPermission.Promotions.DISCOUNTS_CREATE_EDIT_DELETE)]
+    [Route("SaveWorkflowStep")]
     public virtual async Task<IActionResult> SaveWorkflowStep(WorkflowStepModel stepModel)
     {
         if (stepModel.Id > 0)
@@ -481,6 +366,7 @@ public class UserNotificationsController : BasePluginController
     #region FarazSMS
 
     [CheckPermission(StandardPermission.Configuration.MANAGE_SETTINGS)]
+    [Route("FarazSms")]
     public virtual async Task<IActionResult> FarazSms()
     {
         await EnsureLocaleResourcesAsync();
@@ -498,6 +384,7 @@ public class UserNotificationsController : BasePluginController
 
     [HttpPost]
     [CheckPermission(StandardPermission.Configuration.MANAGE_SETTINGS)]
+    [Route("FarazSms")]
     public virtual async Task<IActionResult> FarazSms(FarazSmsSettingsModel model)
     {
         if (ModelState.IsValid)
@@ -520,6 +407,7 @@ public class UserNotificationsController : BasePluginController
     #region Queue Logs
 
     [CheckPermission(StandardPermission.Promotions.DISCOUNTS_VIEW)]
+    [Route("Queue")]
     public virtual async Task<IActionResult> Queue()
     {
         await EnsureLocaleResourcesAsync();

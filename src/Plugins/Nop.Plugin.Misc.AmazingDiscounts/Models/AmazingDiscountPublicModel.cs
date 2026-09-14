@@ -10,6 +10,7 @@ public record AmazingDiscountPublicModel
 public record AmazingDiscountProductItemModel
 {
     public int Id { get; set; }
+    public int ProductId { get; set; }
     public string Name { get; set; }
     public string SeName { get; set; }
     public string ShortDescription { get; set; }
@@ -18,4 +19,8 @@ public record AmazingDiscountProductItemModel
     public string Price { get; set; }
     public int DiscountPercentage { get; set; }
     public string CustomLabel { get; set; }
+    public DateTime? EndDateUtc { get; set; }
+    public long RemainingSeconds { get; set; }
+    public int StockQuantity { get; set; }
+    public int ClaimedPercentage { get; set; }
 }

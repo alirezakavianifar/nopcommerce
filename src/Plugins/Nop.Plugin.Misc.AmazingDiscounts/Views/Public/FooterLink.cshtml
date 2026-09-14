@@ -1,1 +1,105 @@
-<li><a href="@Url.RouteUrl("Plugin.Misc.AmazingDiscounts.List")">@T("Plugins.Misc.AmazingDiscounts.FooterLink")</a></li>
+@model string
+
+@if (string.Equals(Model, Nop.Web.Framework.Infrastructure.PublicWidgetZones.Footer, StringComparison.OrdinalIgnoreCase))
+{
+    <li><a href="/amazing-discounts">@T("Plugins.Misc.AmazingDiscounts.FooterLink")</a></li>
+}
+else if (string.Equals(Model, Nop.Web.Framework.Infrastructure.PublicWidgetZones.BodyEndHtmlTagBefore, StringComparison.OrdinalIgnoreCase))
+{
+    <style>
+        .mobile-footer-navbar {
+            display: none;
+        }
+
+        @@media (max-width: 768px) {
+            .mobile-footer-navbar {
+                display: flex;
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                z-index: 9999;
+                background: rgba(255, 255, 255, 0.96);
+                backdrop-filter: blur(12px);
+                border-top: 1px solid #e2e8f0;
+                box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.08);
+                height: 64px;
+                padding: 0 10px;
+                justify-content: space-around;
+                align-items: center;
+                direction: rtl;
+                font-family: 'Vazirmatn', 'Segoe UI', Tahoma, sans-serif;
+            }
+
+            .mobile-nav-item {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                text-decoration: none !important;
+                color: #64748b;
+                font-size: 0.72rem;
+                font-weight: 600;
+                gap: 3px;
+                transition: all 0.2s ease;
+                flex: 1;
+            }
+
+            .mobile-nav-item.active, .mobile-nav-item:hover {
+                color: #7c3aed;
+            }
+
+            .mobile-nav-icon {
+                font-size: 1.25rem;
+                line-height: 1;
+            }
+
+            .mobile-nav-item.highlight-deal {
+                color: #db2777;
+                position: relative;
+            }
+
+            .mobile-nav-item.highlight-deal .deal-icon-badge {
+                position: absolute;
+                top: -8px;
+                background: linear-gradient(135deg, #ef4444, #ec4899);
+                color: #ffffff;
+                font-size: 0.6rem;
+                font-weight: 900;
+                padding: 1px 6px;
+                border-radius: 9999px;
+                box-shadow: 0 2px 6px rgba(239, 68, 68, 0.4);
+                animation: pulse-badge 1.8s infinite;
+            }
+
+            @@keyframes pulse-badge {
+                0%, 100% { transform: scale(1); }
+                50% { transform: scale(1.1); }
+            }
+
+            body {
+                padding-bottom: 70px !important;
+            }
+        }
+    </style>
+
+    <div class="mobile-footer-navbar" id="footer-navbar">
+        <a href="/" class="mobile-nav-item">
+            <span class="mobile-nav-icon">🏠</span>
+            <span>خانه</span>
+        </a>
+        <a href="/amazing-discounts" class="mobile-nav-item highlight-deal">
+            <span class="deal-icon-badge">ویژه</span>
+            <span class="mobile-nav-icon">⚡</span>
+            <span>شگفت‌انگیز</span>
+        </a>
+        <a href="/cart" class="mobile-nav-item">
+            <span class="mobile-nav-icon">🛒</span>
+            <span>سبد خرید</span>
+        </a>
+        <a href="/customer/info" class="mobile-nav-item">
+            <span class="mobile-nav-icon">👤</span>
+            <span>پروفایل</span>
+        </a>
+    </div>
+}

@@ -1,0 +1,151 @@
+@using Nop.Plugin.Misc.SellerMarketing.Models
+@{
+    Layout = "_ColumnsTwo";
+    ViewBag.PageTitle = T("Plugins.Misc.SellerMarketing.Backup.Title").Text;
+    var backups = ViewBag.Backups as List<SellerBackupItemModel> ?? new List<SellerBackupItemModel>();
+    var restoreRequests = ViewBag.RestoreRequests as List<SellerRestoreRequestModel> ?? new List<SellerRestoreRequestModel>();
+    bool allowExternal = ViewBag.AllowExternalRestore ?? false;
+}
+
+<div class="page account-page seller-backup-page">
+    <div class="page-title">
+        <h1>@T("Plugins.Misc.SellerMarketing.Backup.Title")</h1>
+    </div>
+    <div class="page-body">
+        
+        @* Actions Section *@
+        <div class="section-actions" style="margin-bottom: 25px; padding: 15px; background: #f8f9fa; border-radius: 6px; border: 1px solid #e9ecef;">
+            <div class="row align-items-center">
+                <div class="col-md-7">
+                    <h5>@T("Plugins.Misc.SellerMarketing.Backup.CreateSection")</h5>
+                    <p class="text-muted" style="margin-bottom: 0;">@T("Plugins.Misc.SellerMarketing.Backup.CreateDescription")</p>
+                </div>
+                <div class="col-md-5 text-right">
+                    <form asp-action="CreateBackup" method="post" style="display:inline-block">
+                        <button type="submit" class="btn btn-primary button-1">
+                            <i class="fa fa-database"></i> @T("Plugins.Misc.SellerMarketing.Backup.CreateButton")
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        @* Server Backups Table *@
+        <div class="section-backups" style="margin-bottom: 30px;">
+            <h4>@T("Plugins.Misc.SellerMarketing.Backup.ListTitle")</h4>
+            @if (backups.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover">
+                        <thead class="thead-light">
+                            <tr>
+                                <th>@T("Plugins.Misc.SellerMarketing.Backup.FileName")</th>
+                                <th>@T("Plugins.Misc.SellerMarketing.Backup.IncludedEntities")</th>
+                                <th>@T("Plugins.Misc.SellerMarketing.Backup.FileSize")</th>
+                                <th>@T("Plugins.Misc.SellerMarketing.Backup.CreatedOn")</th>
+                                <th style="width: 220px;">@T("Admin.Common.Actions")</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in backups)
+                            {
+                                <tr>
+                                    <td><strong>@item.FileName</strong></td>
+                                    <td>@item.IncludedEntities</td>
+                                    <td>@item.FileSizeText</td>
+                                    <td>@item.CreatedOn.ToString("yyyy-MM-dd HH:mm")</td>
+                                    <td>
+                                        <a asp-action="DownloadBackup" asp-route-id="@item.Id" class="btn btn-sm btn-info">
+                                            <i class="fa fa-download"></i> @T("Admin.Common.Download")
+                                        </a>
+                                        <form asp-action="RequestRestore" asp-route-backupId="@item.Id" method="post" style="display:inline-block" onsubmit="return confirm('@T("Plugins.Misc.SellerMarketing.Backup.ConfirmRestore")');">
+                                            <button type="submit" class="btn btn-sm btn-warning">
+                                                <i class="fa fa-undo"></i> @T("Plugins.Misc.SellerMarketing.Backup.RequestRestore")
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-info">@T("Plugins.Misc.SellerMarketing.Backup.NoBackups")</div>
+            }
+        </div>
+
+        @* External Upload Section (if enabled by admin policy) *@
+        @if (allowExternal)
+        {
+            <div class="section-upload" style="margin-bottom: 30px; padding: 20px; border: 1px dashed #007bff; border-radius: 6px;">
+                <h4>@T("Plugins.Misc.SellerMarketing.Backup.ExternalUploadTitle")</h4>
+                <p class="text-muted">@T("Plugins.Misc.SellerMarketing.Backup.ExternalUploadNote")</p>
+                <form asp-action="UploadAndRequestRestore" method="post" enctype="multipart/form-data">
+                    <div class="form-group row">
+                        <div class="col-md-8">
+                            <input type="file" name="backupFile" class="form-control-file" accept=".zip" required />
+                        </div>
+                        <div class="col-md-4 text-right">
+                            <button type="submit" class="btn btn-success">
+                                <i class="fa fa-upload"></i> @T("Plugins.Misc.SellerMarketing.Backup.UploadAndRestore")
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        }
+
+        @* Pending and Historical Restore Requests *@
+        <div class="section-requests">
+            <h4>@T("Plugins.Misc.SellerMarketing.Backup.RestoreRequestsTitle")</h4>
+            @if (restoreRequests.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-striped table-bordered">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>@T("Plugins.Misc.SellerMarketing.Backup.Source")</th>
+                                <th>@T("Plugins.Misc.SellerMarketing.Backup.Status")</th>
+                                <th>@T("Plugins.Misc.SellerMarketing.Backup.RequestedOn")</th>
+                                <th>@T("Plugins.Misc.SellerMarketing.Backup.AdminComment")</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var req in restoreRequests)
+                            {
+                                <tr>
+                                    <td>@req.Id</td>
+                                    <td>@(req.IsExternalUpload ? T("Plugins.Misc.SellerMarketing.Backup.ExternalFile").Text : T("Plugins.Misc.SellerMarketing.Backup.ServerBackup").Text)</td>
+                                    <td>
+                                        @if (req.StatusName == "PendingApproval")
+                                        {
+                                            <span class="badge badge-warning" style="background:#ffc107; padding:4px 8px; border-radius:4px;">@T("Plugins.Misc.SellerMarketing.Backup.Status.Pending")</span>
+                                        }
+                                        else if (req.StatusName == "Completed" || req.StatusName == "Approved")
+                                        {
+                                            <span class="badge badge-success" style="background:#28a745; color:#fff; padding:4px 8px; border-radius:4px;">@T("Plugins.Misc.SellerMarketing.Backup.Status.Approved")</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge badge-danger" style="background:#dc3545; color:#fff; padding:4px 8px; border-radius:4px;">@req.StatusName</span>
+                                        }
+                                    </td>
+                                    <td>@req.RequestedOn.ToString("yyyy-MM-dd HH:mm")</td>
+                                    <td>@(string.IsNullOrEmpty(req.AdminComment) ? "-" : req.AdminComment)</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <p class="text-muted">@T("Plugins.Misc.SellerMarketing.Backup.NoRequests")</p>
+            }
+        </div>
+
+    </div>
+</div>

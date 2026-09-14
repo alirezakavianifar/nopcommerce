@@ -6,20 +6,21 @@
 }
 
 <style>
-    /* Amazing Discounts Custom Visual Theme */
+    /* Amazing Discounts Custom High-Converting Visual Theme */
     .amazing-discounts-container {
-        font-family: 'Outfit', 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-        padding: 20px 0 60px 0;
+        font-family: 'Vazirmatn', 'Segoe UI', Tahoma, -apple-system, BlinkMacSystemFont, sans-serif;
+        padding: 10px 0 60px 0;
+        direction: rtl;
     }
 
     .amazing-discounts-hero {
-        background: linear-gradient(135deg, #5b21b6, #8b5cf6, #ec4899);
-        border-radius: 20px;
-        padding: 60px 24px;
+        background: linear-gradient(135deg, #1e1b4b 0%, #4338ca 40%, #7c3aed 75%, #db2777 100%);
+        border-radius: 24px;
+        padding: 50px 30px;
         text-align: center;
         color: #ffffff;
-        margin-bottom: 48px;
-        box-shadow: 0 12px 40px rgba(139, 92, 246, 0.15);
+        margin-bottom: 40px;
+        box-shadow: 0 20px 45px -10px rgba(124, 58, 237, 0.35);
         position: relative;
         overflow: hidden;
     }
@@ -31,9 +32,9 @@
         left: -50%;
         width: 200%;
         height: 200%;
-        background: radial-gradient(circle, rgba(255,255,255,0.12) 0%, transparent 60%);
+        background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 60%);
         pointer-events: none;
-        animation: rotate-radial 25s linear infinite;
+        animation: rotate-radial 30s linear infinite;
     }
 
     @@keyframes rotate-radial {
@@ -41,146 +42,248 @@
         to { transform: rotate(360deg); }
     }
 
+    .amazing-hero-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: rgba(255, 255, 255, 0.2);
+        backdrop-filter: blur(10px);
+        padding: 6px 18px;
+        border-radius: 9999px;
+        font-size: 0.9rem;
+        font-weight: 700;
+        margin-bottom: 16px;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .amazing-hero-badge .pulse-dot {
+        width: 10px;
+        height: 10px;
+        background-color: #ef4444;
+        border-radius: 50%;
+        animation: pulse-ring 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+
+    @@keyframes pulse-ring {
+        0%, 100% { transform: scale(1); opacity: 1; }
+        50% { transform: scale(1.4); opacity: 0.6; }
+    }
+
     .amazing-discounts-hero h1 {
-        font-size: 3rem;
-        font-weight: 850;
+        font-size: 2.6rem;
+        font-weight: 900;
         margin-bottom: 12px;
         letter-spacing: -0.5px;
-        text-shadow: 0 3px 6px rgba(0,0,0,0.15);
+        text-shadow: 0 3px 10px rgba(0,0,0,0.25);
         color: #ffffff;
     }
 
     .amazing-discounts-hero p {
-        font-size: 1.25rem;
+        font-size: 1.15rem;
         font-weight: 400;
         opacity: 0.95;
-        max-width: 650px;
+        max-width: 700px;
         margin: 0 auto;
-        line-height: 1.6;
-        text-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        line-height: 1.7;
+        text-shadow: 0 1px 4px rgba(0,0,0,0.2);
     }
 
     .amazing-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
-        gap: 36px;
+        grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+        gap: 30px;
         padding: 10px 0;
     }
 
     .amazing-card {
         background: #ffffff;
         border-radius: 20px;
-        border: 1px solid rgba(0,0,0,0.05);
-        box-shadow: 0 6px 24px rgba(0, 0, 0, 0.03);
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
         overflow: hidden;
         display: flex;
         flex-direction: column;
         position: relative;
-        transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+        transition: all 0.35s cubic-bezier(0.165, 0.84, 0.44, 1);
     }
 
     .amazing-card:hover {
-        transform: translateY(-8px);
-        box-shadow: 0 16px 36px rgba(139, 92, 246, 0.12);
-        border-color: rgba(139, 92, 246, 0.2);
+        transform: translateY(-7px);
+        box-shadow: 0 20px 35px -10px rgba(124, 58, 237, 0.2);
+        border-color: #c4b5fd;
     }
 
     .amazing-badge-container {
         position: absolute;
-        top: 16px;
-        left: 16px;
+        top: 14px;
+        right: 14px;
         z-index: 10;
         display: flex;
         flex-direction: column;
-        gap: 8px;
+        gap: 6px;
         align-items: flex-start;
     }
 
     .amazing-badge-label {
-        background: linear-gradient(135deg, #ec4899, #f43f5e);
+        background: linear-gradient(135deg, #ef4444, #f43f5e);
         color: #ffffff;
         font-size: 0.75rem;
-        font-weight: 750;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        padding: 5px 12px;
-        border-radius: 30px;
-        box-shadow: 0 3px 10px rgba(236, 72, 153, 0.3);
+        font-weight: 800;
+        padding: 4px 12px;
+        border-radius: 20px;
+        box-shadow: 0 4px 10px rgba(239, 68, 68, 0.3);
     }
 
     .amazing-badge-discount {
         background: linear-gradient(135deg, #10b981, #059669);
         color: #ffffff;
-        font-size: 0.8rem;
-        font-weight: 800;
-        padding: 5px 12px;
-        border-radius: 30px;
-        box-shadow: 0 3px 10px rgba(16, 185, 129, 0.3);
+        font-size: 0.85rem;
+        font-weight: 900;
+        padding: 4px 12px;
+        border-radius: 20px;
+        box-shadow: 0 4px 10px rgba(16, 185, 129, 0.3);
+        direction: ltr;
+        display: inline-block;
     }
 
     .amazing-img-container {
         width: 100%;
-        height: 260px;
+        height: 240px;
         position: relative;
-        background: #fbfbfd;
+        background: #f8fafc;
         display: flex;
         align-items: center;
         justify-content: center;
         overflow: hidden;
-        border-bottom: 1px solid rgba(0,0,0,0.02);
+        border-bottom: 1px solid #f1f5f9;
     }
 
     .amazing-img-container img {
         max-width: 85%;
         max-height: 85%;
         object-fit: contain;
-        transition: transform 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
+        transition: transform 0.5s ease;
     }
 
     .amazing-card:hover .amazing-img-container img {
-        transform: scale(1.06);
+        transform: scale(1.08);
     }
 
     .amazing-details {
-        padding: 24px;
+        padding: 20px 22px 24px 22px;
         display: flex;
         flex-direction: column;
         flex-grow: 1;
     }
 
     .amazing-title {
-        font-size: 1.25rem;
-        font-weight: 750;
-        line-height: 1.4;
+        font-size: 1.15rem;
+        font-weight: 800;
+        line-height: 1.5;
         margin: 0 0 12px 0;
-        font-family: 'Outfit', sans-serif;
     }
 
     .amazing-title a {
-        color: #1f2937;
+        color: #1e293b;
         text-decoration: none;
-        transition: color 0.25s ease;
+        transition: color 0.2s ease;
     }
 
     .amazing-title a:hover {
-        color: #8b5cf6;
+        color: #7c3aed;
     }
 
-    .amazing-description {
-        font-size: 0.9rem;
-        color: #6b7280;
-        margin-bottom: 24px;
-        line-height: 1.6;
-        flex-grow: 1;
+    /* Live Countdown Box */
+    .amazing-countdown-box {
+        background: #fdf4ff;
+        border: 1px solid #f0abfc;
+        border-radius: 12px;
+        padding: 10px 14px;
+        margin-bottom: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
     }
 
+    .amazing-countdown-label {
+        font-size: 0.8rem;
+        font-weight: 700;
+        color: #a21caf;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .amazing-countdown-timer {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        direction: ltr;
+    }
+
+    .timer-unit {
+        background: #ffffff;
+        border: 1px solid #e879f9;
+        border-radius: 6px;
+        padding: 3px 6px;
+        min-width: 26px;
+        text-align: center;
+        font-weight: 800;
+        font-size: 0.85rem;
+        color: #86198f;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+
+    .timer-colon {
+        font-weight: 900;
+        color: #d946ef;
+    }
+
+    /* Stock Progress Bar */
+    .amazing-stock-container {
+        margin-bottom: 18px;
+    }
+
+    .amazing-stock-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 0.8rem;
+        font-weight: 700;
+        margin-bottom: 6px;
+    }
+
+    .stock-claimed-text {
+        color: #ea580c;
+    }
+
+    .stock-left-text {
+        color: #64748b;
+    }
+
+    .stock-bar-track {
+        width: 100%;
+        height: 8px;
+        background: #f1f5f9;
+        border-radius: 9999px;
+        overflow: hidden;
+    }
+
+    .stock-bar-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #f97316, #ef4444);
+        border-radius: 9999px;
+        transition: width 1s ease-in-out;
+    }
+
+    /* Price and CTA Row */
     .amazing-footer-row {
         display: flex;
         justify-content: space-between;
         align-items: center;
         margin-top: auto;
-        padding-top: 16px;
-        border-top: 1px solid rgba(0,0,0,0.03);
+        padding-top: 14px;
+        border-top: 1px solid #f1f5f9;
     }
 
     .amazing-prices {
@@ -189,59 +292,65 @@
     }
 
     .amazing-old-price {
-        font-size: 0.875rem;
-        color: #9ca3af;
+        font-size: 0.85rem;
+        color: #94a3b8;
         text-decoration: line-through;
         margin-bottom: 2px;
-        font-weight: 500;
+        font-weight: 600;
     }
 
     .amazing-price {
-        font-size: 1.45rem;
-        font-weight: 850;
-        color: #111827;
+        font-size: 1.35rem;
+        font-weight: 900;
+        color: #0f172a;
     }
 
     .amazing-btn {
-        background: linear-gradient(135deg, #7c3aed, #6d28d9);
+        background: linear-gradient(135deg, #7c3aed, #6366f1);
         color: #ffffff !important;
-        font-weight: 600;
-        padding: 10px 22px;
-        border-radius: 30px;
+        font-weight: 700;
+        padding: 9px 20px;
+        border-radius: 9999px;
         text-decoration: none !important;
-        font-size: 0.875rem;
+        font-size: 0.85rem;
         box-shadow: 0 4px 14px rgba(124, 58, 237, 0.25);
-        transition: all 0.3s ease;
+        transition: all 0.25s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
     }
 
     .amazing-btn:hover {
-        background: linear-gradient(135deg, #6d28d9, #5b21b6);
+        background: linear-gradient(135deg, #6d28d9, #4f46e5);
         box-shadow: 0 6px 20px rgba(124, 58, 237, 0.35);
         transform: translateY(-2px);
     }
 
     .amazing-empty {
         text-align: center;
-        padding: 80px 24px;
-        background: #f9fafb;
-        border: 2px dashed #e5e7eb;
+        padding: 70px 20px;
+        background: #f8fafc;
+        border: 2px dashed #cbd5e1;
         border-radius: 20px;
-        color: #6b7280;
-        font-size: 1.15rem;
-        max-width: 600px;
+        color: #64748b;
+        font-size: 1.1rem;
+        max-width: 550px;
         margin: 0 auto;
     }
 
     .amazing-empty-icon {
-        font-size: 4rem;
-        color: #d1d5db;
-        margin-bottom: 20px;
+        font-size: 3.5rem;
+        margin-bottom: 16px;
         display: block;
     }
 </style>
 
 <div class="amazing-discounts-container">
     <div class="amazing-discounts-hero">
+        <div class="amazing-hero-badge">
+            <span class="pulse-dot"></span>
+            <span>حراج‌های ویژه و تخفیف‌های طلایی امروز</span>
+        </div>
         <h1>@T("Plugins.Misc.AmazingDiscounts.PageTitle")</h1>
         <p>@T("Plugins.Misc.AmazingDiscounts.HeroSubtitle")</p>
     </div>
@@ -263,7 +372,7 @@
                         }
                         @if (product.DiscountPercentage > 0)
                         {
-                            <span class="amazing-badge-discount">-@product.DiscountPercentage%</span>
+                            <span class="amazing-badge-discount">@product.DiscountPercentage% -</span>
                         }
                     </div>
 
@@ -277,8 +386,30 @@
                         <h2 class="amazing-title">
                             <a href="@Url.RouteUrl("Product", new { SeName = product.SeName })">@product.Name</a>
                         </h2>
-                        <div class="amazing-description">
-                            @Html.Raw(product.ShortDescription)
+
+                        <!-- Live Countdown Timer -->
+                        <div class="amazing-countdown-box">
+                            <div class="amazing-countdown-label">
+                                <span>⏳ فرصت باقی‌مانده:</span>
+                            </div>
+                            <div class="amazing-countdown-timer" data-seconds="@product.RemainingSeconds">
+                                <span class="timer-unit cd-hours">00</span>
+                                <span class="timer-colon">:</span>
+                                <span class="timer-unit cd-minutes">00</span>
+                                <span class="timer-colon">:</span>
+                                <span class="timer-unit cd-seconds">00</span>
+                            </div>
+                        </div>
+
+                        <!-- Real-time Stock Indicator -->
+                        <div class="amazing-stock-container">
+                            <div class="amazing-stock-header">
+                                <span class="stock-claimed-text">@product.ClaimedPercentage٪ فروخته شده</span>
+                                <span class="stock-left-text">تنها @product.StockQuantity عدد باقیست</span>
+                            </div>
+                            <div class="stock-bar-track">
+                                <div class="stock-bar-fill" style="width: @product.ClaimedPercentage%;"></div>
+                            </div>
                         </div>
 
                         <div class="amazing-footer-row">
@@ -290,7 +421,8 @@
                                 <span class="amazing-price">@product.Price</span>
                             </div>
                             <a href="@Url.RouteUrl("Product", new { SeName = product.SeName })" class="amazing-btn">
-                                @T("Plugins.Misc.AmazingDiscounts.ViewDeal")
+                                <span>@T("Plugins.Misc.AmazingDiscounts.ViewDeal")</span>
+                                <span>⚡</span>
                             </a>
                         </div>
                     </div>
@@ -306,3 +438,35 @@
         </div>
     }
 </div>
+
+<script>
+    (function () {
+        function updateTimers() {
+            var timers = document.querySelectorAll('.amazing-countdown-timer');
+            timers.forEach(function (timer) {
+                var seconds = parseInt(timer.getAttribute('data-seconds'), 10);
+                if (isNaN(seconds) || seconds <= 0) {
+                    seconds = 0;
+                } else {
+                    seconds--;
+                    timer.setAttribute('data-seconds', seconds);
+                }
+
+                var hours = Math.floor(seconds / 3600);
+                var minutes = Math.floor((seconds % 3600) / 60);
+                var secs = seconds % 60;
+
+                var hEl = timer.querySelector('.cd-hours');
+                var mEl = timer.querySelector('.cd-minutes');
+                var sEl = timer.querySelector('.cd-seconds');
+
+                if (hEl) hEl.textContent = (hours < 10 ? '0' : '') + hours;
+                if (mEl) mEl.textContent = (minutes < 10 ? '0' : '') + minutes;
+                if (sEl) sEl.textContent = (secs < 10 ? '0' : '') + secs;
+            });
+        }
+
+        updateTimers();
+        setInterval(updateTimers, 1000);
+    })();
+</script>

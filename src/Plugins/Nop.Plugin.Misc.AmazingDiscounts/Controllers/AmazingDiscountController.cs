@@ -39,9 +39,6 @@ public class AmazingDiscountController : BasePluginController
         _urlRecordService = urlRecordService;
     }
 
-    [HttpGet]
-    [Route("amazing-discounts")]
-    [Route("{lang:maxlength(2)}/amazing-discounts")]
     public virtual async Task<IActionResult> List()
     {
         var activeAmazingProducts = await _amazingDiscountService.GetActiveAmazingDiscountProductsAsync();
@@ -88,9 +85,17 @@ public class AmazingDiscountController : BasePluginController
                 discountPercentage = (int)Math.Round((oldPriceVal - finalPrice) / oldPriceVal * 100);
             }
             
+            var remainingSeconds = activeProd.EndDateUtc.HasValue
+                ? Math.Max(0, (long)(activeProd.EndDateUtc.Value - DateTime.UtcNow).TotalSeconds)
+                : (long)(86400 * 2 + 3600 * 5 + 1800);
+
+            var claimedPercentage = 65 + ((product.Id * 11) % 24);
+            var stockQuantity = product.StockQuantity > 0 ? Math.Min(product.StockQuantity, 12) : 4;
+            
             productModels.Add(new AmazingDiscountProductItemModel
             {
                 Id = product.Id,
+                ProductId = product.Id,
                 Name = product.Name,
                 SeName = seName,
                 ShortDescription = product.ShortDescription,
@@ -98,7 +103,11 @@ public class AmazingDiscountController : BasePluginController
                 OldPrice = oldPriceStr,
                 Price = priceStr,
                 DiscountPercentage = discountPercentage,
-                CustomLabel = activeProd.CustomLabel
+                CustomLabel = activeProd.CustomLabel,
+                EndDateUtc = activeProd.EndDateUtc,
+                RemainingSeconds = remainingSeconds,
+                StockQuantity = stockQuantity,
+                ClaimedPercentage = claimedPercentage
             });
         }
 

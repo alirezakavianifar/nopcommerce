@@ -11,6 +11,9 @@ public class NopStartup : INopStartup
     public void ConfigureServices(IServiceCollection services, IConfiguration configuration)
     {
         services.AddScoped<ISellerMarketingService, SellerMarketingService>();
+        services.AddScoped<IAntivirusScanner, AntivirusScanner>();
+        services.AddScoped<ISellerBackupService, SellerBackupService>();
+        services.AddScoped<ISellerRestoreService, SellerRestoreService>();
     }
 
     public void Configure(IApplicationBuilder application)

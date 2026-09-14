@@ -37,4 +37,10 @@ public record RewardRuleModel : BaseNopEntityModel
 
     [NopResourceDisplayName("Plugins.Misc.GroupPurchase.RewardRule.Fields.MinMembers")]
     public int MinMembers { get; set; }
+
+    [NopResourceDisplayName("Plugins.Misc.GroupPurchase.RewardRule.Fields.MinRewardAmount")]
+    public decimal? MinRewardAmount { get; set; }
+
+    [NopResourceDisplayName("Plugins.Misc.GroupPurchase.RewardRule.Fields.MaxRewardAmount")]
+    public decimal? MaxRewardAmount { get; set; }
 }

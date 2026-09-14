@@ -1,0 +1,99 @@
+@model Nop.Plugin.Misc.GroupPurchase.Models.CommissionSearchModel
+@using Nop.Web.Framework.Models.DataTables
+@{
+    Layout = "_AdminLayout";
+    ViewBag.PageTitle = T("Plugins.Misc.GroupPurchase.Commission.Manage").Text;
+}
+
+<div class="content-header clearfix">
+    <h1 class="float-left">
+        @T("Plugins.Misc.GroupPurchase.Commission.Manage")
+    </h1>
+    <div class="float-right">
+        <a asp-action="Create" class="btn btn-primary">
+            <i class="fas fa-plus-square"></i>
+            @T("Admin.Common.AddNew")
+        </a>
+        <button type="button" class="btn btn-success" data-toggle="modal" data-target="#importexcel-window">
+            <i class="fas fa-file-excel"></i>
+            @T("Admin.Common.ImportFromExcel")
+        </button>
+        <form asp-action="SyncExternal" method="post" style="display:inline-block">
+            <button type="submit" class="btn btn-info">
+                <i class="fas fa-sync"></i>
+                @T("Plugins.Misc.GroupPurchase.Commission.SyncForoushGostar")
+            </button>
+        </form>
+    </div>
+</div>
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="form-horizontal">
+            <div class="cards-group">
+                <div class="card card-default">
+                    <div class="card-body">
+                        @await Html.PartialAsync("Table", new DataTablesModel
+                        {
+                            Name = "commissions-grid",
+                            UrlRead = new DataUrl("ListData", "CommissionAdmin", null),
+                            Length = Model.PageSize,
+                            LengthMenu = Model.AvailablePageSizes,
+                            ColumnCollection = new List<ColumnProperty>
+                            {
+                                new ColumnProperty(nameof(CommissionModel.ScopeName))
+                                {
+                                    Title = T("Plugins.Misc.GroupPurchase.Commission.Fields.Scope").Text
+                                },
+                                new ColumnProperty(nameof(CommissionModel.EntityId))
+                                {
+                                    Title = T("Plugins.Misc.GroupPurchase.Commission.Fields.EntityId").Text
+                                },
+                                new ColumnProperty(nameof(CommissionModel.EntityName))
+                                {
+                                    Title = T("Plugins.Misc.GroupPurchase.Commission.Fields.EntityName").Text
+                                },
+                                new ColumnProperty(nameof(CommissionModel.Percentage))
+                                {
+                                    Title = T("Plugins.Misc.GroupPurchase.Commission.Fields.Percentage").Text
+                                },
+                                new ColumnProperty(nameof(CommissionModel.Id))
+                                {
+                                    Title = T("Admin.Common.Edit").Text,
+                                    Width = "100",
+                                    ClassName = NopColumnClassDefaults.Button,
+                                    Render = new RenderButtonEdit(new DataUrl("~/Admin/CommissionAdmin/Edit/"))
+                                }
+                            }
+                        })
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@* Import Excel Modal *@
+<div id="importexcel-window" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="importexcel-window-title">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="importexcel-window-title">@T("Admin.Common.ImportFromExcel")</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form asp-action="ImportExcel" method="post" enctype="multipart/form-data">
+                <div class="modal-body">
+                    <p>@T("Plugins.Misc.GroupPurchase.Commission.ImportExcelNote")</p>
+                    <div class="form-group">
+                        <input type="file" id="importexcelfile" name="importexcelfile" class="form-control-file" />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">@T("Admin.Common.Upload")</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

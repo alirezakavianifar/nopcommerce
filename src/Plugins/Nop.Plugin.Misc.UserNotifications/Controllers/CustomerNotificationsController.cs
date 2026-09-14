@@ -51,6 +51,9 @@ public class CustomerNotificationsController : BasePluginController
     }
 
     [HttpGet("customer/notifications")]
+    [HttpGet("customer/notifications/inbox")]
+    [HttpGet("{lang:maxlength(2)}/customer/notifications")]
+    [HttpGet("{lang:maxlength(2)}/customer/notifications/inbox")]
     public virtual async Task<IActionResult> Inbox(string category = "All", string q = null, bool? unread = null, int page = 1)
     {
         var customer = await _workContext.GetCurrentCustomerAsync();
@@ -221,6 +224,7 @@ public class CustomerNotificationsController : BasePluginController
     }
 
     [HttpGet("customer/notifications/preferences")]
+    [HttpGet("{lang:maxlength(2)}/customer/notifications/preferences")]
     public virtual async Task<IActionResult> Preferences()
     {
         var customer = await _workContext.GetCurrentCustomerAsync();
@@ -244,6 +248,7 @@ public class CustomerNotificationsController : BasePluginController
     }
 
     [HttpPost("customer/notifications/preferences")]
+    [HttpPost("{lang:maxlength(2)}/customer/notifications/preferences")]
     public virtual async Task<IActionResult> Preferences(CustomerNotificationPreferenceModel model)
     {
         var customer = await _workContext.GetCurrentCustomerAsync();

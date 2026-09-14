@@ -17,6 +17,9 @@ public class GroupRewardCalculationService : IGroupRewardCalculationService
     private readonly IRepository<GroupPurchaseMember> _groupPurchaseMemberRepository;
     private readonly IWalletService _walletService;
     private readonly ILotteryService _lotteryService;
+    private readonly ICommissionService _commissionService;
+    private readonly Nop.Services.Orders.IOrderService _orderService;
+    private readonly IProductService _productService;
 
     #endregion
 
@@ -27,13 +30,19 @@ public class GroupRewardCalculationService : IGroupRewardCalculationService
         IRepository<GroupPurchaseReward> groupPurchaseRewardRepository,
         IRepository<GroupPurchaseMember> groupPurchaseMemberRepository,
         IWalletService walletService,
-        ILotteryService lotteryService)
+        ILotteryService lotteryService,
+        ICommissionService commissionService,
+        Nop.Services.Orders.IOrderService orderService,
+        IProductService productService)
     {
         _rewardRuleService = rewardRuleService;
         _groupPurchaseRewardRepository = groupPurchaseRewardRepository;
         _groupPurchaseMemberRepository = groupPurchaseMemberRepository;
         _walletService = walletService;
         _lotteryService = lotteryService;
+        _commissionService = commissionService;
+        _orderService = orderService;
+        _productService = productService;
     }
 
     #endregion
@@ -43,10 +52,6 @@ public class GroupRewardCalculationService : IGroupRewardCalculationService
     /// <summary>
     /// Calculate and apply reward for a group purchase order placement
     /// </summary>
-    /// <param name="order">The order</param>
-    /// <param name="groupPurchase">The group purchase</param>
-    /// <param name="member">The member</param>
-    /// <returns>A task that represents the asynchronous operation</returns>
     public virtual async Task CalculateAndApplyRewardAsync(Order order, Domain.GroupPurchase groupPurchase, GroupPurchaseMember member)
     {
         if (order == null || groupPurchase == null || member == null)
@@ -70,6 +75,10 @@ public class GroupRewardCalculationService : IGroupRewardCalculationService
             r.MinMembers <= groupSize
         ).ToList();
 
+        // Calculate order items and net profit once if any rule uses PercentageOfNetProfit
+        decimal totalNetProfit = 0m;
+        bool netProfitCalculated = false;
+
         foreach (var rule in rules)
         {
             decimal rewardAmount = 0m;
@@ -79,15 +88,30 @@ public class GroupRewardCalculationService : IGroupRewardCalculationService
                 case CalculationType.Fixed:
                     rewardAmount = rule.Value;
                     break;
+
                 case CalculationType.PercentageOfCartTotal:
                     rewardAmount = (rule.Value / 100m) * order.OrderTotal;
                     break;
+
                 case CalculationType.PercentageOfNetProfit:
-                    // Assuming Net Profit calculation is simply proportional or specific custom logic here.
-                    // For now, calculating based on OrderSubTotalExclTax as a proxy, or leaving to custom extension
-                    // Usually implies requiring product cost. Let's fallback to percentage of subtotal.
-                    rewardAmount = (rule.Value / 100m) * order.OrderSubtotalExclTax;
+                    if (!netProfitCalculated)
+                    {
+                        totalNetProfit = await CalculateOrderNetProfitAsync(order);
+                        netProfitCalculated = true;
+                    }
+                    rewardAmount = (rule.Value / 100m) * totalNetProfit;
                     break;
+            }
+
+            // Apply Min / Max reward amount caps (as required by client)
+            if (rule.MinRewardAmount.HasValue && rewardAmount < rule.MinRewardAmount.Value)
+            {
+                rewardAmount = rule.MinRewardAmount.Value;
+            }
+
+            if (rule.MaxRewardAmount.HasValue && rewardAmount > rule.MaxRewardAmount.Value)
+            {
+                rewardAmount = rule.MaxRewardAmount.Value;
             }
 
             if (rewardAmount > 0)
@@ -124,6 +148,62 @@ public class GroupRewardCalculationService : IGroupRewardCalculationService
                 }
             }
         }
+    }
+
+    /// <summary>
+    /// Calculates the net profit of an order:
+    /// Gross Profit based on commission hierarchy (Product -> Category -> Vendor -> Brand -> Cost fallback)
+    /// minus regular site discount and group purchase discount
+    /// </summary>
+    protected virtual async Task<decimal> CalculateOrderNetProfitAsync(Order order)
+    {
+        var orderItems = await _orderService.GetOrderItemsAsync(order.Id);
+        if (orderItems == null || !orderItems.Any())
+            return 0m;
+
+        decimal totalNetProfit = 0m;
+        decimal orderSubtotal = order.OrderSubtotalExclTax > 0 ? order.OrderSubtotalExclTax : 1m;
+
+        foreach (var item in orderItems)
+        {
+            var product = await _productService.GetProductByIdAsync(item.ProductId);
+            if (product == null)
+                continue;
+
+            var itemTotal = item.PriceExclTax * item.Quantity;
+
+            // 1. Resolve commission percentage with hierarchy
+            var commissionPercentage = await _commissionService.ResolveCommissionPercentageAsync(product);
+
+            decimal grossProfit;
+            if (commissionPercentage.HasValue)
+            {
+                // Gross Profit = ItemTotal * Commission %
+                grossProfit = (commissionPercentage.Value / 100m) * itemTotal;
+            }
+            else
+            {
+                // Fallback to Product Cost: Price - ProductCost
+                var totalCost = product.ProductCost * item.Quantity;
+                grossProfit = Math.Max(0m, itemTotal - totalCost);
+            }
+
+            // 2. Regular item discount
+            var regularItemDiscount = item.DiscountAmountExclTax;
+
+            // 3. Proportional overall order discount (e.g. group purchase discount or cart coupons)
+            var proportionalOrderDiscount = 0m;
+            if (order.OrderDiscount > 0)
+            {
+                proportionalOrderDiscount = order.OrderDiscount * (itemTotal / orderSubtotal);
+            }
+
+            // 4. Net Profit = Gross Profit - Regular Discount - Group Purchase Discount
+            var netItemProfit = Math.Max(0m, grossProfit - regularItemDiscount - proportionalOrderDiscount);
+            totalNetProfit += netItemProfit;
+        }
+
+        return totalNetProfit;
     }
 
     #endregion

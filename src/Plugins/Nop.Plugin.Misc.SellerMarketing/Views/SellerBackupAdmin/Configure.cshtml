@@ -1,0 +1,139 @@
+@model Nop.Plugin.Misc.SellerMarketing.Models.SellerBackupSettingsModel
+@{
+    Layout = "_AdminLayout";
+    ViewBag.PageTitle = T("Plugins.Misc.SellerMarketing.Backup.AdminSettings").Text;
+}
+
+<form asp-controller="SellerBackupAdmin" asp-action="Configure" method="post">
+    <div class="content-header clearfix">
+        <h1 class="float-left">
+            @T("Plugins.Misc.SellerMarketing.Backup.AdminSettings")
+        </h1>
+        <div class="float-right">
+            <button type="submit" name="save" class="btn btn-primary">
+                <i class="far fa-save"></i>
+                @T("Admin.Common.Save")
+            </button>
+            <a asp-action="RestoreRequests" class="btn btn-info">
+                <i class="fas fa-list-alt"></i>
+                @T("Plugins.Misc.SellerMarketing.Backup.ViewRequests")
+            </a>
+        </div>
+    </div>
+
+    <div asp-validation-summary="All"></div>
+
+    <section class="content">
+        <div class="container-fluid">
+            <div class="form-horizontal">
+                <div class="cards-group">
+                    
+                    @* Entity Permissions Matrix *@
+                    <div class="card card-default">
+                        <div class="card-header">
+                            @T("Plugins.Misc.SellerMarketing.Backup.EntityPermissions")
+                        </div>
+                        <div class="card-body">
+                            
+                            <div class="form-group row">
+                                <div class="col-md-3">
+                                    <nop-label asp-for="AllowBackupProducts" />
+                                </div>
+                                <div class="col-md-9">
+                                    <nop-editor asp-for="AllowBackupProducts" />
+                                    <span asp-validation-for="AllowBackupProducts"></span>
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <div class="col-md-3">
+                                    <nop-label asp-for="AllowBackupProductAttributes" />
+                                </div>
+                                <div class="col-md-9">
+                                    <nop-editor asp-for="AllowBackupProductAttributes" />
+                                    <span asp-validation-for="AllowBackupProductAttributes"></span>
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <div class="col-md-3">
+                                    <nop-label asp-for="AllowBackupPictures" />
+                                </div>
+                                <div class="col-md-9">
+                                    <nop-editor asp-for="AllowBackupPictures" />
+                                    <span asp-validation-for="AllowBackupPictures"></span>
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <div class="col-md-3">
+                                    <nop-label asp-for="AllowBackupOrders" />
+                                </div>
+                                <div class="col-md-9">
+                                    <nop-editor asp-for="AllowBackupOrders" />
+                                    <span asp-validation-for="AllowBackupOrders"></span>
+                                    <small class="form-text text-danger">@T("Plugins.Misc.SellerMarketing.Backup.AllowOrders.RestrictedHint")</small>
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <div class="col-md-3">
+                                    <nop-label asp-for="AllowBackupFinancialData" />
+                                </div>
+                                <div class="col-md-9">
+                                    <nop-editor asp-for="AllowBackupFinancialData" />
+                                    <span asp-validation-for="AllowBackupFinancialData"></span>
+                                    <small class="form-text text-danger">@T("Plugins.Misc.SellerMarketing.Backup.AllowFinancialData.RestrictedHint")</small>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    @* Security and Source Policies *@
+                    <div class="card card-default">
+                        <div class="card-header">
+                            @T("Plugins.Misc.SellerMarketing.Backup.SecurityPolicies")
+                        </div>
+                        <div class="card-body">
+                            
+                            <div class="form-group row">
+                                <div class="col-md-3">
+                                    <nop-label asp-for="AllowExternalFileRestore" />
+                                </div>
+                                <div class="col-md-9">
+                                    <nop-editor asp-for="AllowExternalFileRestore" />
+                                    <span asp-validation-for="AllowExternalFileRestore"></span>
+                                    <small class="form-text text-muted">@T("Plugins.Misc.SellerMarketing.Backup.AllowExternalFileRestore.Hint")</small>
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <div class="col-md-3">
+                                    <nop-label asp-for="RequireAdminApprovalForRestore" />
+                                </div>
+                                <div class="col-md-9">
+                                    <nop-editor asp-for="RequireAdminApprovalForRestore" />
+                                    <span asp-validation-for="RequireAdminApprovalForRestore"></span>
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <div class="col-md-3">
+                                    <nop-label asp-for="HmacSignatureSecretKey" />
+                                </div>
+                                <div class="col-md-9">
+                                    <nop-editor asp-for="HmacSignatureSecretKey" />
+                                    <span asp-validation-for="HmacSignatureSecretKey"></span>
+                                    <small class="form-text text-muted">@T("Plugins.Misc.SellerMarketing.Backup.HmacSecretKey.Hint")</small>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </section>
+</form>

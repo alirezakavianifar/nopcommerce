@@ -11,8 +11,9 @@ public partial interface IUserNotificationService
     /// <summary>
     /// Gets active announcements
     /// </summary>
+    /// <param name="customerRoleIds">Optional customer role filter IDs</param>
     /// <returns>A task that represents the asynchronous operation. The task result contains the list of active announcements</returns>
-    Task<IList<NotificationAnnouncement>> GetActiveAnnouncementsAsync();
+    Task<IList<NotificationAnnouncement>> GetActiveAnnouncementsAsync(IList<int> customerRoleIds = null);
 
     /// <summary>
     /// Gets an announcement by identifier

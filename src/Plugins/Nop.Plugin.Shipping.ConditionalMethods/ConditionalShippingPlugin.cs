@@ -27,6 +27,7 @@ public class ConditionalShippingPlugin : BasePlugin, IShippingRateComputationMet
     private readonly ISettingService _settingService;
     private readonly IConditionalShippingService _conditionalShippingService;
     private readonly ConditionalShippingSettings _settings;
+    private readonly IWorkContext _workContext;
 
     #endregion
 
@@ -37,13 +38,15 @@ public class ConditionalShippingPlugin : BasePlugin, IShippingRateComputationMet
         ILocalizationService localizationService,
         ISettingService settingService,
         IConditionalShippingService conditionalShippingService,
-        ConditionalShippingSettings settings)
+        ConditionalShippingSettings settings,
+        IWorkContext workContext)
     {
         _webHelper = webHelper;
         _localizationService = localizationService;
         _settingService = settingService;
         _conditionalShippingService = conditionalShippingService;
         _settings = settings;
+        _workContext = workContext;
     }
 
     #endregion
@@ -215,27 +218,34 @@ public class ConditionalShippingPlugin : BasePlugin, IShippingRateComputationMet
 
     public async Task ManageSiteMapAsync(AdminMenuItem rootNode)
     {
-        var shippingMenu = rootNode.GetItemBySystemName("Shipping");
-        if (shippingMenu == null)
-        {
-            shippingMenu = rootNode.GetItemBySystemName("Configuration");
-        }
+        var workingLanguage = await _workContext.GetWorkingLanguageAsync();
+        var isPersian = workingLanguage?.LanguageCulture?.StartsWith("fa", StringComparison.OrdinalIgnoreCase) ?? true;
+
+        var title = isPersian ? "ارسال شرطی و فوری" : "Conditional Shipping";
+        var cityTitle = isPersian ? "نگاشت شهرها (پوشش پیک)" : "City Mappings";
+        var prodTitle = isPersian ? "کالاهای مجاز ارسال فوری" : "Product Mappings";
+        var whTitle = isPersian ? "انبارهای مجاز ارسال فوری" : "Warehouse Mappings";
+
+        var configMenu = rootNode.GetItemBySystemName("Configuration");
+        var shippingMenu = configMenu?.ChildNodes.FirstOrDefault(n => n.SystemName == "Shipping") 
+            ?? rootNode.GetItemBySystemName("Shipping") 
+            ?? configMenu;
 
         if (shippingMenu != null)
         {
             var pluginNode = new AdminMenuItem
             {
                 SystemName = "Shipping.ConditionalMethods",
-                Title = await _localizationService.GetResourceAsync("Plugins.Shipping.ConditionalMethods.AdminMenu"),
+                Title = title,
                 Url = "/Admin/ConditionalShipping/Configure",
-                IconClass = "far fa-dot-circle",
+                IconClass = "fas fa-shipping-fast",
                 Visible = true
             };
 
             var cityNode = new AdminMenuItem
             {
                 SystemName = "Shipping.ConditionalMethods.CityMappings",
-                Title = await _localizationService.GetResourceAsync("Plugins.Shipping.ConditionalMethods.AdminMenu.CityMappings"),
+                Title = cityTitle,
                 Url = "/Admin/ConditionalShipping/CityMappings",
                 IconClass = "far fa-circle",
                 Visible = true
@@ -245,7 +255,7 @@ public class ConditionalShippingPlugin : BasePlugin, IShippingRateComputationMet
             var productNode = new AdminMenuItem
             {
                 SystemName = "Shipping.ConditionalMethods.ProductMappings",
-                Title = await _localizationService.GetResourceAsync("Plugins.Shipping.ConditionalMethods.AdminMenu.ProductMappings"),
+                Title = prodTitle,
                 Url = "/Admin/ConditionalShipping/ProductMappings",
                 IconClass = "far fa-circle",
                 Visible = true
@@ -255,7 +265,7 @@ public class ConditionalShippingPlugin : BasePlugin, IShippingRateComputationMet
             var warehouseNode = new AdminMenuItem
             {
                 SystemName = "Shipping.ConditionalMethods.WarehouseMappings",
-                Title = await _localizationService.GetResourceAsync("Plugins.Shipping.ConditionalMethods.AdminMenu.WarehouseMappings"),
+                Title = whTitle,
                 Url = "/Admin/ConditionalShipping/WarehouseMappings",
                 IconClass = "far fa-circle",
                 Visible = true

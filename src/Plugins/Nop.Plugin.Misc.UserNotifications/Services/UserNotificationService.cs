@@ -19,8 +19,9 @@ public partial class UserNotificationService : IUserNotificationService
     /// <summary>
     /// Gets active announcements
     /// </summary>
+    /// <param name="customerRoleIds">Optional customer role filter IDs</param>
     /// <returns>A task that represents the asynchronous operation. The task result contains the list of active announcements</returns>
-    public virtual async Task<IList<NotificationAnnouncement>> GetActiveAnnouncementsAsync()
+    public virtual async Task<IList<NotificationAnnouncement>> GetActiveAnnouncementsAsync(IList<int> customerRoleIds = null)
     {
         var nowUtc = DateTime.UtcNow;
 
@@ -29,6 +30,12 @@ public partial class UserNotificationService : IUserNotificationService
             query = query.Where(a => a.IsPublished);
             query = query.Where(a => !a.StartDateUtc.HasValue || a.StartDateUtc <= nowUtc);
             query = query.Where(a => !a.EndDateUtc.HasValue || a.EndDateUtc >= nowUtc);
+
+            if (customerRoleIds != null && customerRoleIds.Any())
+            {
+                query = query.Where(a => !a.CustomerRoleId.HasValue || a.CustomerRoleId == 0 || customerRoleIds.Contains(a.CustomerRoleId.Value));
+            }
+
             query = query.OrderByDescending(a => a.CreatedOnUtc);
 
             return query;

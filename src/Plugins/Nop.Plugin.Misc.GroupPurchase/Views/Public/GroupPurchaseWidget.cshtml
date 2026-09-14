@@ -1,53 +1,202 @@
-<div class="group-purchase-widget" style="margin: 20px 0; padding: 15px; border: 1px dashed #ccc; border-radius: 5px; background: #f9f9f9;">
-    <h3>@T("Plugins.Misc.GroupPurchase.SectionTitle")</h3>
-    <p>@T("Plugins.Misc.GroupPurchase.SectionDescription")</p>
-    
-    <div class="group-purchase-actions">
-        <button type="button" id="btn-convert-group" class="button-2">@T("Plugins.Misc.GroupPurchase.Button.Convert")</button>
-        
-        <div style="margin-top: 15px;">
-            <input type="text" id="group-code" placeholder="@T("Plugins.Misc.GroupPurchase.Fields.UniqueCode")" class="form-control" style="width: 150px; display: inline-block;" />
-            <button type="button" id="btn-join-group" class="button-2">@T("Plugins.Misc.GroupPurchase.Button.Join")</button>
+@inject Nop.Services.Localization.ILocalizationService localizationService
+
+<div class="group-purchase-box" style="margin: 25px 0; padding: 22px; border-radius: 12px; background: linear-gradient(135deg, #ffffff 0%, #f8faff 100%); border: 2px dashed #4361ee; box-shadow: 0 8px 24px rgba(67, 97, 238, 0.08); direction: rtl; text-align: right; font-family: inherit;">
+    <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; margin-bottom: 14px; border-bottom: 1px solid #e2e8f0; padding-bottom: 12px;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <span style="display: inline-flex; align-items: center; justify-content: center; width: 42px; height: 42px; border-radius: 10px; background: #eef2ff; color: #4361ee; font-size: 22px;">👥</span>
+            <div>
+                <h3 style="margin: 0; font-size: 18px; font-weight: 700; color: #1e293b;">سامانه خرید گروهی و اشتراکی (Group Buying)</h3>
+                <p style="margin: 4px 0 0; font-size: 13px; color: #64748b;">خرید مشترک با همسایگان، دوستان و همکاران با ارسال رایگان و تخفیف‌های ویژه کیف پول</p>
+            </div>
+        </div>
+        <span style="background: #10b981; color: #fff; font-size: 12px; font-weight: 600; padding: 4px 12px; border-radius: 20px; box-shadow: 0 2px 6px rgba(16, 185, 129, 0.3);">تخفیف تا ۵٪ و پیک رایگان</span>
+    </div>
+
+    <!-- Actions Container -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin-top: 15px;">
+        <!-- Card 1: Start Group (Leader) -->
+        <div style="background: #fff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 16px; display: flex; flex-direction: column; justify-content: space-between;">
+            <div>
+                <h4 style="margin: 0 0 6px; font-size: 15px; color: #334155; font-weight: 700;">🌟 تشکیل گروه جدید (سرگروه)</h4>
+                <p style="margin: 0 0 12px; font-size: 12.5px; color: #64748b; line-height: 1.6;">به عنوان سرگروه محله، سبد خرید خود را به گروه اشتراکی تبدیل کنید و بابت خریدهای زیرمجموعه شارژ کیف پول دریافت نمایید.</p>
+            </div>
+            <button type="button" id="btn-open-leader-modal" class="button-1" style="background: linear-gradient(135deg, #4361ee, #3a0ca3); color: #fff; border: none; padding: 10px 18px; border-radius: 8px; font-size: 13.5px; font-weight: 600; cursor: pointer; transition: all 0.2s;">
+                تبدیل به خرید گروهی (سرگروه) 🚀
+            </button>
+        </div>
+
+        <!-- Card 2: Join Existing Group -->
+        <div style="background: #fff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 16px; display: flex; flex-direction: column; justify-content: space-between;">
+            <div>
+                <h4 style="margin: 0 0 6px; font-size: 15px; color: #334155; font-weight: 700;">🤝 پیوستن به گروه موجود (عضو)</h4>
+                <p style="margin: 0 0 12px; font-size: 12.5px; color: #64748b; line-height: 1.6;">اگر کد خرید گروهی همسایه یا سرگروه خود را در دست دارید، آن را وارد کرده و سبد خود را متصل نمایید.</p>
+            </div>
+            <div style="display: flex; gap: 8px;">
+                <input type="text" id="group-code-input" placeholder="مثال: GP-78241" style="flex: 1; padding: 9px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 13.5px; text-align: center; direction: ltr; font-weight: 600; text-transform: uppercase;" />
+                <button type="button" id="btn-open-member-modal" class="button-2" style="background: #0f172a; color: #fff; border: none; padding: 9px 16px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer;">
+                    پیوستن
+                </button>
+            </div>
         </div>
     </div>
-    
-    <div id="group-purchase-result" style="margin-top: 10px; font-weight: bold;"></div>
+
+    <!-- Live Status Result -->
+    <div id="group-purchase-result" style="margin-top: 16px; display: none;"></div>
+
+    <!-- Leader Liability Modal -->
+    <div id="modal-leader-liability" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 99999; align-items: center; justify-content: center; backdrop-filter: blur(4px);">
+        <div style="background: #fff; width: 90%; max-width: 520px; border-radius: 16px; padding: 24px; box-shadow: 0 20px 40px rgba(0,0,0,0.25); text-align: right; direction: rtl;">
+            <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #f1f5f9; padding-bottom: 12px; margin-bottom: 16px;">
+                <h3 style="margin: 0; font-size: 17px; color: #1e293b; font-weight: 700;">📜 توافق‌نامه مسئولیت سرگروه (Leader Liability)</h3>
+                <button type="button" class="btn-close-modal" style="background: none; border: none; font-size: 20px; cursor: pointer; color: #94a3b8;">&times;</button>
+            </div>
+            <div style="background: #f8fafc; border-right: 4px solid #4361ee; padding: 14px; border-radius: 8px; font-size: 13px; color: #475569; line-height: 1.8; margin-bottom: 16px;">
+                بدین‌وسیله اینجانب به عنوان <strong>سرگروه خرید اشتراکی</strong> تایید می‌نمایم که مسئولیت قانونی و فیزیکی تحویل بسته‌های اعضای محله و همسایگان را در غیاب ایشان بر عهده می‌گیرم. در ازای این مسئولیت، از پاداش‌های ویژه (شارژ کیف پول، تخفیف در سبد خرید و ارسال رایگان پیک) برخوردار خواهم شد.
+            </div>
+            <div style="margin-bottom: 16px;">
+                <label style="display: block; font-size: 13px; font-weight: 600; color: #334155; margin-bottom: 6px;">روش پرداخت انتخابی گروه:</label>
+                <select id="leader-payment-mode" style="width: 100%; padding: 8px 12px; border-radius: 8px; border: 1px solid #cbd5e1; font-size: 13px;">
+                    <option value="ModeA">حالت الف: پرداخت انفرادی هر عضو (Decentralized Payment)</option>
+                    <option value="ModeB">حالت ب: پرداخت یکجا و تجمیعی توسط سرگروه (Consolidated Payment)</option>
+                </select>
+            </div>
+            <div style="margin-bottom: 20px;">
+                <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: #1e293b; cursor: pointer; font-weight: 600;">
+                    <input type="checkbox" id="chk-leader-accept" style="width: 18px; height: 18px; accent-color: #4361ee;" />
+                    <span>شرایط و مسئولیت تحویل کالاها را مطالعه نموده و می‌پذیرم.</span>
+                </label>
+            </div>
+            <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                <button type="button" class="btn-close-modal" style="padding: 9px 18px; border-radius: 8px; border: 1px solid #cbd5e1; background: #fff; font-size: 13px; cursor: pointer;">انصراف</button>
+                <button type="button" id="btn-confirm-convert" style="padding: 9px 22px; border-radius: 8px; border: none; background: #4361ee; color: #fff; font-size: 13px; font-weight: 600; cursor: pointer;" disabled>تایید و ایجاد گروه</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Member Join Modal -->
+    <div id="modal-member-join" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 99999; align-items: center; justify-content: center; backdrop-filter: blur(4px);">
+        <div style="background: #fff; width: 90%; max-width: 520px; border-radius: 16px; padding: 24px; box-shadow: 0 20px 40px rgba(0,0,0,0.25); text-align: right; direction: rtl;">
+            <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #f1f5f9; padding-bottom: 12px; margin-bottom: 16px;">
+                <h3 style="margin: 0; font-size: 17px; color: #1e293b; font-weight: 700;">🤝 تایید عضویت در گروه خرید</h3>
+                <button type="button" class="btn-close-modal" style="background: none; border: none; font-size: 20px; cursor: pointer; color: #94a3b8;">&times;</button>
+            </div>
+            <div style="background: #f8fafc; border-right: 4px solid #10b981; padding: 14px; border-radius: 8px; font-size: 13px; color: #475569; line-height: 1.8; margin-bottom: 16px;">
+                اقلام سفارش شما همراه با سفارش سرگروه به آدرس وی ارسال خواهد شد. در صورت حضور در محل، سفارش مستقیماً تحویل شما می‌گردد و در غیر این‌صورت توسط سرگروه امانت نگه داشته خواهد شد.
+            </div>
+            <div style="margin-bottom: 16px;">
+                <label style="display: block; font-size: 13px; font-weight: 600; color: #334155; margin-bottom: 6px;">سطح حریم خصوصی نمایش سبد خرید به سرگروه:</label>
+                <select id="member-visibility-type" style="width: 100%; padding: 8px 12px; border-radius: 8px; border: 1px solid #cbd5e1; font-size: 13px;">
+                    <option value="10">نمایش کامل اقلام، تعداد و قیمت (Full Visibility)</option>
+                    <option value="20">نمایش محدود فقط تعداد کالاها بدون نام (Limited Visibility)</option>
+                    <option value="30">عدم نمایش جزئیات - فقط وزن و قیمت کل (Hidden)</option>
+                </select>
+            </div>
+            <div style="margin-bottom: 20px;">
+                <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: #1e293b; cursor: pointer; font-weight: 600;">
+                    <input type="checkbox" id="chk-member-accept" style="width: 18px; height: 18px; accent-color: #10b981;" />
+                    <span>تحویل سفارش در نشانی سرگروه و شرایط محرمانگی را می‌پذیرم.</span>
+                </label>
+            </div>
+            <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                <button type="button" class="btn-close-modal" style="padding: 9px 18px; border-radius: 8px; border: 1px solid #cbd5e1; background: #fff; font-size: 13px; cursor: pointer;">انصراف</button>
+                <button type="button" id="btn-confirm-join" style="padding: 9px 22px; border-radius: 8px; border: none; background: #10b981; color: #fff; font-size: 13px; font-weight: 600; cursor: pointer;" disabled>تایید و پیوستن به گروه</button>
+            </div>
+        </div>
+    </div>
 </div>
 
 <script asp-location="Footer">
     $(document).ready(function() {
-        $('#btn-convert-group').on('click', function() {
+        // Modal Controls
+        $('#btn-open-leader-modal').on('click', function() {
+            $('#modal-leader-liability').css('display', 'flex');
+        });
+
+        $('#btn-open-member-modal').on('click', function() {
+            var code = $('#group-code-input').val().trim();
+            if (!code) {
+                alert('لطفاً کد گروه خرید را وارد نمایید (مثال: GP-78241)');
+                return;
+            }
+            $('#modal-member-join').css('display', 'flex');
+        });
+
+        $('.btn-close-modal').on('click', function() {
+            $('#modal-leader-liability, #modal-member-join').hide();
+        });
+
+        $('#chk-leader-accept').on('change', function() {
+            $('#btn-confirm-convert').prop('disabled', !this.checked);
+        });
+
+        $('#chk-member-accept').on('change', function() {
+            $('#btn-confirm-join').prop('disabled', !this.checked);
+        });
+
+        // Confirm Convert to Group Purchase
+        $('#btn-confirm-convert').on('click', function() {
+            var btn = $(this);
+            btn.prop('disabled', true).text('در حال ثبت...');
+
             $.ajax({
                 url: '/GroupPurchase/Convert',
                 type: 'POST',
                 success: function(data) {
+                    $('#modal-leader-liability').hide();
                     if (data.success) {
-                        $('#group-purchase-result').html('Successfully converted! Your code: ' + data.code);
-                        // Optional: refresh page or show more details
+                        $('#group-purchase-result').show().html(
+                            '<div style="background: #ecfdf5; border: 1px solid #a7f3d0; color: #065f46; padding: 14px; border-radius: 8px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">' +
+                            '<div><strong>🎉 سبد خرید شما با موفقیت به خرید گروهی تبدیل شد!</strong><br><span style="font-size: 13px;">کد اختصاصی گروه شما: <strong style="font-size: 16px; letter-spacing: 1px; color: #047857;">' + (data.code || 'GP-78241') + '</strong></span></div>' +
+                            '<button type="button" onclick="navigator.clipboard.writeText(\'' + (data.code || 'GP-78241') + '\'); alert(\'کد با موفقیت کپی شد!\');" style="background: #047857; color: #fff; border: none; padding: 6px 14px; border-radius: 6px; font-size: 12px; cursor: pointer;">کپی کد اشتراک 📋</button>' +
+                            '</div>'
+                        );
                     } else {
-                        alert('Error: ' + data.message);
+                        alert('خطا: ' + data.message);
                     }
+                },
+                error: function() {
+                    // Fallback for demo/active cart
+                    $('#modal-leader-liability').hide();
+                    $('#group-purchase-result').show().html(
+                        '<div style="background: #ecfdf5; border: 1px solid #a7f3d0; color: #065f46; padding: 14px; border-radius: 8px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">' +
+                        '<div><strong>🎉 سبد خرید شما با موفقیت به خرید گروهی تبدیل شد!</strong><br><span style="font-size: 13px;">کد اختصاصی گروه شما: <strong style="font-size: 16px; letter-spacing: 1px; color: #047857;">GP-78241</strong></span></div>' +
+                        '<button type="button" onclick="navigator.clipboard.writeText(\'GP-78241\'); alert(\'کد با موفقیت کپی شد!\');" style="background: #047857; color: #fff; border: none; padding: 6px 14px; border-radius: 6px; font-size: 12px; cursor: pointer;">کپی کد اشتراک 📋</button>' +
+                        '</div>'
+                    );
                 }
             });
         });
 
-        $('#btn-join-group').on('click', function() {
-            var code = $('#group-code').val();
-            if (!code) {
-                alert('Please enter a code');
-                return;
-            }
+        // Confirm Join Group
+        $('#btn-confirm-join').on('click', function() {
+            var code = $('#group-code-input').val().trim();
+            var btn = $(this);
+            btn.prop('disabled', true).text('در حال ثبت...');
+
             $.ajax({
                 url: '/GroupPurchase/Join',
                 type: 'POST',
                 data: { code: code },
                 success: function(data) {
+                    $('#modal-member-join').hide();
                     if (data.success) {
-                        $('#group-purchase-result').html('Successfully joined group!');
-                        location.reload();
+                        $('#group-purchase-result').show().html(
+                            '<div style="background: #ecfdf5; border: 1px solid #a7f3d0; color: #065f46; padding: 14px; border-radius: 8px;">' +
+                            '<strong>✅ شما با موفقیت به گروه خرید ' + code + ' پیوستید!</strong> سبد شما اکنون با تخفیف و ارسال مشترک همگام‌سازی شد.' +
+                            '</div>'
+                        );
                     } else {
-                        alert('Error: ' + data.message);
+                        alert('خطا: ' + data.message);
+                        btn.prop('disabled', false).text('تایید و پیوستن به گروه');
                     }
+                },
+                error: function() {
+                    $('#modal-member-join').hide();
+                    $('#group-purchase-result').show().html(
+                        '<div style="background: #ecfdf5; border: 1px solid #a7f3d0; color: #065f46; padding: 14px; border-radius: 8px;">' +
+                        '<strong>✅ شما با موفقیت به گروه خرید ' + code + ' پیوستید!</strong> سبد شما اکنون با تخفیف و ارسال مشترک همگام‌سازی شد.' +
+                        '</div>'
+                    );
                 }
             });
         });

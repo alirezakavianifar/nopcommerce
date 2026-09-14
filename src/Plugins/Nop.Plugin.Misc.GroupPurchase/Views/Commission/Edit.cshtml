@@ -1,0 +1,32 @@
+@model Nop.Plugin.Misc.GroupPurchase.Models.CommissionModel
+@{
+    Layout = "_AdminLayout";
+    ViewBag.PageTitle = T("Plugins.Misc.GroupPurchase.Commission.Edit").Text;
+}
+
+<form asp-controller="CommissionAdmin" asp-action="Edit" method="post">
+    <div class="content-header clearfix">
+        <h1 class="float-left">
+            @T("Plugins.Misc.GroupPurchase.Commission.Edit")
+            <small>
+                <i class="fas fa-arrow-circle-left"></i>
+                <a asp-action="List">@T("Plugins.Misc.GroupPurchase.Commission.BackToList")</a>
+            </small>
+        </h1>
+        <div class="float-right">
+            <button type="submit" name="save" class="btn btn-primary">
+                <i class="far fa-save"></i>
+                @T("Admin.Common.Save")
+            </button>
+            <button type="submit" name="save-continue" class="btn btn-primary">
+                <i class="far fa-save"></i>
+                @T("Admin.Common.SaveContinue")
+            </button>
+            <button type="submit" asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger" onclick="return confirm('@T("Admin.Common.AreYouSure")');">
+                <i class="far fa-trash-alt"></i>
+                @T("Admin.Common.Delete")
+            </button>
+        </div>
+    </div>
+    @await Html.PartialAsync("~/Plugins/Misc.GroupPurchase/Views/Commission/_CreateOrUpdate.cshtml", Model)
+</form>

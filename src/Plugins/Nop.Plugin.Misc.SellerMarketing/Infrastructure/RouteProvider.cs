@@ -1,11 +1,10 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Nop.Web.Framework.Mvc.Routing;
-using Nop.Web.Infrastructure;
 
 namespace Nop.Plugin.Misc.SellerMarketing.Infrastructure;
 
-public class RouteProvider : BaseRouteProvider, IRouteProvider
+public class RouteProvider : IRouteProvider
 {
     public void RegisterRoutes(IEndpointRouteBuilder endpointRouteBuilder)
     {
@@ -77,6 +76,48 @@ public class RouteProvider : BaseRouteProvider, IRouteProvider
             name: "Plugin.Misc.SellerMarketing.Api.MyRequests",
             pattern: "api/seller-marketing/my-requests",
             defaults: new { controller = "SellerMarketingApi", action = "MyRequests" });
+
+        // Seller Backup & Restore Public Routes
+        endpointRouteBuilder.MapControllerRoute(
+            name: "Plugin.Misc.SellerMarketing.Public.Backup",
+            pattern: "seller/backup",
+            defaults: new { controller = "SellerBackupPublic", action = "Index" });
+
+        endpointRouteBuilder.MapControllerRoute(
+            name: "Plugin.Misc.SellerMarketing.Public.Backup.Lang",
+            pattern: "{lang:maxlength(2)}/seller/backup",
+            defaults: new { controller = "SellerBackupPublic", action = "Index" });
+
+        endpointRouteBuilder.MapControllerRoute(
+            name: "Plugin.Misc.SellerMarketing.Public.Backup.Create",
+            pattern: "seller/backup/create",
+            defaults: new { controller = "SellerBackupPublic", action = "CreateBackup" });
+
+        endpointRouteBuilder.MapControllerRoute(
+            name: "Plugin.Misc.SellerMarketing.Public.Backup.Download",
+            pattern: "seller/backup/download/{id:int}",
+            defaults: new { controller = "SellerBackupPublic", action = "DownloadBackup" });
+
+        endpointRouteBuilder.MapControllerRoute(
+            name: "Plugin.Misc.SellerMarketing.Public.Backup.Restore",
+            pattern: "seller/backup/restore",
+            defaults: new { controller = "SellerBackupPublic", action = "RequestRestore" });
+
+        endpointRouteBuilder.MapControllerRoute(
+            name: "Plugin.Misc.SellerMarketing.Public.Backup.UploadRestore",
+            pattern: "seller/backup/upload-restore",
+            defaults: new { controller = "SellerBackupPublic", action = "UploadAndRequestRestore" });
+
+        // Admin Backup Routes
+        endpointRouteBuilder.MapControllerRoute(
+            name: "Plugin.Misc.SellerMarketing.Admin.Backup.Configure",
+            pattern: "Admin/SellerBackupAdmin/Configure",
+            defaults: new { controller = "SellerBackupAdmin", action = "Configure", area = "Admin" });
+
+        endpointRouteBuilder.MapControllerRoute(
+            name: "Plugin.Misc.SellerMarketing.Admin.Backup.RestoreRequests",
+            pattern: "Admin/SellerBackupAdmin/RestoreRequests",
+            defaults: new { controller = "SellerBackupAdmin", action = "RestoreRequests", area = "Admin" });
     }
 
     public int Priority => 1000;

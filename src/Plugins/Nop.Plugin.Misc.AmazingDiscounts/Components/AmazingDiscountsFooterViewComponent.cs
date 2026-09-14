@@ -7,6 +7,6 @@ public class AmazingDiscountsFooterViewComponent : NopViewComponent
 {
     public IViewComponentResult Invoke(string widgetZone, object additionalData)
     {
-        return View("~/Plugins/Misc.AmazingDiscounts/Views/Public/FooterLink.cshtml");
+        return View("~/Plugins/Misc.AmazingDiscounts/Views/Public/FooterLink.cshtml", widgetZone);
     }
 }
